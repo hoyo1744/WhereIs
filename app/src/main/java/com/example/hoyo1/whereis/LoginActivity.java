@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,11 +91,22 @@ public class LoginActivity extends AppCompatActivity {
                 };
 
                 LoginRequest loginRequest=new LoginRequest(userId,userPassword,responseLister);
-                RequestQueue queue=Volley.newRequestQueue(LoginActivity.this);
+                RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
                 queue.add(loginRequest);
 
 
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(dialog!=null)
+        {
+            dialog.dismiss();
+            dialog=null;
+        }
     }
 }
