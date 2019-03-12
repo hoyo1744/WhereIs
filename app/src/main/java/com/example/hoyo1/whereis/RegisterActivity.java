@@ -28,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private String userEmail;
     private String userName;
     private String userGenger;
+    private String userPhoneNumber;
     private AlertDialog dialog;
     private boolean validate=false;
 
@@ -40,7 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText idText=(EditText) findViewById((R.id.idText));
         final EditText passwordText=(EditText) findViewById((R.id.passwordText));
         final EditText emailText=(EditText) findViewById((R.id.emailText));
-
+        final EditText nameText=(EditText)findViewById(R.id.nameText);
+        final EditText phoneNumberText=(EditText)findViewById(R.id.phoneNumberTextText);
 
         RadioGroup genderGroup=(RadioGroup)findViewById((R.id.genderGroup));
         int genderGroupID=genderGroup.getCheckedRadioButtonId();
@@ -73,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return ;
 
                 }
+                //response 리스너 구현
                 Response.Listener<String> responListener=new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -120,6 +123,10 @@ public class RegisterActivity extends AppCompatActivity {
                 String userID=idText.getText().toString();
                 String userPassword=passwordText.getText().toString();
                 String userEmail=emailText.getText().toString();
+                String userName=nameText.getText().toString();
+                String userPhoneNumber=phoneNumberText.getText().toString();
+
+
 
                 if(!validate)
                 {
@@ -131,7 +138,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return ;
                 }
 
-                if(userID.equals("") || userPassword.equals("") || userEmail.equals(""))
+                if(userID.equals("") || userPassword.equals("") || userEmail.equals("") ||  userName.equals("") || userPhoneNumber.equals(""))
                 {
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("빈칸이 남아있습니다.")
@@ -169,7 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 };
-                RegisterRequest registerRequest=new RegisterRequest(userID,userPassword,userEmail,userGenger,responListener);
+                RegisterRequest registerRequest=new RegisterRequest(userID,userPassword,userEmail,userName,userPhoneNumber,userGenger,responListener);
                 RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
                 queue.add(registerRequest);
 
