@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
 
-
         });
 
         final EditText idText=(EditText)findViewById(R.id.idText);
