@@ -18,8 +18,6 @@ public class LoginRequest extends StringRequest {
         parameters.put("userId", userId);
         parameters.put("userPassword", userPassword);
 
-
-
     }
 
 
