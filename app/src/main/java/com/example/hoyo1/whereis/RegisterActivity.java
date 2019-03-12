@@ -202,6 +202,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
+
     protected  void onStop()
     {
 
