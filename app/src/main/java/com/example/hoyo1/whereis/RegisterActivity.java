@@ -36,7 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        //findViewById는 레이아웃에 정의된 객체를 참조하기 위한 함수
         final EditText idText=(EditText) findViewById((R.id.idText));
         final EditText passwordText=(EditText) findViewById((R.id.passwordText));
         final EditText emailText=(EditText) findViewById((R.id.emailText));
