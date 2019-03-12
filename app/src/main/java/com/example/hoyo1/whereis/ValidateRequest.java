@@ -7,8 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidateRequest extends StringRequest {
-    final static private String url="http://.php";
-    private Map<String,String> parameters;
+    final static private String url="";
+    public Map<String,String> parameters;
+
     public ValidateRequest(String userId, Response.Listener<String> listener) {
         super(Method.POST, url, listener, null);
 
@@ -17,7 +18,7 @@ public class ValidateRequest extends StringRequest {
 
     }
 
-
+    @Override
     public Map<String,String> getParams(){
         return parameters;
     }

@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis;
 
+import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -16,6 +18,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.widget.Toast.LENGTH_LONG;
+import static android.widget.Toast.makeText;
 import static com.example.hoyo1.whereis.R.color.colorGray;
 import static com.example.hoyo1.whereis.R.id.idText;
 import static com.example.hoyo1.whereis.R.id.nameText;
@@ -62,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
         validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userID=idText.getText().toString();
+                final String userID=idText.getText().toString();
                 if(validate)
                     return ;
 
@@ -81,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         try{
                             JSONObject jsonObject=new JSONObject(response);
-                            boolean success=jsonObject.getBoolean(response);
+                            boolean success=jsonObject.getBoolean("success");
                             if(success){
                                 AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                                 dialog=builder.setMessage("사용할 수 있는 아이디입니다.")
@@ -96,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                             }
                             else{
+
                                 AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                                 dialog=builder.setMessage("사용할 수 없는 아이디입니다.")
                                         .setPositiveButton("확인",null)
@@ -105,9 +110,11 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
+                       }
                     }
                 };
+
+
 
                 ValidateRequest validateRequest=new ValidateRequest(userID,responListener);
                 RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
@@ -126,7 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String userName=nameText.getText().toString();
                 String userPhoneNumber=phoneNumberText.getText().toString();
 
-
+                Toast.makeText(RegisterActivity.this, userGenger, Toast.LENGTH_SHORT).show();
 
                 if(!validate)
                 {
@@ -152,14 +159,20 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         try{
                             JSONObject jsonObject=new JSONObject(response);
-                            boolean success=jsonObject.getBoolean(response);
+                            boolean success=jsonObject.getBoolean("success");
                             if(success){
-                                AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
-                                dialog=builder.setMessage("회원가입이 완료되었습니다.")
-                                        .setPositiveButton("확인",null)
-                                        .create();
-                                dialog.show();
-                                finish();
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
+                                    dialog=builder.setMessage("회원가입이 완료되었습니다.")
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            finish();
+                                                        }
+                                                    }
+                                            )
+                                            .create();
+                                    dialog.show();
+
 
 
                             }
@@ -176,7 +189,8 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 };
-                RegisterRequest registerRequest=new RegisterRequest(userID,userPassword,userEmail,userName,userPhoneNumber,userGenger,responListener);
+
+                RegisterRequest registerRequest=new RegisterRequest(userID,userPassword,userEmail,userName,userGenger,userPhoneNumber,responListener);
                 RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
                 queue.add(registerRequest);
 
