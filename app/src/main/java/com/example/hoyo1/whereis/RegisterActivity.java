@@ -1,10 +1,12 @@
 package com.example.hoyo1.whereis;
 
+import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -39,8 +41,15 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        //액션바와 타이틀바 숨기기
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_register);
+
+
+
         //findViewById는 레이아웃에 정의된 객체를 참조하기 위한 함수
         final EditText idText=(EditText) findViewById((R.id.idText));
         final EditText passwordText=(EditText) findViewById((R.id.passwordText));

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WhereIs</string>
+    <string name="activiy_main">그룹</string>
+    <string name="menu_main_search">검색</string>
+    <string name="menu_main_groupAdd">그룹추가</string>
+    <string name="menu_main_setting">설정</string>
+
 </resources>
