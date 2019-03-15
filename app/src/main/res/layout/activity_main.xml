@@ -26,6 +26,9 @@
                 android:layout_height="70dp"
                 android:layout_marginTop="10dp">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp">
                 //배경
                 <ImageView
                     android:layout_width="match_parent"
@@ -37,6 +40,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_gravity="left"
+                    android:layout_alignParentLeft="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="5dp"
                     app:srcCompat="@drawable/ic_person_black_24dp" />
@@ -46,11 +50,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="44dp"
                     android:layout_gravity="left"
-                    android:layout_marginLeft="80dp"
+                    android:layout_toRightOf="@+id/profileImage"
                     android:layout_marginTop="10dp"
                     android:text="엄호용"
                     android:textSize="25dp"
                     android:textStyle="bold" />
+
+                </RelativeLayout>
             </FrameLayout>
         </LinearLayout>
 
