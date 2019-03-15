@@ -4,5 +4,7 @@
     <string name="menu_main_search">검색</string>
     <string name="menu_main_groupAdd">그룹추가</string>
     <string name="menu_main_setting">설정</string>
+    <string name="menu_groupadd_out">나가기</string>
+    <string name="menu_groupadd_confirm">확인</string>
 
 </resources>
