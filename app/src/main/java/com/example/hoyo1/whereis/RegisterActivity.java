@@ -50,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
+
         //findViewById는 레이아웃에 정의된 객체를 참조하기 위한 함수
         final EditText idText=(EditText) findViewById((R.id.idText));
         final EditText passwordText=(EditText) findViewById((R.id.passwordText));
@@ -222,4 +223,6 @@ public class RegisterActivity extends AppCompatActivity {
             dialog=null;
         }
     }
+
+
 }

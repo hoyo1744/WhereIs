@@ -1,10 +1,21 @@
 <resources>
     <string name="app_name">WhereIs</string>
+
+
+    /*메인(로그인이후)*/
     <string name="activiy_main">그룹</string>
     <string name="menu_main_search">검색</string>
     <string name="menu_main_groupAdd">그룹추가</string>
     <string name="menu_main_setting">설정</string>
+
+    /*그룹추가(메인에서 그룹생성)*/
     <string name="menu_groupadd_out">나가기</string>
     <string name="menu_groupadd_confirm">확인</string>
+
+
+    /*그룹메인(그룹클릭시)*/
+    <string name="menu_group_search">검색</string>
+    <string name="menu_group_add">초대</string>
+    <string name="menu_group_setting">설정</string>
 
 </resources>

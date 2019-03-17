@@ -186,8 +186,8 @@ public class GroupAddActivity extends AppCompatActivity {
         switch (menuId)
         {
             case R.id.confirmMenu:
-
-
+                //그룹이름,그룹리더이름,그룹헤더 및 카테고리값을 저장
+                Toast.makeText(this,groupLeaderNameEditText.getText().toString(),Toast.LENGTH_LONG).show();
 
 
 

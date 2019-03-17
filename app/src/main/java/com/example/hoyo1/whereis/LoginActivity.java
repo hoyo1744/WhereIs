@@ -29,12 +29,8 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        //액션바와 타이틀바 숨기기
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_login);
 
-
+        init();
 
 
 
@@ -121,5 +117,13 @@ public class LoginActivity extends AppCompatActivity {
             dialog.dismiss();
             dialog=null;
         }
+    }
+
+    public void init(){
+        //액션바와 타이틀바 숨기기
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_login);
+
     }
 }

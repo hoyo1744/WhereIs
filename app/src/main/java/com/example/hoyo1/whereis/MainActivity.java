@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_GROUP_ADD = 101;
+    public static final int REQUEST_GROUP = 102;
 
     ListView listView;
     SingerAdapter adapter;
@@ -34,31 +36,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
-        listView=(ListView)findViewById(R.id.listView);
+
+        init();
 
 
-        /////////////////////////////////////////////////////////////////////////////////////
-        //초기화시작
-        /////////////////////////////////////////////////////////////////////////////////////
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SingerItem item=(SingerItem)adapter.getItem(position);
+                Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
+                startActivityForResult(intent,REQUEST_GROUP);
+            }
+        });
 
-        adapter = new SingerAdapter(getApplicationContext());
-        //리스트초기화
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        listView.setAdapter(adapter);
 
-        //그룹소제목초기화
-        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //초기화끝
-        /////////////////////////////////////////////////////////////////////////////////////
     }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main,menu);
@@ -96,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode==REQUEST_GROUP_ADD){
-            //요청받은 메시지처리
+            //요청받은 메시지처리(그룹추가)
             if(resultCode==RESULT_OK){
                 //그룹추가 완료
             }
@@ -104,5 +99,35 @@ public class MainActivity extends AppCompatActivity {
                 //그룹추가 취소
             }
         }
+        else if(requestCode==REQUEST_GROUP){
+            //그룹메인
+
+        }
+    }
+
+    public void init(){
+        groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
+        listView=(ListView)findViewById(R.id.listView);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //초기화시작
+        /////////////////////////////////////////////////////////////////////////////////////
+
+        adapter = new SingerAdapter(getApplicationContext());
+        //리스트초기화
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
+        listView.setAdapter(adapter);
+
+        //그룹소제목초기화
+        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
+        /////////////////////////////////////////////////////////////////////////////////////
+        //초기화끝
+        /////////////////////////////////////////////////////////////////////////////////////
     }
 }
