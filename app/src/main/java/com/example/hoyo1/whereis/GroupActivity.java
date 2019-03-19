@@ -64,6 +64,8 @@ public class GroupActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP|actionBar.DISPLAY_SHOW_TITLE);
 
+
+
         profileGrid=(GridView)findViewById(R.id.gridView);
         profileAdapter= new GridAdapter(getApplicationContext());
         //리스트초기화

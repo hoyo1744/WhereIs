@@ -10,33 +10,38 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="16dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="50dp">
 
 
             //스테틱 그룹장 :
+
             <TextView
                 android:id="@+id/groupLeaderTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
-                android:layout_toLeftOf="@id/groupLeaderImageView"
                 android:layout_marginTop="20dp"
+                android:layout_toLeftOf="@id/groupLeaderImageView"
                 android:text="그룹장 : "
                 android:textSize="15dp"
                 android:textStyle="normal" />
 
             //그룹리더프로필이미지
+
             <ImageView
                 android:id="@+id/groupLeaderImageView"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginTop="20dp"
-                android:layout_toLeftOf="@id/groupLeaderNameTextView"
+                android:layout_toLeftOf="@+id/groupLeaderNameTextView"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
             //그룹리더프로필이름
+
             <TextView
                 android:id="@+id/groupLeaderNameTextView"
                 android:layout_width="wrap_content"
@@ -48,25 +53,29 @@
                 android:textStyle="normal" />
 
 
-
-
         </RelativeLayout>
 
-
-        //그룹멤버 그리드뷰
+        //그룹멤버 그리드 헤더
         <GridView
-            android:id="@+id/gridView"
+            android:id="@+id/gridViewHeader"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:numColumns="1"
+            android:layout_height="50dp"
             android:horizontalSpacing="2dp"
-            android:verticalSpacing="2dp"
-            >
-
-
+            android:numColumns="5"
+            android:verticalSpacing="2dp">
 
         </GridView>
+        //그룹멤버 그리드뷰
+        <GridView
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:horizontalSpacing="2dp"
+        android:numColumns="1"
+        android:verticalSpacing="2dp">
 
+
+    </GridView>
 
 
     </LinearLayout>
