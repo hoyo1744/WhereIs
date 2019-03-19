@@ -55,9 +55,10 @@
 
         //그룹멤버 그리드뷰
         <GridView
+            android:id="@+id/gridView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:numColumns="10"
+            android:numColumns="1"
             android:horizontalSpacing="2dp"
             android:verticalSpacing="2dp"
             >
