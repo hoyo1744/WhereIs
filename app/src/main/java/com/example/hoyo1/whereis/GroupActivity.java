@@ -2,19 +2,27 @@ package com.example.hoyo1.whereis;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridAdapter;
+import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridTextAdapter;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerProfileItem;
+import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerTextItem;
+
+import in.srain.cube.views.GridViewWithHeaderAndFooter;
 
 public class GroupActivity extends AppCompatActivity {
 
 
-    GridView profileGrid;
+    GridViewWithHeaderAndFooter profileGrid;
+    GridViewWithHeaderAndFooter textGrid;
     GridAdapter profileAdapter;
+    GridTextAdapter textAdapter;
 
 
     @Override
@@ -65,9 +73,17 @@ public class GroupActivity extends AppCompatActivity {
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP|actionBar.DISPLAY_SHOW_TITLE);
 
 
+        LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View GridProfileHeader=inflater.inflate(R.layout.header_item,null);
 
-        profileGrid=(GridView)findViewById(R.id.gridView);
+        profileGrid=(GridViewWithHeaderAndFooter )findViewById(R.id.gridView);
+        textGrid=(GridViewWithHeaderAndFooter)findViewById(R.id.gridView2);
         profileAdapter= new GridAdapter(getApplicationContext());
+        textAdapter=new GridTextAdapter(getApplicationContext());
+
+
+
+        profileGrid.addHeaderView(GridProfileHeader);
         //리스트초기화
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
@@ -75,6 +91,18 @@ public class GroupActivity extends AppCompatActivity {
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
         profileGrid.setAdapter(profileAdapter);
+
+        textGrid.addHeaderView(GridProfileHeader);
+        textAdapter.addItem(new SingerTextItem("내용"));
+        textAdapter.addItem(new SingerTextItem("내용"));
+        textAdapter.addItem(new SingerTextItem("내용"));
+        textAdapter.addItem(new SingerTextItem("내용"));
+        textAdapter.addItem(new SingerTextItem("내용"));
+        textGrid.setAdapter(textAdapter);
+
+
+
+
 
     }
 }
