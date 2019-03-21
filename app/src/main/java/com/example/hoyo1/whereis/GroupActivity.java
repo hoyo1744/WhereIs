@@ -77,28 +77,41 @@ public class GroupActivity extends AppCompatActivity {
         View GridProfileHeader=inflater.inflate(R.layout.header_item,null);
 
         profileGrid=(GridViewWithHeaderAndFooter )findViewById(R.id.gridView);
-        textGrid=(GridViewWithHeaderAndFooter)findViewById(R.id.gridView2);
         profileAdapter= new GridAdapter(getApplicationContext());
-        textAdapter=new GridTextAdapter(getApplicationContext());
 
 
 
-        profileGrid.addHeaderView(GridProfileHeader);
-        //리스트초기화
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp ));
+        //profileGrid.addHeaderView(GridProfileHeader)
+        // /리스트초기화(헤더)
+        profileAdapter.addItem(new SingerProfileItem("프로필",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("내용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("내용",profileAdapter.ITEM_VIEW_TEXT));
+
+
+
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
         profileGrid.setAdapter(profileAdapter);
 
-        textGrid.addHeaderView(GridProfileHeader);
-        textAdapter.addItem(new SingerTextItem("내용"));
-        textAdapter.addItem(new SingerTextItem("내용"));
-        textAdapter.addItem(new SingerTextItem("내용"));
-        textAdapter.addItem(new SingerTextItem("내용"));
-        textAdapter.addItem(new SingerTextItem("내용"));
-        textGrid.setAdapter(textAdapter);
 
 
 

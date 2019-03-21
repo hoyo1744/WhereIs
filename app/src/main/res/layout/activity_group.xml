@@ -62,21 +62,13 @@
         //그룹멤버 그리드뷰(동적생성)
         <in.srain.cube.views.GridViewWithHeaderAndFooter
             android:id="@+id/gridView"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:horizontalSpacing="1dp"
-            android:numColumns="1"
+            android:horizontalSpacing="2dp"
+            android:numColumns="3"
             android:verticalSpacing="2dp">
         </in.srain.cube.views.GridViewWithHeaderAndFooter >
-        //그룹멤버 그리드뷰(동적생성)
-        <in.srain.cube.views.GridViewWithHeaderAndFooter
-            android:id="@+id/gridView2"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:horizontalSpacing="1dp"
-            android:numColumns="1"
-            android:verticalSpacing="2dp">
-        </in.srain.cube.views.GridViewWithHeaderAndFooter >
+
 
         </LinearLayout>
 

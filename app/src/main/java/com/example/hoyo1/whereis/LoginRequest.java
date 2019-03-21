@@ -13,7 +13,6 @@ public class LoginRequest extends StringRequest {
 
     public LoginRequest(String userId, String userPassword,Response.Listener<String> listener) {
         super(Method.POST, url, listener, null);
-
         parameters = new HashMap<>();
         parameters.put("userId", userId);
         parameters.put("userPassword", userPassword);

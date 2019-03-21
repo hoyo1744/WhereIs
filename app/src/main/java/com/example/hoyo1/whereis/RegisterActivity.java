@@ -28,7 +28,6 @@ import static com.example.hoyo1.whereis.R.id.nameText;
 
 public class RegisterActivity extends AppCompatActivity {
 
-
     private String userID;
     private String userPassword;
     private String userEmail;
