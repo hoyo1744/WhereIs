@@ -140,31 +140,13 @@ public class LoginActivity extends AppCompatActivity {
                     boolean success=jsonResponse.getBoolean("success");
                     if(success)
                     {
-                        AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
-                        dialog=builder.setMessage("로그인에 성공했습니다.")
-                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        //싱글톤객체 초기화
-                                        GetInitialSingletonUser(userId,userPassword);
-                                        //로그인이 성공한다면 다음씬으로 넘어간다.
-                                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
-                                        LoginActivity.this.startActivity(intent);
-                                        finish();
-                                    }
-                                })
-                                .create();
-                        dialog.show();
+
 
 
                     }
                     else
                     {
-                        AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
-                        dialog=builder.setMessage("로그인에 실패했습니다.")
-                                .setPositiveButton("확인", null)
-                                .create();
-                        dialog.show();
+
                     }
                 }
                 catch (JSONException e) {
@@ -174,9 +156,9 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         //LoginInfoRequest로 새로 만들자.
-        LoginRequest loginRequest=new LoginRequest(userId,userPassword,responseLister);
+        LoginInfoRequest loginInfoRequest=new LoginInfoRequest(userId,userPassword,responseLister);
         RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
-        queue.add(loginRequest);
+        queue.add(loginInfoRequest);
 
 
 
