@@ -54,8 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userId=idText.getText().toString();
-                String userPassword=passwordText.getText().toString();
+                final String userId=idText.getText().toString();
+                final String userPassword=passwordText.getText().toString();
 
                 Response.Listener<String> responseLister= new Response.Listener<String>() {
                     @Override
@@ -71,7 +71,8 @@ public class LoginActivity extends AppCompatActivity {
                                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-
+                                                //싱글톤객체 초기화
+                                                GetInitialSingletonUser(userId,userPassword);
                                                 //로그인이 성공한다면 다음씬으로 넘어간다.
                                                 Intent intent=new Intent(LoginActivity.this,MainActivity.class);
                                                 LoginActivity.this.startActivity(intent);
@@ -123,6 +124,62 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
+
+    }
+
+
+    public void GetInitialSingletonUser(String userId,String userPassword){
+        //새로운 Request를 통해서 값을 가져와서 싱글톤객체를 생성함.
+
+        Response.Listener<String> responseLister= new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+
+                    JSONObject jsonResponse=new JSONObject(response);
+                    boolean success=jsonResponse.getBoolean("success");
+                    if(success)
+                    {
+                        AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                        dialog=builder.setMessage("로그인에 성공했습니다.")
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //싱글톤객체 초기화
+                                        GetInitialSingletonUser(userId,userPassword);
+                                        //로그인이 성공한다면 다음씬으로 넘어간다.
+                                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                                        LoginActivity.this.startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .create();
+                        dialog.show();
+
+
+                    }
+                    else
+                    {
+                        AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                        dialog=builder.setMessage("로그인에 실패했습니다.")
+                                .setPositiveButton("확인", null)
+                                .create();
+                        dialog.show();
+                    }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        //LoginInfoRequest로 새로 만들자.
+        LoginRequest loginRequest=new LoginRequest(userId,userPassword,responseLister);
+        RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
+        queue.add(loginRequest);
+
+
+
 
     }
 }
