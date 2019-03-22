@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    // 호용 20190322 : main에서의 요청은 100대
     public static final int REQUEST_GROUP_ADD = 101;
     public static final int REQUEST_GROUP = 102;
 

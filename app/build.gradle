@@ -36,5 +36,4 @@ dependencies {
     implementation 'in.srain.cube:grid-view-with-header-footer:1.0.12'
 
 
-
 }

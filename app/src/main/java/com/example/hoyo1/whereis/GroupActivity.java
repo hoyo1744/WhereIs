@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +19,8 @@ import in.srain.cube.views.GridViewWithHeaderAndFooter;
 
 public class GroupActivity extends AppCompatActivity {
 
+    //그룹에서 요청은 200대
+    public static final int  REQUEST_MEMBER_ADD = 201;
 
     GridViewWithHeaderAndFooter profileGrid;
     GridViewWithHeaderAndFooter textGrid;
@@ -53,6 +56,8 @@ public class GroupActivity extends AppCompatActivity {
                 break;
             case R.id.memberAddGroupMenu:
                 //그룹멤버초대
+                Intent intent=new Intent(getApplicationContext(),GroupMemberAddActivity.class);
+                startActivityForResult(intent,REQUEST_MEMBER_ADD);
                 break;
             case R.id.settingGroupMenu:
                 //그룹방 세팅(정렬)
