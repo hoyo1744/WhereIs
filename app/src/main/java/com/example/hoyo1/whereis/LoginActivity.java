@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -72,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //싱글톤객체 초기화
+
                                                 GetInitialSingletonUser(userId,userPassword);
                                                 //로그인이 성공한다면 다음씬으로 넘어간다.
                                                 Intent intent=new Intent(LoginActivity.this,MainActivity.class);
@@ -130,35 +132,44 @@ public class LoginActivity extends AppCompatActivity {
 
     public void GetInitialSingletonUser(String userId,String userPassword){
         //새로운 Request를 통해서 값을 가져와서 싱글톤객체를 생성함.
-
+        Toast.makeText(LoginActivity.this,"테스트4",Toast.LENGTH_LONG).show();
         Response.Listener<String> responseLister= new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try{
 
-                    JSONObject jsonResponse=new JSONObject(response);
-                    boolean success=jsonResponse.getBoolean("success");
+                    JSONObject jsonResponse2=new JSONObject(response);
+                    boolean success=jsonResponse2.getBoolean("success");
+                    Toast.makeText(LoginActivity.this,"테스트5",Toast.LENGTH_LONG).show();
                     if(success)
                     {
-
-
+                        String id,name,email,phone,level;
+                        id=jsonResponse2.getString("id");
+                        name=jsonResponse2.getString("name");
+                        email=jsonResponse2.getString("email");
+                        phone=jsonResponse2.getString("phone");
+                        level=jsonResponse2.getString("level");
+                        Toast.makeText(LoginActivity.this,"테스트",Toast.LENGTH_LONG).show();
+                        SingletonUser.getInstance().Initialize();
+                        SingletonUser.getInstance().setInfo(id,name,email,phone,level);
 
                     }
                     else
                     {
-
+                        Toast.makeText(LoginActivity.this,"테스트1",Toast.LENGTH_LONG).show();
                     }
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
+                    Toast.makeText(LoginActivity.this,"테스트6",Toast.LENGTH_LONG).show();
                 }
             }
         };
 
         //LoginInfoRequest로 새로 만들자.
         LoginInfoRequest loginInfoRequest=new LoginInfoRequest(userId,userPassword,responseLister);
-        RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
-        queue.add(loginInfoRequest);
+        RequestQueue queueInfo= Volley.newRequestQueue(LoginActivity.this);
+        queueInfo.add(loginInfoRequest);
 
 
 

@@ -8,6 +8,8 @@ public class SingletonUser {
         public String userId;
         public String userName;
         public String userEmail;
+        public String userPhone;
+        public String userLevel;
     }
 
     private UserInfo user;
@@ -16,18 +18,23 @@ public class SingletonUser {
         user.userId="";
         user.userName="";
         user.userEmail="";
+        user.userPhone="";
+        user.userLevel="";
     }
 
-    public void setInfo(String id,String name,String email){
-        user.userId=id;
-        user.userName=name;
-        user.userEmail=email;
+    public void setInfo(String id,String name,String email,String phone,String level){
+        this.user.userName=name;
+        this.user.userEmail=email;
+        this.user.userPhone=phone;
+        this.user.userLevel=level;
+        this.user.userId=id;
     }
     public UserInfo getInfo(){
         return this.user;
     }
 
     private SingletonUser(){
+
     }
 
     //---------------------------------------------------------
