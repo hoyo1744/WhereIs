@@ -3,6 +3,7 @@ package com.example.hoyo1.whereis;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_GROUP_ADD = 101;
     public static final int REQUEST_GROUP = 102;
 
+
+    ImageView userImageView;
+    TextView userNameTextView;
     ListView listView;
     SingerAdapter adapter;
     TextView groupSubTitleTextView;
@@ -110,6 +115,15 @@ public class MainActivity extends AppCompatActivity {
     public void init(){
         groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
         listView=(ListView)findViewById(R.id.listView);
+        userImageView=(ImageView)findViewById(R.id.profileImage);
+        userNameTextView=(TextView)findViewById(R.id.profileText);
+
+
+        //개인프로필이름 표시
+        userNameTextView.setText(SingletonUser.getInstance().getUserId());
+        //개인프로필사진 표시
+
+
 
 
         /////////////////////////////////////////////////////////////////////////////////////

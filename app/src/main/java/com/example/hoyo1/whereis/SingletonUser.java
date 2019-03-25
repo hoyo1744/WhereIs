@@ -3,39 +3,49 @@ package com.example.hoyo1.whereis;
 //싱글톤 로그인
 public class SingletonUser {
 
-    public class UserInfo
-    {
-        public String userId;
-        public String userName;
-        public String userEmail;
-        public String userPhone;
-        public String userLevel;
-    }
 
-    private UserInfo user;
+    private String userName;
+    private String userEmail;
+    private String userId;
+    private String userPhone;
+    private String userLevel;
 
-    public void Initialize(){
-        user.userId="";
-        user.userName="";
-        user.userEmail="";
-        user.userPhone="";
-        user.userLevel="";
-    }
 
-    public void setInfo(String id,String name,String email,String phone,String level){
-        this.user.userName=name;
-        this.user.userEmail=email;
-        this.user.userPhone=phone;
-        this.user.userLevel=level;
-        this.user.userId=id;
-    }
-    public UserInfo getInfo(){
-        return this.user;
-    }
+
 
     private SingletonUser(){
 
     }
+    public void Initialize(){
+        this.userId=null;
+        this.userName=null;
+        this.userEmail=null;
+        this.userPhone=null;
+        this.userLevel=null;
+    }
+    public void setUserInfo(String id,String name,String email,String phone,String level){
+        this.userId=id;
+        this.userName=name;
+        this.userEmail=email;
+        this.userPhone=phone;
+        this.userLevel=level;
+    }
+    public String getUserId(){
+        return this.userId;
+    }
+    public String getUserEmail(){
+        return this.userEmail;
+    }
+    public String getUserName(){
+        return this.userName;
+    }
+    public String getUserPhone(){
+        return this.userPhone;
+    }
+    public String getUserLevel(){
+        return this.userLevel;
+    }
+
 
     //---------------------------------------------------------
     private static class SingletonUserHolder{

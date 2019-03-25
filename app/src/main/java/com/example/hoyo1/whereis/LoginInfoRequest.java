@@ -9,11 +9,11 @@ import java.util.Map;
 public class LoginInfoRequest extends StringRequest {
 
 
-    final static private String url = "";
+    final static private String urlUserInfo = "";
     private Map<String, String> parameters;
 
     public LoginInfoRequest(String userId, String userPassword,Response.Listener<String> listener) {
-        super(Method.POST, url, listener, null);
+        super(Method.POST, urlUserInfo, listener, null);
         parameters = new HashMap<>();
         parameters.put("userId", userId);
         parameters.put("userPassword", userPassword);
