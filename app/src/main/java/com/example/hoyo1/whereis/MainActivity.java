@@ -17,6 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -28,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     // 호용 20190322 : main에서의 요청은 100대
     public static final int REQUEST_GROUP_ADD = 101;
     public static final int REQUEST_GROUP = 102;
+    public static final int MAX_GROUP_LIST= 10000;
 
 
     ImageView userImageView;
@@ -124,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
         //개인프로필사진 표시
 
 
+        //그룹아이디리퀘스트
+        GetGroupList();
+
 
 
 
@@ -148,5 +158,48 @@ public class MainActivity extends AppCompatActivity {
         /////////////////////////////////////////////////////////////////////////////////////
         //초기화끝
         /////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    public void GetGroupList(){
+
+        String userNumber=SingletonUser.getInstance().getUserNumber();
+        Response.Listener<String> responseLister= new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONObject jsonResponse=new JSONObject(response);
+                    boolean success=jsonResponse.getBoolean("success");
+
+                    if(success)
+                    {
+                        SingletonGroupList.getInstance().Initialize();
+                        int size=jsonResponse.getInt("size");
+                        //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
+                        for(int nNo=1;nNo<=size;nNo++)
+                        {
+                            String strGroupName= Integer.toString(nNo);
+                            String strGroupLeaderName=Integer.toString(nNo+MAX_GROUP_LIST);
+                            String groupName=jsonResponse.getString(strGroupName);
+                            String groupLeaderName=jsonResponse.getString(strGroupLeaderName);
+                            SingletonGroupList.getInstance().setGroupList(nNo,groupName,groupLeaderName);
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        //LoginInfoRequest로 새로 만들자.
+        GroupIdRequest groupIDRequest=new GroupIdRequest(userNumber,responseLister);
+        RequestQueue queueInfo= Volley.newRequestQueue(MainActivity.this);
+        queueInfo.add(groupIDRequest);
+
+
     }
 }

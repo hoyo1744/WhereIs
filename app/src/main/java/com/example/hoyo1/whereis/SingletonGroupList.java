@@ -30,6 +30,13 @@ public class SingletonGroupList {
 
         mapGroup.put(key,groupInfo);
     }
+    public void setGroupList(Integer key,String groupName,String groupLeader){
+        GroupInfo groupInfo=new GroupInfo();
+        groupInfo.groupName=groupName;
+        groupInfo.groupLeader=groupLeader;
+        groupInfo.groupLeaderImage=-1;
+        mapGroup.put(key,groupInfo);
+    }
     public String getGroupName(Integer key){
         return this.mapGroup.get(key).groupName;
     }

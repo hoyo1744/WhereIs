@@ -143,14 +143,16 @@ public class LoginActivity extends AppCompatActivity {
 
                     if(success)
                     {
-                        String id,name,email,phone,level;
+                        String number,id,name,email,phone,level;
+
+                        number=jsonResponse.getString("idx");
                         id=jsonResponse.getString("id");
                         name=jsonResponse.getString("name");
                         email=jsonResponse.getString("email");
                         phone=jsonResponse.getString("phone");
                         level=jsonResponse.getString("level");
                         SingletonUser.getInstance().Initialize();
-                        SingletonUser.getInstance().setUserInfo(id,name,email,phone,level);
+                        SingletonUser.getInstance().setUserInfo(number,id,name,email,phone,level);
 
                     }
                     else

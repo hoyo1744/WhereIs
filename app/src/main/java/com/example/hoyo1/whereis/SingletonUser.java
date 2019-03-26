@@ -4,6 +4,7 @@ package com.example.hoyo1.whereis;
 public class SingletonUser {
 
 
+    private String userNumber;
     private String userName;
     private String userEmail;
     private String userId;
@@ -17,18 +18,23 @@ public class SingletonUser {
 
     }
     public void Initialize(){
+        this.userNumber=null;
         this.userId=null;
         this.userName=null;
         this.userEmail=null;
         this.userPhone=null;
         this.userLevel=null;
     }
-    public void setUserInfo(String id,String name,String email,String phone,String level){
+    public void setUserInfo(String Number,String id,String name,String email,String phone,String level){
+        this.userNumber=Number;
         this.userId=id;
         this.userName=name;
         this.userEmail=email;
         this.userPhone=phone;
         this.userLevel=level;
+    }
+    public String getUserNumber(){
+        return this.userNumber;
     }
     public String getUserId(){
         return this.userId;
