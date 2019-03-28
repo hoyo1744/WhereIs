@@ -46,6 +46,9 @@ public class SingletonGroupList {
     public int getGroupLeaderImage(Integer key){
         return this.mapGroup.get(key).groupLeaderImage;
     }
+    public int getGroupCount(){
+        return this.mapGroup.size();
+    }
 
 
     //---------------------------------------------------------

@@ -7,19 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GroupIdRequest extends StringRequest {
-    final static private String url="";
-    public Map<String,String> parameters;
 
-    public GroupIdRequest(String userId, Response.Listener<String> listener) {
+    final static private String url = "";
+    private Map<String, String> parameters;
+
+    public GroupIdRequest(String userNumber,Response.Listener<String> listener) {
         super(Method.POST, url, listener, null);
-
         parameters = new HashMap<>();
-        parameters.put("userId", userId);
-
+        parameters.put("userNumber", userNumber);
     }
 
-    @Override
-    public Map<String,String> getParams(){
+
+    public Map<String, String> getParams() {
+
         return parameters;
     }
 }

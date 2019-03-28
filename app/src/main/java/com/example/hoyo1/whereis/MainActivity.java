@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MAX_GROUP_LIST= 10000;
 
 
+    boolean bIsResponseCheck=false;
     ImageView userImageView;
     TextView userNameTextView;
     ListView listView;
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
+        SingletonGroupList.getInstance().Initialize();
         groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
         listView=(ListView)findViewById(R.id.listView);
         userImageView=(ImageView)findViewById(R.id.profileImage);
@@ -131,10 +133,8 @@ public class MainActivity extends AppCompatActivity {
         //개인프로필사진 표시
 
 
-        //그룹아이디리퀘스트
+        //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장)
         GetGroupList();
-
-
 
 
 
@@ -143,7 +143,27 @@ public class MainActivity extends AppCompatActivity {
         //초기화시작
         /////////////////////////////////////////////////////////////////////////////////////
 
+
+
+        //리스트동적생성 완료
         adapter = new SingerAdapter(getApplicationContext());
+
+        /*
+        int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
+
+        //리스트동적생성 시작
+        for(int nGroupListCnt=0;nGroupListCnt<nGroupListSize;nGroupListCnt++)
+        {
+            String groupName,groupLeaderName;
+            groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
+            groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
+            adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderName,R.drawable.ic_person_black_24dp));
+
+        }
+
+
+        // 호용 20190328 : 서버로부터 응답이 늦게 와서 리스트가 안만들어진다... 스레드를 써야할것같다.
+        */
         //리스트초기화
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
@@ -152,9 +172,11 @@ public class MainActivity extends AppCompatActivity {
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
         listView.setAdapter(adapter);
+        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
+
 
         //그룹소제목초기화
-        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
+
         /////////////////////////////////////////////////////////////////////////////////////
         //초기화끝
         /////////////////////////////////////////////////////////////////////////////////////
@@ -163,26 +185,32 @@ public class MainActivity extends AppCompatActivity {
     public void GetGroupList(){
 
         String userNumber=SingletonUser.getInstance().getUserNumber();
-        Response.Listener<String> responseLister= new Response.Listener<String>() {
+        Response.Listener<String> responseLister2= new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try{
-                    JSONObject jsonResponse=new JSONObject(response);
-                    boolean success=jsonResponse.getBoolean("success");
+                    JSONObject jsonResponse2=new JSONObject(response);
+                    boolean success=jsonResponse2.getBoolean("success");
 
                     if(success)
                     {
+                        Toast.makeText(MainActivity.this, "여기왔다.", Toast.LENGTH_LONG).show();
+
                         SingletonGroupList.getInstance().Initialize();
-                        int size=jsonResponse.getInt("size");
+                        int size=jsonResponse2.getInt("size");
                         //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
-                        for(int nNo=1;nNo<=size;nNo++)
+                        for(int nNo=1;nNo<size;nNo++)
                         {
                             String strGroupName= Integer.toString(nNo);
                             String strGroupLeaderName=Integer.toString(nNo+MAX_GROUP_LIST);
-                            String groupName=jsonResponse.getString(strGroupName);
-                            String groupLeaderName=jsonResponse.getString(strGroupLeaderName);
+                            String groupName=jsonResponse2.getString(strGroupName);
+                            String groupLeaderName=jsonResponse2.getString(strGroupLeaderName);
                             SingletonGroupList.getInstance().setGroupList(nNo,groupName,groupLeaderName);
                         }
+
+
+
+
                     }
                     else
                     {
@@ -196,9 +224,9 @@ public class MainActivity extends AppCompatActivity {
         };
 
         //LoginInfoRequest로 새로 만들자.
-        GroupIdRequest groupIDRequest=new GroupIdRequest(userNumber,responseLister);
-        RequestQueue queueInfo= Volley.newRequestQueue(MainActivity.this);
-        queueInfo.add(groupIDRequest);
+        GroupIdRequest groupIDRequest=new GroupIdRequest("14",responseLister2);
+        RequestQueue queue2= Volley.newRequestQueue(MainActivity.this);
+        queue2.add(groupIDRequest);
 
 
     }
