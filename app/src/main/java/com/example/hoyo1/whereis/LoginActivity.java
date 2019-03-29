@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        Toast.makeText(LoginActivity.this,"테스트1",Toast.LENGTH_LONG).show();
+
                     }
                 }
                 catch (JSONException e) {

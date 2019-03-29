@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -36,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_GROUP = 102;
     public static final int MAX_GROUP_LIST= 10000;
 
+    //메시지모음
+    public static final int AM_GROUP_LIST_CREATE=20000;
+
 
     boolean bIsResponseCheck=false;
     ImageView userImageView;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     SingerAdapter adapter;
     TextView groupSubTitleTextView;
+    Handler handlerGroupList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SingerItem item=(SingerItem)adapter.getItem(position);
+                //SingerItem item=(SingerItem)adapter.getItem(position);
                 Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
                 startActivityForResult(intent,REQUEST_GROUP);
             }
@@ -121,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
-        SingletonGroupList.getInstance().Initialize();
         groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
         listView=(ListView)findViewById(R.id.listView);
         userImageView=(ImageView)findViewById(R.id.profileImage);
@@ -131,10 +136,55 @@ public class MainActivity extends AppCompatActivity {
         //개인프로필이름 표시
         userNameTextView.setText(SingletonUser.getInstance().getUserId());
         //개인프로필사진 표시
+        adapter = new SingerAdapter(getApplicationContext());
 
+        handlerGroupList=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                switch(msg.what){
+
+                    case AM_GROUP_LIST_CREATE:
+                        //그룹리스트 동적생성
+
+
+                        //Toast.makeText(MainActivity.this,SingletonGroupList.getInstance().getGroupName(1),Toast.LENGTH_LONG).show();
+
+                        //리스트동적생성 시작
+                        //int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
+
+
+                        for(int nGroupListCnt=1;nGroupListCnt<2;nGroupListCnt++)
+                        {
+                            String groupName,groupLeaderName;
+                            groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
+                            groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
+                            adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderName,R.drawable.ic_person_black_24dp));
+
+                        }
+
+
+
+
+
+                        listView.setAdapter(adapter);
+                        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
+
+                        break;
+                }
+
+            }
+        };
 
         //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장)
         GetGroupList();
+
+
+
+
+
+
 
 
 
@@ -146,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //리스트동적생성 완료
-        adapter = new SingerAdapter(getApplicationContext());
+        //adapter = new SingerAdapter(getApplicationContext());
 
         /*
         int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
@@ -164,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 호용 20190328 : 서버로부터 응답이 늦게 와서 리스트가 안만들어진다... 스레드를 써야할것같다.
         */
+        /*
         //리스트초기화
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
@@ -173,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
         listView.setAdapter(adapter);
         groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
-
+        */
 
         //그룹소제목초기화
 
@@ -184,49 +235,68 @@ public class MainActivity extends AppCompatActivity {
 
     public void GetGroupList(){
 
-        String userNumber=SingletonUser.getInstance().getUserNumber();
-        Response.Listener<String> responseLister2= new Response.Listener<String>() {
+
+        //서브스레드 생성 및 서버와 통신
+
+        final Thread threadGroupList=new Thread(new Runnable() {
+
+            boolean isPlaying=false;
             @Override
-            public void onResponse(String response) {
-                try{
-                    JSONObject jsonResponse2=new JSONObject(response);
-                    boolean success=jsonResponse2.getBoolean("success");
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
 
-                    if(success)
-                    {
-                        Toast.makeText(MainActivity.this, "여기왔다.", Toast.LENGTH_LONG).show();
+                    String userNumber = SingletonUser.getInstance().getUserNumber();
+                    Response.Listener<String> responseLister2 = new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonResponse2 = new JSONObject(response);
+                                boolean success = jsonResponse2.getBoolean("success");
 
-                        SingletonGroupList.getInstance().Initialize();
-                        int size=jsonResponse2.getInt("size");
-                        //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
-                        for(int nNo=1;nNo<size;nNo++)
-                        {
-                            String strGroupName= Integer.toString(nNo);
-                            String strGroupLeaderName=Integer.toString(nNo+MAX_GROUP_LIST);
-                            String groupName=jsonResponse2.getString(strGroupName);
-                            String groupLeaderName=jsonResponse2.getString(strGroupLeaderName);
-                            SingletonGroupList.getInstance().setGroupList(nNo,groupName,groupLeaderName);
+                                if (success) {
+
+
+                                    SingletonGroupList.getInstance().Initialize();
+                                    int size = jsonResponse2.getInt("size");
+                                    //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
+                                    for (int nNo = 1; nNo < size; nNo++) {
+                                        String strGroupName = Integer.toString(nNo);
+                                        String strGroupLeaderName = Integer.toString(nNo + MAX_GROUP_LIST);
+                                        String groupName = jsonResponse2.getString(strGroupName);
+                                        String groupLeaderName = jsonResponse2.getString(strGroupLeaderName);
+                                        SingletonGroupList.getInstance().setGroupList(nNo, groupName, groupLeaderName);
+                                    }
+
+
+                                    Message msg = handlerGroupList.obtainMessage();
+                                    msg.what = AM_GROUP_LIST_CREATE;
+                                    handlerGroupList.sendMessage(msg);
+
+                                }
+                                else {
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
 
-
-
-
-                    }
-                    else
-                    {
-
-                    }
+                    };
+                    GroupIdRequest groupIDRequest = new GroupIdRequest("14", responseLister2);
+                    RequestQueue queue2 = Volley.newRequestQueue(MainActivity.this);
+                    queue2.add(groupIDRequest);
                 }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+
+
             }
-        };
 
-        //LoginInfoRequest로 새로 만들자.
-        GroupIdRequest groupIDRequest=new GroupIdRequest("14",responseLister2);
-        RequestQueue queue2= Volley.newRequestQueue(MainActivity.this);
-        queue2.add(groupIDRequest);
+
+
+        });
+
+        threadGroupList.start();
 
 
     }
