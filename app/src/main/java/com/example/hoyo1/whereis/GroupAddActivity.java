@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GroupAddActivity extends AppCompatActivity {
@@ -154,6 +155,7 @@ public class GroupAddActivity extends AppCompatActivity {
                     bIsCreatedCategoryView=true;
                     for(int cnt=0;cnt<nCategoryNum;cnt++){
                         subGroupAddCategory subGroupAddCategoryView=new subGroupAddCategory(getApplicationContext());
+
                         subGroupAdd.addView(subGroupAddCategoryView);
 
 
@@ -186,11 +188,17 @@ public class GroupAddActivity extends AppCompatActivity {
         switch (menuId)
         {
             case R.id.confirmMenu:
-                //그룹이름,그룹리더이름,그룹헤더 및 카테고리값을 저장
-                Toast.makeText(this,groupLeaderNameEditText.getText().toString(),Toast.LENGTH_LONG).show();
+                //예외처리 빈칸 없이 입력해주세요.
+                //return ;
 
 
 
+                //서브쓰레드생성 후,
+                CreateGroup();
+
+
+
+                //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
                 setResult(RESULT_OK);
                 finish();
                 break;
@@ -224,6 +232,51 @@ public class GroupAddActivity extends AppCompatActivity {
         }
 
         return true;
+
+
+
+    }
+
+    //새로운 그룹생성
+    public void CreateGroup(){
+        //서브스레드 생성 및 서버와 통신
+        final Thread threadGroupList=new Thread(new Runnable() {
+
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+                    ArrayList<String> categoryHead=new ArrayList<>(11);
+                    ArrayList<String> categoryContent=new ArrayList<>(11);
+                    String strGroupName=groupNameEditText.getText().toString();
+                    String strGroupLeaderName=groupLeaderNameEditText.getText().toString();
+                    String strGroupCategoryNum=groupCategoryNumberEditText.getText().toString();
+
+
+
+                    for(int nIdx=1;nIdx<=Integer.parseInt(strGroupCategoryNum);nIdx++) {
+
+
+                    }
+
+
+
+
+
+
+
+                }
+
+
+
+            }
+
+
+
+        });
+
+        threadGroupList.start();
 
 
 

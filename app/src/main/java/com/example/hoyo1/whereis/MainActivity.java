@@ -149,13 +149,13 @@ public class MainActivity extends AppCompatActivity {
                         //그룹리스트 동적생성
 
 
-                        //Toast.makeText(MainActivity.this,SingletonGroupList.getInstance().getGroupName(1),Toast.LENGTH_LONG).show();
+
 
                         //리스트동적생성 시작
-                        //int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
+                        int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
 
 
-                        for(int nGroupListCnt=1;nGroupListCnt<2;nGroupListCnt++)
+                        for(int nGroupListCnt=1;nGroupListCnt<=nGroupListSize;nGroupListCnt++)
                         {
                             String groupName,groupLeaderName;
                             groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                                     SingletonGroupList.getInstance().Initialize();
                                     int size = jsonResponse2.getInt("size");
                                     //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
-                                    for (int nNo = 1; nNo < size; nNo++) {
+                                    for (int nNo = 1; nNo <= size; nNo++) {
                                         String strGroupName = Integer.toString(nNo);
                                         String strGroupLeaderName = Integer.toString(nNo + MAX_GROUP_LIST);
                                         String groupName = jsonResponse2.getString(strGroupName);
@@ -281,9 +281,8 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-
                     };
-                    GroupIdRequest groupIDRequest = new GroupIdRequest("14", responseLister2);
+                    GroupIdRequest groupIDRequest = new GroupIdRequest(userNumber, responseLister2);
                     RequestQueue queue2 = Volley.newRequestQueue(MainActivity.this);
                     queue2.add(groupIDRequest);
                 }
