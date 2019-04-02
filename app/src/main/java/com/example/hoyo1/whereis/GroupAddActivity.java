@@ -2,6 +2,8 @@ package com.example.hoyo1.whereis;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,16 +16,26 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GroupAddActivity extends AppCompatActivity {
 
+    static final int AM_GROUP_CATEGORY_CREATE=30000;
+
     //호용 20190317 : 그룹카테고리 추가전,후,나누기(아직 작업x)
     private enum GroupAddState{
 
     };
+    ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
 
     private boolean bIsCreatedCategoryView; //커스텀뷰가 생성되었는지 확인
     private AlertDialog dialog;
@@ -31,6 +43,7 @@ public class GroupAddActivity extends AppCompatActivity {
     EditText groupLeaderNameEditText;
     EditText groupCategoryNumberEditText;
     LinearLayout subGroupAdd;               //커스텀뷰를 추가할 하위 레이아웃
+    Handler handlerCategory;
 
 
 
@@ -93,6 +106,7 @@ public class GroupAddActivity extends AppCompatActivity {
                     //호용 20190317 : 여기도 예외처리가 필요할거같은데.. 뷰가 생성된 경우만!
                     if(bIsCreatedCategoryView) {
                         subGroupAdd.removeAllViews();
+                        listGroup.clear();
                         bIsCreatedCategoryView = false;
                     }
                     return ;
@@ -144,6 +158,7 @@ public class GroupAddActivity extends AppCompatActivity {
                         //호용 20190317 : 여기도 예외처리가 필요할거같은데.. 뷰가 생성된 경우만!
                         if(bIsCreatedCategoryView) {
                             subGroupAdd.removeAllViews();
+                            listGroup.clear();
                             bIsCreatedCategoryView = false;
                         }
                         return ;
@@ -155,7 +170,7 @@ public class GroupAddActivity extends AppCompatActivity {
                     bIsCreatedCategoryView=true;
                     for(int cnt=0;cnt<nCategoryNum;cnt++){
                         subGroupAddCategory subGroupAddCategoryView=new subGroupAddCategory(getApplicationContext());
-
+                        listGroup.add(subGroupAddCategoryView);
                         subGroupAdd.addView(subGroupAddCategoryView);
 
 
@@ -198,9 +213,7 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
 
-                //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
-                setResult(RESULT_OK);
-                finish();
+
                 break;
             case android.R.id.home:
                 setResult(RESULT_CANCELED);
@@ -221,6 +234,30 @@ public class GroupAddActivity extends AppCompatActivity {
         groupLeaderNameEditText=(EditText)findViewById(R.id.groupLeaderNameEditText);
         groupNameEditText=(EditText)findViewById(R.id.groupNameEditText);
         subGroupAdd=(LinearLayout)findViewById(R.id.subGroupAdd);
+        listGroup.clear();
+
+
+
+        handlerCategory=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                switch(msg.what){
+
+                    case AM_GROUP_CATEGORY_CREATE:
+                        //카테고리생성완료
+
+
+                        //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
+                        setResult(RESULT_OK);
+                        finish();
+
+                        break;
+                }
+
+            }
+        };
     }
 
     //호용 20190317 : 단어안에 숫자만 있는지 확인하는 함수
@@ -240,45 +277,56 @@ public class GroupAddActivity extends AppCompatActivity {
     //새로운 그룹생성
     public void CreateGroup(){
         //서브스레드 생성 및 서버와 통신
-        final Thread threadGroupList=new Thread(new Runnable() {
+        Thread threadGroupList=new Thread(new Runnable() {
 
             boolean isPlaying=false;
             @Override
             public void run() {
                 if(isPlaying==false) {
                     isPlaying=true;
-                    ArrayList<String> categoryHead=new ArrayList<>(11);
-                    ArrayList<String> categoryContent=new ArrayList<>(11);
+                    ArrayList<String> categoryHead=new ArrayList<>();
+                    ArrayList<String> categoryContent=new ArrayList<>();
                     String strGroupName=groupNameEditText.getText().toString();
                     String strGroupLeaderName=groupLeaderNameEditText.getText().toString();
                     String strGroupCategoryNum=groupCategoryNumberEditText.getText().toString();
 
-
-
                     for(int nIdx=1;nIdx<=Integer.parseInt(strGroupCategoryNum);nIdx++) {
-
-
+                        categoryHead.add(listGroup.get(nIdx-1).getHead());
+                        categoryContent.add(listGroup.get(nIdx-1).getContent());
                     }
 
 
+                    //서버와 통신
+                    Response.Listener<String> responseLister2 = new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonResponse2 = new JSONObject(response);
+                                boolean success = jsonResponse2.getBoolean("success");
 
+                                if (success) {
 
+                                    Message msg = handlerCategory.obtainMessage();
+                                    msg.what = AM_GROUP_CATEGORY_CREATE;
+                                    handlerCategory.sendMessage(msg);
 
+                                }
+                                else {
 
-
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    GroupCreateRequest groupCreateRequest = new GroupCreateRequest(strGroupName,strGroupLeaderName,strGroupCategoryNum,categoryHead,categoryContent,responseLister2);
+                    RequestQueue queue2 = Volley.newRequestQueue(GroupAddActivity.this);
+                    queue2.add(groupCreateRequest);
                 }
-
-
-
             }
-
-
-
         });
 
         threadGroupList.start();
-
-
 
     }
 }

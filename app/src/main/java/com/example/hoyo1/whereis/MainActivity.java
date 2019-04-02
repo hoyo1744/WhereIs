@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
         //서브스레드 생성 및 서버와 통신
 
-        final Thread threadGroupList=new Thread(new Runnable() {
+        Thread threadGroupList=new Thread(new Runnable() {
 
             boolean isPlaying=false;
             @Override
