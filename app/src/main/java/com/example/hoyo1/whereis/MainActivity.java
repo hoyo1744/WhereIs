@@ -116,7 +116,10 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode==RESULT_OK){
                 //그룹추가 완료
 
-                //그룹리스트 리로드해야함.
+
+                Toast.makeText(MainActivity.this,"테스트",Toast.LENGTH_LONG).show();
+                //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장), 그룹리스트 리로드
+                GetGroupList();
 
 
 
@@ -154,28 +157,8 @@ public class MainActivity extends AppCompatActivity {
                     case AM_GROUP_LIST_CREATE:
                         //그룹리스트 동적생성
 
+                        LoadList();
 
-
-
-                        //리스트동적생성 시작
-                        int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
-
-
-                        for(int nGroupListCnt=1;nGroupListCnt<=nGroupListSize;nGroupListCnt++)
-                        {
-                            String groupName,groupLeaderName;
-                            groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
-                            groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
-                            adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderName,R.drawable.ic_person_black_24dp));
-
-                        }
-
-
-
-
-
-                        listView.setAdapter(adapter);
-                        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
 
                         break;
                 }
@@ -303,6 +286,29 @@ public class MainActivity extends AppCompatActivity {
 
         threadGroupList.start();
 
+
+    }
+
+    public void LoadList(){
+        //리스트동적생성 시작
+        int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
+
+
+        for(int nGroupListCnt=1;nGroupListCnt<=nGroupListSize;nGroupListCnt++)
+        {
+            String groupName,groupLeaderName;
+            groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
+            groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
+            adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderName,R.drawable.ic_person_black_24dp));
+
+        }
+
+
+
+
+
+        listView.setAdapter(adapter);
+        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
 
     }
 }

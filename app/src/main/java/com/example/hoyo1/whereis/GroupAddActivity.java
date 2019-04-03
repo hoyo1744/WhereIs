@@ -234,6 +234,10 @@ public class GroupAddActivity extends AppCompatActivity {
         groupLeaderNameEditText=(EditText)findViewById(R.id.groupLeaderNameEditText);
         groupNameEditText=(EditText)findViewById(R.id.groupNameEditText);
         subGroupAdd=(LinearLayout)findViewById(R.id.subGroupAdd);
+
+        groupLeaderNameEditText.setText(SingletonUser.getInstance().getUserId());
+        //호용 : 수정불가하도록 추가해야함.
+
         listGroup.clear();
 
 
