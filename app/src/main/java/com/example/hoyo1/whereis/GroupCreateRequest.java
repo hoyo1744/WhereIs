@@ -1,5 +1,7 @@
 package com.example.hoyo1.whereis;
 
+import android.util.Log;
+
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 
@@ -12,16 +14,35 @@ public class GroupCreateRequest extends StringRequest {
     final static private String url = "";
     private Map<String, String> parameters;
 
-    public GroupCreateRequest(String groupName, String groupLeader, String groupCategoryNum, ArrayList categoryHead,ArrayList categoryContent, Response.Listener<String> listener) {
+    public GroupCreateRequest(String groupName, String groupLeader, String groupCategoryNum, ArrayList<String> categoryHead,ArrayList<String> categoryContent, Response.Listener<String> listener) {
         super(Method.POST, url, listener, null);
         parameters = new HashMap<>();
         parameters.put("groupName", groupName);
         parameters.put("groupLeader", groupLeader);
         parameters.put("groupCategoryNum", groupCategoryNum);
 
-        for(int nIdx=1;nIdx<=10;nIdx++) {
-            parameters.put("categoryHead" + "nIdx", categoryHead.get(nIdx).toString());
-            parameters.put("categoryContent" + "nIdx", categoryContent.get(nIdx).toString());
+        int nCategoryNum=Integer.parseInt(groupCategoryNum);
+
+        for(int nIdx=1;nIdx<=nCategoryNum;nIdx++) {
+            String strHeadNum="categoryHead"+Integer.toString(nIdx);
+            String strContentNum="categoryContent"+Integer.toString(nIdx);
+            String strHead1=categoryHead.get(nIdx-1).toString();
+            String strContent1=categoryContent.get(nIdx-1).toString();
+            Log.v("strHead1",strHead1);
+            Log.v("strContent1",strContent1);
+            parameters.put(strHeadNum, strHead1);
+            parameters.put(strContentNum, strContent1);
+        }
+
+        //호용 : 무조건 보내고 봐야하는건가? ok
+        for(int nIdx=nCategoryNum+1;nIdx<=10;nIdx++)
+        {
+            String strHeadNum="categoryHead"+Integer.toString(nIdx);
+            String strContentNum="categoryContent"+Integer.toString(nIdx);
+            String strNull="null";
+
+            parameters.put(strHeadNum, strNull);
+            parameters.put(strContentNum, strNull);
         }
     }
 

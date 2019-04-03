@@ -249,6 +249,8 @@ public class GroupAddActivity extends AppCompatActivity {
                         //카테고리생성완료
 
 
+
+
                         //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
                         setResult(RESULT_OK);
                         finish();
@@ -297,13 +299,12 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
                     //서버와 통신
-                    Response.Listener<String> responseLister2 = new Response.Listener<String>(){
+                    Response.Listener<String> responseLister3 = new Response.Listener<String>(){
                         @Override
                         public void onResponse(String response) {
                             try {
-                                JSONObject jsonResponse2 = new JSONObject(response);
-                                boolean success = jsonResponse2.getBoolean("success");
-
+                                JSONObject responseLister3 = new JSONObject(response);
+                                boolean success = responseLister3.getBoolean("success");
                                 if (success) {
 
                                     Message msg = handlerCategory.obtainMessage();
@@ -319,9 +320,9 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    GroupCreateRequest groupCreateRequest = new GroupCreateRequest(strGroupName,strGroupLeaderName,strGroupCategoryNum,categoryHead,categoryContent,responseLister2);
-                    RequestQueue queue2 = Volley.newRequestQueue(GroupAddActivity.this);
-                    queue2.add(groupCreateRequest);
+                    GroupCreateRequest groupCreateRequest = new GroupCreateRequest(strGroupName,strGroupLeaderName,strGroupCategoryNum,categoryHead,categoryContent,responseLister3);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
+                    queue3.add(groupCreateRequest);
                 }
             }
         });

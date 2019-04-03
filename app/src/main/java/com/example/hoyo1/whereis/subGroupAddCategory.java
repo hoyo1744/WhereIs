@@ -26,10 +26,10 @@ public class subGroupAddCategory extends LinearLayout {
 
 
     public String getContent(){
-        return this.content.toString();
+        return this.content.getText().toString();
     }
     public String getHead(){
-        return this.head.toString();
+        return this.head.getText().toString();
     }
 
 

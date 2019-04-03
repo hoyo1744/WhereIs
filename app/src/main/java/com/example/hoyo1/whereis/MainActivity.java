@@ -115,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
             //요청받은 메시지처리(그룹추가)
             if(resultCode==RESULT_OK){
                 //그룹추가 완료
+
+                //그룹리스트 리로드해야함.
+
+
+
+
             }
             else if(resultCode==RESULT_CANCELED){
                 //그룹추가 취소
