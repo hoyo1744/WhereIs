@@ -1,7 +1,6 @@
 package com.example.hoyo1.whereis;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
@@ -9,12 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,13 +20,33 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+
+class Member{
+    public String groupID;
+    public String groupCategory;
+
+
+    public void setMember(String id,String category){
+        this.groupID=id;
+        this.groupCategory=category;
+    }
+
+    public String getGroupID(){
+        return this.groupID;
+    }
+    public String getCategory(){
+        return this.groupCategory;
+    }
+
+}
+
 
 public class GroupAddActivity extends AppCompatActivity {
 
+
     static final int AM_GROUP_CATEGORY_CREATE=30000;
+    static final int AM_GROUP_MEMBER_ADD=30001;
 
     //호용 20190317 : 그룹카테고리 추가전,후,나누기(아직 작업x)
     private enum GroupAddState{
@@ -208,8 +225,9 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
 
-                //서브쓰레드생성 후,
+                //서브쓰레드생성 후,그룹생성
                 CreateGroup();
+
 
 
 
@@ -252,13 +270,13 @@ public class GroupAddActivity extends AppCompatActivity {
                     case AM_GROUP_CATEGORY_CREATE:
                         //카테고리생성완료
 
-
-
-
+                        //서브쓰레드생성 후,그룹멤버에 추가
+                        AddGroupMember((Member) msg.obj);
+                        break;
+                    case AM_GROUP_MEMBER_ADD:
                         //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
                         setResult(RESULT_OK);
                         finish();
-
                         break;
                 }
 
@@ -309,9 +327,18 @@ public class GroupAddActivity extends AppCompatActivity {
                             try {
                                 JSONObject responseLister3 = new JSONObject(response);
                                 boolean success = responseLister3.getBoolean("success");
-                                if (success) {
+                                boolean successAddMember=responseLister3.getBoolean("successAddMember");
+                                if (success && successAddMember) {
 
+                                    String groupID=responseLister3.getString("groupID");
+                                    String groupCategory=responseLister3.getString("groupCategory");
+
+
+
+                                    Member memberGroup=new Member();
+                                    memberGroup.setMember(groupID,groupCategory);
                                     Message msg = handlerCategory.obtainMessage();
+                                    msg.obj=memberGroup;
                                     msg.what = AM_GROUP_CATEGORY_CREATE;
                                     handlerCategory.sendMessage(msg);
 
@@ -332,6 +359,58 @@ public class GroupAddActivity extends AppCompatActivity {
         });
 
         threadGroupList.start();
+
+    }
+
+
+    public void AddGroupMember(Member member){
+
+        final String groupID=member.getGroupID();
+        final String groupCategory=member.getCategory();
+        final String userID=SingletonUser.getInstance().getUserNumber();
+
+        //서브스레드 생성 및 서버와 통신
+        Thread threadGroupMember=new Thread(new Runnable() {
+
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+
+                    //서버와 통신
+                    Response.Listener<String> responseLister3 = new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject responseLister3 = new JSONObject(response);
+                                boolean success = responseLister3.getBoolean("success");
+                                if (success) {
+
+
+
+                                    Message msg = handlerCategory.obtainMessage();
+                                    msg.what = AM_GROUP_MEMBER_ADD;
+                                    handlerCategory.sendMessage(msg);
+
+                                }
+                                else {
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    AddGroupMemberRequest groupCreateRequest = new AddGroupMemberRequest(groupID,userID,groupCategory,responseLister3);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
+                    queue3.add(groupCreateRequest);
+                }
+            }
+        });
+
+        threadGroupMember.start();
+
 
     }
 }

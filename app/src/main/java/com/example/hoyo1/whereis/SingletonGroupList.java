@@ -8,6 +8,7 @@ public class SingletonGroupList {
 
     class GroupInfo
     {
+        public String groupID;
         public String groupName;
         public String groupLeader;
         public int groupLeaderImage;
@@ -22,16 +23,19 @@ public class SingletonGroupList {
     public void Initialize(){
         mapGroup=new HashMap<>();
     }
-    public void setGroupList(Integer key,String groupName,String groupLeader,int groupLeaderResId){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,int groupLeaderResId){
+
         GroupInfo groupInfo=new GroupInfo();
+        groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
         groupInfo.groupLeaderImage=groupLeaderResId;
 
         mapGroup.put(key,groupInfo);
     }
-    public void setGroupList(Integer key,String groupName,String groupLeader){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader){
         GroupInfo groupInfo=new GroupInfo();
+        groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
         groupInfo.groupLeaderImage=-1;

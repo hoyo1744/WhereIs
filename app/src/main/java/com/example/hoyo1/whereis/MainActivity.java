@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_GROUP_ADD = 101;
     public static final int REQUEST_GROUP = 102;
     public static final int MAX_GROUP_LIST= 10000;
+    public static final int MAX_GROUP_LEADER=30000;
 
     //메시지모음
     public static final int AM_GROUP_LIST_CREATE=20000;
@@ -252,9 +253,11 @@ public class MainActivity extends AppCompatActivity {
                                     for (int nNo = 1; nNo <= size; nNo++) {
                                         String strGroupName = Integer.toString(nNo);
                                         String strGroupLeaderName = Integer.toString(nNo + MAX_GROUP_LIST);
+                                        String strGroupID=Integer.toString(nNo+MAX_GROUP_LEADER);
                                         String groupName = jsonResponse2.getString(strGroupName);
                                         String groupLeaderName = jsonResponse2.getString(strGroupLeaderName);
-                                        SingletonGroupList.getInstance().setGroupList(nNo, groupName, groupLeaderName);
+                                        String groupID= jsonResponse2.getString(strGroupID);
+                                        SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName);
                                     }
 
 
