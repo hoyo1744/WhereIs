@@ -31,6 +31,7 @@ public class SingletonGroupList {
         groupInfo.groupLeader=groupLeader;
         groupInfo.groupLeaderImage=groupLeaderResId;
 
+
         mapGroup.put(key,groupInfo);
     }
     public void setGroupList(Integer key,String groupID,String groupName,String groupLeader){
@@ -47,12 +48,16 @@ public class SingletonGroupList {
     public String getGroupLeader(Integer key){
         return this.mapGroup.get(key).groupLeader;
     }
+    public String getGroupID(Integer key){
+        return this.mapGroup.get(key).groupID;
+    }
     public int getGroupLeaderImage(Integer key){
         return this.mapGroup.get(key).groupLeaderImage;
     }
     public int getGroupCount(){
         return this.mapGroup.size();
     }
+
 
 
     //---------------------------------------------------------

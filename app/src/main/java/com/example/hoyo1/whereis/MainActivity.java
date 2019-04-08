@@ -6,8 +6,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.IntRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //SingerItem item=(SingerItem)adapter.getItem(position);
+                //리스트순서는 0부터 시작이다.
                 Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
+                intent.putExtra("key", (position+1));
                 startActivityForResult(intent,REQUEST_GROUP);
             }
         });
@@ -257,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                                         String groupName = jsonResponse2.getString(strGroupName);
                                         String groupLeaderName = jsonResponse2.getString(strGroupLeaderName);
                                         String groupID= jsonResponse2.getString(strGroupID);
+                                        //key=그룹리스트1-n까지
                                         SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName);
                                     }
 
