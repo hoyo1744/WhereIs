@@ -34,16 +34,22 @@ import static com.example.hoyo1.whereis.MainActivity.AM_GROUP_LIST_CREATE;
 public class GroupActivity extends AppCompatActivity {
 
     class UserInfo{
+        private int nCategory;
         private String strUserID;
         private ArrayList<String> strArrContent=new ArrayList<>();
 
 
-
+        public int getCategory(){
+            return this.nCategory;
+        }
         public String getUserID(){
             return this.strUserID;
         }
         public String getContent(int pos){
             return this.strArrContent.get(pos);
+        }
+        public void setCategory(int nParam){
+            this.nCategory=nParam;
         }
         public void setUserID(String strParam){
             this.strUserID=strParam;
@@ -273,10 +279,14 @@ public class GroupActivity extends AppCompatActivity {
 
 
 
+
+
         /*
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
         profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
         profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
+
+
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
         profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
         profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
