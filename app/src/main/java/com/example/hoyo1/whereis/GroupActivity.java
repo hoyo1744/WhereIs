@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -23,6 +25,7 @@ import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerTextItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -74,6 +77,8 @@ public class GroupActivity extends AppCompatActivity {
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
     ArrayList<UserInfo> listUserInfo;
+    TextView textViewGroupLeaderName;
+
 
     Intent intent;
     Handler handlerGroupList;
@@ -131,11 +136,17 @@ public class GroupActivity extends AppCompatActivity {
         listGridHead=new ArrayList<>();
         listGridContent=new ArrayList<>();
         listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
+        textViewGroupLeaderName=(TextView) findViewById(R.id.groupLeaderNameTextView);
+
 
         intent= getIntent(); /*데이터 수신*/
         int key=(intent.getExtras().getInt("key"));
         String groupName=SingletonGroupList.getInstance().getGroupName(key);
+        String groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(key);
         setTitle(groupName);   //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
+        textViewGroupLeaderName.setText(groupLeaderName);
+
+
 
         profileAdapter= new GridAdapter(getApplicationContext());
         handlerGroupList=new Handler(){
@@ -148,14 +159,12 @@ public class GroupActivity extends AppCompatActivity {
                     case AM_GROUP_LIST_INIT:
                         //그룹헤더와 그룹컨텐트 리스트 초기화완료-->헤더생성
                         LoadGridHeader();
-
+                        LoadGridUserAndUserContent();
 
 
 
                         break;
                     case AM_GROUP_USER_INIT:
-
-
                         LoadGrid();
                         break;
                 }
@@ -163,17 +172,17 @@ public class GroupActivity extends AppCompatActivity {
             }
         };
         LoadGridHeadAndContent();
-        LoadGridUserAndUserContent();
+
 
     }
+
     public void LoadGridHeadAndContent(){
 
 
 
         //서브스레드 생성 및 서버와 통신
 
-        Thread threadGroupList=new Thread(new Runnable() {
-
+        Thread threadHead=new Thread(new Runnable() {
             boolean isPlaying=false;
             @Override
             public void run() {
@@ -266,26 +275,35 @@ public class GroupActivity extends AppCompatActivity {
 
         });
 
-        threadGroupList.start();
+
+
+        threadHead.start();
 
 
 
     }
     public void LoadGrid(){
         //그리드를 동적으로 생성.
-        //조건 : 그룹에 속한 유저 검색 group_member에서 유저확인
-        //확인된 유저ID를 통해서 group_content를 검색해서 Content를 가져온다.
-        //따라서 유저리스트,유저컨텐트리스트가 필요하다.
+        //프로필+유저컨텐트로 그리드동적구현(nCategoryNum은 프로필수를 제외한 헤더의 수이다.)
 
+
+        int nGroupCategoryNum=listUserInfo.get(0).getCategory();
+
+        for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
+            //프로필
+            String strUserName=listUserInfo.get(nUserCount).getUserID();
+            profileAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, profileAdapter.ITEM_VIEW_PROFILE));
+            for(int nCategory=0;nCategory<nGroupCategoryNum;nCategory++) {
+                //프로필을 제외한 컨텐츠 동적추가
+                String strUserContent=listUserInfo.get(nUserCount).getContent(nCategory);
+                profileAdapter.addItem(new SingerProfileItem(strUserContent, profileAdapter.ITEM_VIEW_TEXT));
+            }
+        }
 
 
 
 
         /*
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-
 
         profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
         profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
@@ -317,7 +335,7 @@ public class GroupActivity extends AppCompatActivity {
         //유저 및 유저컨텐트(프로필+유저컨텐트)
         //서브스레드 생성 및 서버와 통신
 
-        Thread threadGroupList=new Thread(new Runnable() {
+        Thread threadUserAndUserContent=new Thread(new Runnable() {
 
             boolean isPlaying=false;
             @Override
@@ -346,6 +364,7 @@ public class GroupActivity extends AppCompatActivity {
                                         if(!successSub) {
                                             //에러처리
                                         }
+                                        userInfo.setCategory(nCategoryNum);
                                         String strUserID=obj.getString("userID");
                                         String strContent1=obj.getString("content1");
                                         userInfo.AddContent(strContent1);
@@ -367,9 +386,7 @@ public class GroupActivity extends AppCompatActivity {
                                         userInfo.AddContent(strContent9);
                                         String strContent10=obj.getString("content10");
                                         userInfo.AddContent(strContent10);
-
                                         userInfo.setUserID(strUserID);
-
                                         listUserInfo.add(userInfo);
                                     }
 
@@ -388,7 +405,7 @@ public class GroupActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    GroupInfoRequest groupInfoRequest= new GroupInfoRequest(strGroupID, responseLister2);
+                    GroupUserInfoRequest groupInfoRequest= new GroupUserInfoRequest(strGroupID, responseLister2);
                     RequestQueue queue = Volley.newRequestQueue(GroupActivity.this);
                     queue .add(groupInfoRequest);
                 }
@@ -401,7 +418,7 @@ public class GroupActivity extends AppCompatActivity {
 
         });
 
-        threadGroupList.start();
+        threadUserAndUserContent.start();
 
 
 
