@@ -3,6 +3,8 @@ package com.example.hoyo1.whereis;
 import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,8 +24,10 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private AlertDialog dialog;
+    final static int AM_LOGIN_SUCCESS=40000;
 
+    private AlertDialog dialog;
+    Handler handlerLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -74,13 +78,10 @@ public class LoginActivity extends AppCompatActivity {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 //싱글톤객체 초기화
 
+
                                                 GetInitialSingletonUser(userId,userPassword);
                                                 //로그인이 성공한다면 다음씬으로 넘어간다.
-                                                Intent intent=new Intent(LoginActivity.this,MainActivity.class);
 
-
-                                                LoginActivity.this.startActivity(intent);
-                                                finish();
                                             }
                                         })
                                         .create();
@@ -129,50 +130,107 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
 
-    }
-
-
-    public void GetInitialSingletonUser(String userId,String userPassword){
-        //새로운 Request를 통해서 값을 가져와서 싱글톤객체를 생성함.
-        Response.Listener<String> responseLister= new Response.Listener<String>() {
+        handlerLogin=new Handler(){
             @Override
-            public void onResponse(String response) {
-                try{
-                    JSONObject jsonResponse=new JSONObject(response);
-                    boolean success=jsonResponse.getBoolean("success");
-
-                    if(success)
-                    {
-                        String number,id,name,email,phone,level;
-
-                        number=jsonResponse.getString("idx");
-                        id=jsonResponse.getString("id");
-                        name=jsonResponse.getString("name");
-                        email=jsonResponse.getString("email");
-                        phone=jsonResponse.getString("phone");
-                        level=jsonResponse.getString("level");
-                        SingletonUser.getInstance().Initialize();
-                        SingletonUser.getInstance().setUserInfo(number,id,name,email,phone,level);
-
-                    }
-                    else
-                    {
-
-                    }
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch(msg.what){
+                    case AM_LOGIN_SUCCESS:
+                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                        LoginActivity.this.startActivity(intent);
+                        finish();
+                        break;
                 }
             }
         };
+    }
 
-        //LoginInfoRequest로 새로 만들자.
-        LoginInfoRequest loginInfoRequest=new LoginInfoRequest(userId,userPassword,responseLister);
-        RequestQueue queueInfo= Volley.newRequestQueue(LoginActivity.this);
-        queueInfo.add(loginInfoRequest);
+
+    public void GetInitialSingletonUser(final String userId, final String userPassword){
+
+
+
+        //서브스레드 생성 및 서버와 통신
+
+        Thread threadGroupList=new Thread(new Runnable() {
+
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+
+
+                    //새로운 Request를 통해서 값을 가져와서 싱글톤객체를 생성함.
+                    Response.Listener<String> responseLister= new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try{
+                                JSONObject jsonResponse=new JSONObject(response);
+                                boolean success=jsonResponse.getBoolean("success");
+
+                                if(success)
+                                {
+                                    String number,id,name,email,phone,level;
+
+                                    number=jsonResponse.getString("idx");
+                                    id=jsonResponse.getString("id");
+                                    name=jsonResponse.getString("name");
+                                    email=jsonResponse.getString("email");
+                                    phone=jsonResponse.getString("phone");
+                                    level=jsonResponse.getString("level");
+                                    SingletonUser.getInstance().Initialize();
+                                    SingletonUser.getInstance().setUserInfo(number,id,name,email,phone,level);
+
+                                    Message msg = handlerLogin.obtainMessage();
+                                    msg.what = AM_LOGIN_SUCCESS;
+                                    handlerLogin.sendMessage(msg);
+
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                            catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+
+                    //LoginInfoRequest로 새로 만들자.
+                    LoginInfoRequest loginInfoRequest=new LoginInfoRequest(userId,userPassword,responseLister);
+                    RequestQueue queueInfo= Volley.newRequestQueue(LoginActivity.this);
+                    queueInfo.add(loginInfoRequest);
+
+                }
+
+
+
+            }
+
+
+
+        });
+
+        threadGroupList.start();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
     }
+
 }

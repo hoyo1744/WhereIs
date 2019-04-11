@@ -6,39 +6,42 @@ import java.util.Map;
 
 public class SingletonGroupList {
 
+    //
     class GroupInfo
     {
         public String groupID;
         public String groupName;
         public String groupLeader;
         public int groupLeaderImage;
+        public String groupCategory;
     }
 
     //해시맵의 키 = 그룹번호(id)
     private HashMap<Integer, GroupInfo> mapGroup;
-
     private SingletonGroupList(){
 
     }
     public void Initialize(){
         mapGroup=new HashMap<>();
     }
-    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,int groupLeaderResId){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,int groupLeaderResId,String groupCategory){
 
         GroupInfo groupInfo=new GroupInfo();
         groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
         groupInfo.groupLeaderImage=groupLeaderResId;
+        groupInfo.groupCategory=groupCategory;
 
 
         mapGroup.put(key,groupInfo);
     }
-    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupCategory){
         GroupInfo groupInfo=new GroupInfo();
         groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
+        groupInfo.groupCategory=groupCategory;
         groupInfo.groupLeaderImage=-1;
         mapGroup.put(key,groupInfo);
     }
@@ -51,6 +54,7 @@ public class SingletonGroupList {
     public String getGroupID(Integer key){
         return this.mapGroup.get(key).groupID;
     }
+    public String getGroupCategory(Integer key){return this.mapGroup.get(key).groupCategory;}
     public int getGroupLeaderImage(Integer key){
         return this.mapGroup.get(key).groupLeaderImage;
     }

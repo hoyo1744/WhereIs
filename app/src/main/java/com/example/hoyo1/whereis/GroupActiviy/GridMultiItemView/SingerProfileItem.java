@@ -7,7 +7,6 @@ public class SingerProfileItem {
 
     String profileName;
     int profileImageResId;
-
     String content;
 
 

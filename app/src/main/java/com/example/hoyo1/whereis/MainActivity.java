@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_GROUP = 102;
     public static final int MAX_GROUP_LIST= 10000;
     public static final int MAX_GROUP_LEADER=30000;
+    public static final int MAX_GROUP_CATEGORY=50000;
 
     //메시지모음
     public static final int AM_GROUP_LIST_CREATE=20000;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 //리스트순서는 0부터 시작이다.
                 Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
                 intent.putExtra("key", (position+1));
+
+
                 startActivityForResult(intent,REQUEST_GROUP);
             }
         });
@@ -258,11 +261,14 @@ public class MainActivity extends AppCompatActivity {
                                         String strGroupName = Integer.toString(nNo);
                                         String strGroupLeaderName = Integer.toString(nNo + MAX_GROUP_LIST);
                                         String strGroupID=Integer.toString(nNo+MAX_GROUP_LEADER);
+                                        String strGroupCategory=Integer.toString(nNo+MAX_GROUP_CATEGORY);
+
                                         String groupName = jsonResponse2.getString(strGroupName);
                                         String groupLeaderName = jsonResponse2.getString(strGroupLeaderName);
                                         String groupID= jsonResponse2.getString(strGroupID);
+                                        String groupCategory=jsonResponse2.getString(strGroupCategory);
                                         //key=그룹리스트1-n까지
-                                        SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName);
+                                        SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName,groupCategory);
                                     }
 
 

@@ -64,6 +64,7 @@ public class GridAdapter extends BaseAdapter {
 
         GridProfileView profileView = null;
         GridTextView textView = null;
+
         if (convertView == null) {
             SingerProfileItem item = profileItems.get(position);
 
@@ -72,6 +73,7 @@ public class GridAdapter extends BaseAdapter {
                     GridTextView gridTextView = new GridTextView(adapterContext);
                     gridTextView.setContent(item.getContent());
                     convertView = gridTextView;
+
                     break;
                 case ITEM_VIEW_PROFILE:
                     GridProfileView gridProfileView = new GridProfileView(adapterContext);
@@ -80,6 +82,9 @@ public class GridAdapter extends BaseAdapter {
                     convertView = gridProfileView;
                     break;
             }
+        }
+        else{
+
         }
 
         return convertView;

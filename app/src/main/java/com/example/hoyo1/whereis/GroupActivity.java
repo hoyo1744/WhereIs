@@ -74,6 +74,7 @@ public class GroupActivity extends AppCompatActivity {
     GridViewWithHeaderAndFooter textGrid;
     GridAdapter profileAdapter;
     GridTextAdapter textAdapter;
+    GridView gridView;
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
     ArrayList<UserInfo> listUserInfo;
@@ -136,6 +137,7 @@ public class GroupActivity extends AppCompatActivity {
         listGridHead=new ArrayList<>();
         listGridContent=new ArrayList<>();
         listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
+        gridView=(GridView)findViewById(R.id.gridView);
         textViewGroupLeaderName=(TextView) findViewById(R.id.groupLeaderNameTextView);
 
 
@@ -143,7 +145,9 @@ public class GroupActivity extends AppCompatActivity {
         int key=(intent.getExtras().getInt("key"));
         String groupName=SingletonGroupList.getInstance().getGroupName(key);
         String groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(key);
-        setTitle(groupName);   //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
+        String groupCategory=SingletonGroupList.getInstance().getGroupCategory(key);
+        setTitle(groupName);                                            //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
+        gridView.setNumColumns(Integer.parseInt(groupCategory)+1);     //그리드뷰 컬럼 동적설정.
         textViewGroupLeaderName.setText(groupLeaderName);
 
 
@@ -365,7 +369,7 @@ public class GroupActivity extends AppCompatActivity {
                                             //에러처리
                                         }
                                         userInfo.setCategory(nCategoryNum);
-                                        String strUserID=obj.getString("userID");
+                                        String strUserID=obj.getString("userName");
                                         String strContent1=obj.getString("content1");
                                         userInfo.AddContent(strContent1);
                                         String strContent2=obj.getString("content2");
@@ -431,7 +435,7 @@ public class GroupActivity extends AppCompatActivity {
         // /리스트초기화(헤더)
         profileAdapter.addItem(new SingerProfileItem("프로필", profileAdapter.ITEM_VIEW_TEXT));
         for(int nCount=0;nCount<nCategoryNum;nCount++) {
-            String strHead=profileAdapter.getItem(nCount).toString();
+            String strHead=listGridHead.get(nCount).toString();
             profileAdapter.addItem(new SingerProfileItem(strHead, profileAdapter.ITEM_VIEW_TEXT));
             //profileAdapter.addItem(new SingerProfileItem("내용", profileAdapter.ITEM_VIEW_TEXT));
         }
