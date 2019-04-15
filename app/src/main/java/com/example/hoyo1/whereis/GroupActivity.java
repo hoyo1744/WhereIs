@@ -69,15 +69,22 @@ public class GroupActivity extends AppCompatActivity {
     //메시지모음(그룹: 4만대)
     public static final int AM_GROUP_LIST_INIT=40000;       //헤더 및 컨텐트 리스트 초기화
     public static final int AM_GROUP_USER_INIT=40001;       //그룹에 속한 유저 및 유저컨텐트 초기화
+    public static final int AM_GROUP_USER_LIST=40002;       //그룹에 속한 유저 및 유저컨텐트 초기화
 
-    GridViewWithHeaderAndFooter profileGrid;
-    GridViewWithHeaderAndFooter textGrid;
+    //GridViewWithHeaderAndFooter profileGrid;
+    GridView profileGrid;
+    //GridViewWithHeaderAndFooter textGrid;
+    GridView textGrid;
+
     GridAdapter profileAdapter;
     GridTextAdapter textAdapter;
     GridView gridView;
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
     ArrayList<UserInfo> listUserInfo;
+    ArrayList<String> listHeadSize;
+
+
     TextView textViewGroupLeaderName;
 
 
@@ -133,11 +140,15 @@ public class GroupActivity extends AppCompatActivity {
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP|actionBar.DISPLAY_SHOW_TITLE);
         LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View GridProfileHeader=inflater.inflate(R.layout.header_item,null);
-        profileGrid=(GridViewWithHeaderAndFooter )findViewById(R.id.gridView);
+        //profileGrid=(GridViewWithHeaderAndFooter )findViewById(R.id.gridView);
+        profileGrid=(GridView) findViewById(R.id.gridView);
         listGridHead=new ArrayList<>();
         listGridContent=new ArrayList<>();
         listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
+        listHeadSize=new ArrayList<>();         //헤드최대크기모음
+
         gridView=(GridView)findViewById(R.id.gridView);
+
         textViewGroupLeaderName=(TextView) findViewById(R.id.groupLeaderNameTextView);
 
 
@@ -159,23 +170,21 @@ public class GroupActivity extends AppCompatActivity {
                 super.handleMessage(msg);
 
                 switch(msg.what){
-
                     case AM_GROUP_LIST_INIT:
-                        //그룹헤더와 그룹컨텐트 리스트 초기화완료-->헤더생성
-                        LoadGridHeader();
-                        LoadGridUserAndUserContent();
-
-
+                        //그룹헤더와 그룹컨텐트 리스트 초기화완료-->회원이름가져오기
+                        LoadGridHeadAndContent();
 
                         break;
                     case AM_GROUP_USER_INIT:
+                        LoadGridHeader();
                         LoadGrid();
                         break;
                 }
 
             }
         };
-        LoadGridHeadAndContent();
+        LoadGridUserAndUserContent();
+
 
 
     }
@@ -249,12 +258,16 @@ public class GroupActivity extends AppCompatActivity {
                                     String strContent10=jsonResponse.getString("groupContent10");
                                     listGridContent.add(strContent10);
 
+                                    //여기에서 컨텐트 파싱시작.
+                                    GetMaxContent();
+                                    //파싱완료
+
 
 
 
 
                                     Message msg = handlerGroupList.obtainMessage();
-                                    msg.what = AM_GROUP_LIST_INIT;
+                                    msg.what = AM_GROUP_USER_INIT;
                                     handlerGroupList.sendMessage(msg);
 
                                 }
@@ -296,11 +309,17 @@ public class GroupActivity extends AppCompatActivity {
         for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
             //프로필
             String strUserName=listUserInfo.get(nUserCount).getUserID();
-            profileAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, profileAdapter.ITEM_VIEW_PROFILE));
+            String strHeadAndContent=listHeadSize.get(0).toString();
+            int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
+            int height=  (int)textViewGroupLeaderName.getHeight();
+            profileAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, profileAdapter.ITEM_VIEW_PROFILE,width,height));
             for(int nCategory=0;nCategory<nGroupCategoryNum;nCategory++) {
                 //프로필을 제외한 컨텐츠 동적추가
                 String strUserContent=listUserInfo.get(nUserCount).getContent(nCategory);
-                profileAdapter.addItem(new SingerProfileItem(strUserContent, profileAdapter.ITEM_VIEW_TEXT));
+                strHeadAndContent=listHeadSize.get(nCategory+1).toString();
+                width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
+                height=  (int)textViewGroupLeaderName.getHeight();
+                profileAdapter.addItem(new SingerProfileItem(strUserContent, profileAdapter.ITEM_VIEW_TEXT,width,height));
             }
         }
 
@@ -331,6 +350,12 @@ public class GroupActivity extends AppCompatActivity {
 
 
         profileGrid.setAdapter(profileAdapter);
+
+
+        //여기서 최종 그리드의 크기를 조정한다.
+        //profileGrid.getLayoutParams().width=500;
+        //profileGrid.getLayoutParams().height=2000;
+
 
 
     }
@@ -395,9 +420,14 @@ public class GroupActivity extends AppCompatActivity {
                                     }
 
 
+                                    //유저이름파악
+                                    GetMaxProfile();
+
+                                    //유저이름파악완료
+
 
                                     Message msg = handlerGroupList.obtainMessage();
-                                    msg.what = AM_GROUP_USER_INIT;
+                                    msg.what = AM_GROUP_LIST_INIT;
                                     handlerGroupList.sendMessage(msg);
 
                                 }
@@ -436,9 +466,63 @@ public class GroupActivity extends AppCompatActivity {
         profileAdapter.addItem(new SingerProfileItem("프로필", profileAdapter.ITEM_VIEW_TEXT));
         for(int nCount=0;nCount<nCategoryNum;nCount++) {
             String strHead=listGridHead.get(nCount).toString();
-            profileAdapter.addItem(new SingerProfileItem(strHead, profileAdapter.ITEM_VIEW_TEXT));
+            String strHeadAndContent=listHeadSize.get(nCount).toString();
+            int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
+            int height=  (int)textViewGroupLeaderName.getHeight();
+            profileAdapter.addItem(new SingerProfileItem(strHead, profileAdapter.ITEM_VIEW_TEXT,width,height));
             //profileAdapter.addItem(new SingerProfileItem("내용", profileAdapter.ITEM_VIEW_TEXT));
         }
 
     }
+
+    public void GetMaxProfile(){
+        int nlistCount=listUserInfo.size();
+        if(nlistCount!=0) {
+
+            String strSelectedUserName = listUserInfo.get(0).getUserID();//가장긴유저이름
+            int nNameLength =strSelectedUserName.length();//가장긴유저이름의 크기
+
+            for (int nCount = 1; nCount < nlistCount; nCount++) {
+                String strName = listUserInfo.get(nCount).getUserID();
+                int nLength=strName.length();
+                if(nNameLength<nLength)
+                {
+                    strSelectedUserName=strName;
+                    nNameLength=strName.length();
+                }
+
+
+            }
+
+            //프로필이름중에 가장 긴 이름 완료.
+            listHeadSize.add(strSelectedUserName);
+        }
+    }
+    public  void GetMaxContent(){
+        int nlistCount=listGridContent.size();
+        if(nlistCount!=0)
+        {
+            for(int nCount=0;nCount<nlistCount;nCount++)
+            {
+                //1개씩 가져와서 파싱후, 가장 긴것 고르기
+                String strContent=listGridContent.get(nCount);
+                if(strContent=="null")
+                    break;
+                //#기준으로파싱하기
+                String[] words=strContent.split("#");
+                int nLen=-1;
+                String strWord="";
+                for(String wd : words){
+                    int wdLen=wd.length();
+                    if(wdLen>nLen) {
+                        nLen = wdLen;
+                        strWord = wd;
+                    }
+                }
+                listHeadSize.add(strWord);
+
+            }
+        }
+    }
+
 }

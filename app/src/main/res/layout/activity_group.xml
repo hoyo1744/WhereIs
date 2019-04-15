@@ -55,30 +55,39 @@
 
 
         </RelativeLayout>
+
+
         <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-        //그룹멤버 그리드뷰(동적생성)
-        <in.srain.cube.views.GridViewWithHeaderAndFooter
-            android:id="@+id/gridView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:horizontalSpacing="2dp"
-            android:numColumns="6"
-            android:verticalSpacing="2dp"
-            android:columnWidth="10dp"
-
-
             >
-        </in.srain.cube.views.GridViewWithHeaderAndFooter >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
+                //그룹멤버 그리드뷰(동적생성)
+
+                <GridView
+                    android:id="@+id/gridView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numColumns="6"></GridView>
+            </FrameLayout>
+        </HorizontalScrollView>
+
+    </LinearLayout>
         </LinearLayout>
 
 
 
-    </LinearLayout>
+
+
 
 
 

@@ -1,9 +1,11 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
 import android.content.Context;
+import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 
 
 import com.example.hoyo1.whereis.SingerItemView;
@@ -64,15 +66,21 @@ public class GridAdapter extends BaseAdapter {
 
         GridProfileView profileView = null;
         GridTextView textView = null;
-
+        ViewGroup.LayoutParams params=null;
+        //테스트
+        //ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(1000,200);
         if (convertView == null) {
             SingerProfileItem item = profileItems.get(position);
+            //호용 : 가로,세로크기를 입력받아 그리드셀 크기를 조정해준다.
+            params=new ViewGroup.LayoutParams(item.getParams().width,item.getParams().height);
 
             switch (viewType) {
                 case ITEM_VIEW_TEXT:
                     GridTextView gridTextView = new GridTextView(adapterContext);
                     gridTextView.setContent(item.getContent());
                     convertView = gridTextView;
+                    //convertView.setLayoutParams(params);//테스트
+
 
                     break;
                 case ITEM_VIEW_PROFILE:
@@ -80,6 +88,7 @@ public class GridAdapter extends BaseAdapter {
                     gridProfileView.setProfileName(item.getName());
                     gridProfileView.setProfileImage(item.getResId());
                     convertView = gridProfileView;
+                    //convertView.setLayoutParams(params);//테스트
                     break;
             }
         }
