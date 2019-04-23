@@ -58,34 +58,41 @@
 
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            >
+            android:layout_height="match_parent">
 
-            <FrameLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-                //그룹멤버 그리드뷰(동적생성)
-
-                <GridView
-                    android:id="@+id/gridView"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                >
+                <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:numColumns="12"
-                    android:columnWidth="1000dp">
-                </GridView>
-            </FrameLayout>
-        </HorizontalScrollView>
+                    android:fillViewport="true"
+                    >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/linearLayout"
+                    >
 
-    </LinearLayout>
+                    <!--리스트뷰동적추가구간-->
+
+
+
+                    <!--리스트뷰동적추가구간완료-->
+
+
+
+
+                </LinearLayout>
+                </ScrollView>
+            </HorizontalScrollView>
+
         </LinearLayout>
+    </LinearLayout>
 
 
 

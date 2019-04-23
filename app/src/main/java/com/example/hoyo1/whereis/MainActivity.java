@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //SingerItem item=(SingerItem)adapter.getItem(position);
                 //리스트순서는 0부터 시작이다.
-                Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
+                //Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
+                Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
                 intent.putExtra("key", (position+1));
 
 

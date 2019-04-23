@@ -22,7 +22,8 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".GroupAddActivity" />
         <activity android:name=".GroupActivity" />
-        <activity android:name=".GroupMemberAddActivity"></activity>
+        <activity android:name=".GroupMemberAddActivity" />
+        <activity android:name=".Group2Activity"></activity>
     </application>
 
 </manifest>

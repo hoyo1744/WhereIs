@@ -1,33 +1,24 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
-
-
-import com.example.hoyo1.whereis.SingerItemView;
 
 import java.util.ArrayList;
 
-
-//GridAdapter1개로 모든 그리드 행과 열을 책임져야함.
-public class GridAdapter extends BaseAdapter {
-
+public class ListAdapter extends BaseAdapter {
 
     public static final int ITEM_VIEW_MAX=2;
     public static final int ITEM_VIEW_TEXT=0;
     public static final int ITEM_VIEW_PROFILE=1;
 
-
-    //프로필어댑터
     ArrayList<SingerProfileItem> profileItems=new ArrayList<SingerProfileItem>();
     public Context adapterContext;
 
-    public GridAdapter(Context context){
+
+    public ListAdapter (Context context){
         adapterContext=context;
     }
 
@@ -39,11 +30,6 @@ public class GridAdapter extends BaseAdapter {
     @Override
     public int getViewTypeCount() {
         return ITEM_VIEW_MAX;
-    }
-
-    public void addItem(SingerProfileItem item){
-
-        profileItems.add(item);
     }
 
     @Override
@@ -60,16 +46,22 @@ public class GridAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+    public void removeAll(){
+        profileItems.clear();
+    }
+    public void addItem(SingerProfileItem item){
+        profileItems.add(item);
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         int viewType = getItemViewType(position);
 
         GridProfileView profileView = null;
         GridTextView textView = null;
         GridProfileView.LayoutParams gridProfileViewParams=null;
         GridTextView.LayoutParams gridTextViewParams=null;
-
 
         //테스트
         //ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(1000,200);
@@ -84,7 +76,7 @@ public class GridAdapter extends BaseAdapter {
                     gridTextView.setGravity(Gravity.CENTER);
                     gridTextView.setContent(item.getContent());
                     convertView = gridTextView;
-                    //convertView.setLayoutParams(gridTextViewParams);//테스트
+                    convertView.setLayoutParams(gridTextViewParams);//테스트
 
 
                     break;
@@ -94,7 +86,7 @@ public class GridAdapter extends BaseAdapter {
                     gridProfileView.setProfileName(item.getName());
                     gridProfileView.setProfileImage(item.getResId());
                     convertView = gridProfileView;
-                    //convertView.setLayoutParams(gridProfileViewParams);//테스트
+                    convertView.setLayoutParams(gridProfileViewParams);//테스트
                     break;
             }
         }
@@ -104,7 +96,5 @@ public class GridAdapter extends BaseAdapter {
 
         return convertView;
     }
-
-
 
 }

@@ -1,41 +1,30 @@
 package com.example.hoyo1.whereis;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridAdapter;
-import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridTextAdapter;
+import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.ListAdapter;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerProfileItem;
-import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerTextItem;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import in.srain.cube.views.GridViewWithHeaderAndFooter;
-
-import static com.example.hoyo1.whereis.MainActivity.AM_GROUP_LIST_CREATE;
-
-public class GroupActivity extends AppCompatActivity {
-
+public class Group2Activity extends AppCompatActivity {
     class UserInfo{
         private int nCategory;
         private String strUserID;
@@ -62,7 +51,6 @@ public class GroupActivity extends AppCompatActivity {
         }
 
     }
-
     //그룹에서 요청은 200대
     public static final int  REQUEST_MEMBER_ADD = 201;
 
@@ -70,39 +58,37 @@ public class GroupActivity extends AppCompatActivity {
     public static final int AM_GROUP_LIST_INIT=40000;       //헤더 및 컨텐트 리스트 초기화
     public static final int AM_GROUP_USER_INIT=40001;       //그룹에 속한 유저 및 유저컨텐트 초기화
     public static final int AM_GROUP_USER_LIST=40002;       //그룹에 속한 유저 및 유저컨텐트 초기화
-
-    //GridViewWithHeaderAndFooter profileGrid;
-    GridView profileGrid;
-    //GridViewWithHeaderAndFooter textGrid;
-    GridView textGrid;
-
-    GridAdapter profileAdapter;
-    GridTextAdapter textAdapter;
-    GridView gridView;
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
-    ArrayList<UserInfo> listUserInfo;
+    ArrayList<Group2Activity.UserInfo> listUserInfo;
     ArrayList<String> listHeadSize;
     ArrayList<String> listContentSize;
 
+    ListAdapter listAdapter;
+    LinearLayout linearLayout;
+    ArrayList<ListView> arrayListView;
+
+    NoVerticalScrollListView test1;
+    NoVerticalScrollListView test2;
+    NoVerticalScrollListView test3;
+    NoVerticalScrollListView test4;
+    NoVerticalScrollListView test5;
+    NoVerticalScrollListView test6;
 
     TextView textViewGroupLeaderName;
-
-
     Intent intent;
     Handler handlerGroupList;
     int nCategoryNum;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setTitle("그룹이름");   //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
-        setContentView(R.layout.activity_group);
-        init();
-
-
+        setContentView(R.layout.activity_group2);
+        Init();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_group,menu);
@@ -135,23 +121,14 @@ public class GroupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void init(){
-
+    public void Init(){
         android.support.v7.app.ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP|actionBar.DISPLAY_SHOW_TITLE);
         LayoutInflater inflater=(LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-        View GridProfileHeader=inflater.inflate(R.layout.header_item,null);
-        //profileGrid=(GridViewWithHeaderAndFooter )findViewById(R.id.gridView);
-        profileGrid=(GridView) findViewById(R.id.gridView);
-        listGridHead=new ArrayList<>();
-        listGridContent=new ArrayList<>();
-        listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
-        listHeadSize=new ArrayList<>();         //헤더최대크기모음
-        listContentSize=new ArrayList<>();         //컨텐트최대크기모음
 
-        gridView=(GridView)findViewById(R.id.gridView);
-
+        linearLayout=(LinearLayout)findViewById(R.id.linearLayout);
         textViewGroupLeaderName=(TextView) findViewById(R.id.groupLeaderNameTextView);
+
 
 
         intent= getIntent(); /*데이터 수신*/
@@ -160,12 +137,53 @@ public class GroupActivity extends AppCompatActivity {
         String groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(key);
         String groupCategory=SingletonGroupList.getInstance().getGroupCategory(key);
         setTitle(groupName);                                            //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
-        gridView.setNumColumns(Integer.parseInt(groupCategory)+1);     //그리드뷰 컬럼 동적설정.
+        nCategoryNum=Integer.parseInt(groupCategory)+1;
         textViewGroupLeaderName.setText(groupLeaderName);
 
 
+        listGridHead=new ArrayList<>();
+        listGridContent=new ArrayList<>();
+        listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
+        listHeadSize=new ArrayList<>();         //헤더최대크기모음
+        listContentSize=new ArrayList<>();         //컨텐트최대크기모음
 
-        profileAdapter= new GridAdapter(getApplicationContext());
+        //카테고리수만큼 리스트 생성
+        arrayListView=new ArrayList<ListView>();
+        test1=new NoVerticalScrollListView(getApplicationContext());
+        test1.setVerticalScrollBarEnabled(false);
+        test2=new NoVerticalScrollListView(getApplicationContext());
+        test2.setVerticalScrollBarEnabled(false);
+        test3=new NoVerticalScrollListView(getApplicationContext());
+        test3.setVerticalScrollBarEnabled(false);
+        test4=new NoVerticalScrollListView(getApplicationContext());
+        test4.setVerticalScrollBarEnabled(false);
+        test5=new NoVerticalScrollListView(getApplicationContext());
+        test5.setVerticalScrollBarEnabled(false);
+        test6=new NoVerticalScrollListView(getApplicationContext());
+
+
+
+
+
+
+
+
+        //리스트생성 및 상위레이아웃에 리스트 추가
+        // 여기서 에러가발생하는거 같은데...
+        for(int nIdx=0;nIdx<nCategoryNum;nIdx++){
+            ListView listChild=new ListView(getApplicationContext());
+            //arrayListView.add(listChild);
+            //linearLayout.addView(arrayListView.get(nIdx));
+        }
+        /*
+        linearLayout.addView(test1);
+        linearLayout.addView(test2);
+        linearLayout.addView(test3);
+        linearLayout.addView(test4);
+        linearLayout.addView(test5);
+        linearLayout.addView(test6);
+        */
+
         handlerGroupList=new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -174,27 +192,28 @@ public class GroupActivity extends AppCompatActivity {
                 switch(msg.what){
                     case AM_GROUP_LIST_INIT:
                         //그룹헤더와 그룹컨텐트 리스트 초기화완료-->회원이름가져오기
-                        LoadGridUserAndUserContent();
+                        LoadListUserAndUserContent();
 
                         break;
                     case AM_GROUP_USER_INIT:
-                        LoadGridHeader();
-                        LoadGrid();
+                        LoadList();
                         break;
                 }
 
             }
         };
-        LoadGridHeadAndContent();
+        LoadListHeadAndContent();
+
+
+
+
+
 
 
 
 
     }
-
-    public void LoadGridHeadAndContent(){
-
-
+    public void LoadListHeadAndContent(){
 
         //서브스레드 생성 및 서버와 통신
 
@@ -216,7 +235,7 @@ public class GroupActivity extends AppCompatActivity {
 
                                 if (success) {
 
-                                    nCategoryNum=jsonResponse.getInt("groupCategory");
+                                    //nCategoryNum=jsonResponse.getInt("groupCategory");
                                     //그룹헤드리스트 초기화
                                     String strHead1=jsonResponse.getString("groupHead1");
                                     listGridHead.add((strHead1));
@@ -283,7 +302,7 @@ public class GroupActivity extends AppCompatActivity {
                         }
                     };
                     GroupInfoRequest groupInfoRequest= new GroupInfoRequest(strGroupID, responseLister2);
-                    RequestQueue queue = Volley.newRequestQueue(GroupActivity.this);
+                    RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
                     queue .add(groupInfoRequest);
                 }
 
@@ -298,76 +317,36 @@ public class GroupActivity extends AppCompatActivity {
 
 
         threadHead.start();
-
-
-
     }
-    public void LoadGrid(){
-        //그리드를 동적으로 생성.
-        //프로필+유저컨텐트로 그리드동적구현(nCategoryNum은 프로필수를 제외한 헤더의 수이다.)
+    public  void GetMaxContent(){
+        int nlistCount=listGridContent.size();
+        if(nlistCount!=0)
+        {
+            for(int nCount=0;nCount<nlistCount;nCount++)
+            {
+                //1개씩 가져와서 파싱후, 가장 긴것 고르기
+                String strContent=listGridContent.get(nCount);
+                if(strContent=="null")
+                    break;
+                //#기준으로파싱하기
+                String[] words=strContent.split("#");
+                int nLen=-1;
+                String strWord="";
+                for(String wd : words){
+                    int wdLen=wd.length();
+                    if(wdLen>nLen) {
+                        nLen = wdLen;
+                        strWord = wd;
+                    }
+                }
+                listContentSize.add(strWord);
 
-        int nTotalWidth=0;
-
-        int nGroupCategoryNum=listUserInfo.get(0).getCategory();
-        for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
-            //프로필
-            String strUserName=listUserInfo.get(nUserCount).getUserID();
-            String strHeadAndContent=listHeadSize.get(0).toString();
-            int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
-            width+=500;
-            nTotalWidth+=width;
-            int height=  (int)textViewGroupLeaderName.getHeight();
-            profileAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, profileAdapter.ITEM_VIEW_PROFILE,width,height));
-            for(int nCategory=0;nCategory<nGroupCategoryNum;nCategory++) {
-                //프로필을 제외한 컨텐츠 동적추가
-                String strUserContent=listUserInfo.get(nUserCount).getContent(nCategory);
-                strHeadAndContent=listContentSize.get(nCategory).toString();
-                width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
-                nTotalWidth+=width;
-                height=  (int)textViewGroupLeaderName.getHeight();
-                profileAdapter.addItem(new SingerProfileItem(strUserContent, profileAdapter.ITEM_VIEW_TEXT,nTotalWidth,height));
             }
         }
-
-
-
-
-        /*
-
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",R.drawable.ic_person_black_24dp,profileAdapter.ITEM_VIEW_PROFILE));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        profileAdapter.addItem(new SingerProfileItem("엄호용",profileAdapter.ITEM_VIEW_TEXT));
-        */
-
-
-        profileGrid.setAdapter(profileAdapter);
-
-
-        //여기서 최종 그리드의 크기를 조정한다.
-        profileGrid.getLayoutParams().width=nTotalWidth;
-
-
-
-
-
     }
 
-    public void LoadGridUserAndUserContent(){
+    public void LoadListUserAndUserContent(){
+
         //유저 및 유저컨텐트(프로필+유저컨텐트)
         //서브스레드 생성 및 서버와 통신
 
@@ -393,7 +372,7 @@ public class GroupActivity extends AppCompatActivity {
                                     int nUserCount=jsonResponse.getInt("size");
                                     //유저수 만큼 이터레이터
                                     for(int nIdx=1;nIdx<=nUserCount;nIdx++){
-                                        UserInfo userInfo=new UserInfo();
+                                        Group2Activity.UserInfo userInfo=new Group2Activity.UserInfo();
 
                                         JSONObject obj=jsonResponse.getJSONObject(Integer.toString(nIdx));
                                         boolean successSub=obj.getBoolean("success");
@@ -447,7 +426,7 @@ public class GroupActivity extends AppCompatActivity {
                         }
                     };
                     GroupUserInfoRequest groupInfoRequest= new GroupUserInfoRequest(strGroupID, responseLister2);
-                    RequestQueue queue = Volley.newRequestQueue(GroupActivity.this);
+                    RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
                     queue .add(groupInfoRequest);
                 }
 
@@ -464,33 +443,6 @@ public class GroupActivity extends AppCompatActivity {
 
 
     }
-    public void LoadGridHeader(){
-
-        int nTotalWidth=0;
-
-
-        String strHeadAndContent=listHeadSize.get(0).toString();
-        int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
-        //int height=  Math.abs((int)(textViewGroupLeaderName.getPaint().ascent())+Math.abs((int)textViewGroupLeaderName.getPaint().descent()));
-        width+=500;
-        nTotalWidth+=width;
-        int height=(int)textViewGroupLeaderName.getHeight();
-        //카테고리수+1(프로필)=전체 헤더길이
-        // /리스트초기화(헤더)
-        //+50의 값은 이미지값이다.
-        profileAdapter.addItem(new SingerProfileItem("프로필", profileAdapter.ITEM_VIEW_TEXT,nTotalWidth,height));
-        for(int nCount=0;nCount<nCategoryNum;nCount++) {
-            String strHead=listGridHead.get(nCount).toString();
-            strHeadAndContent=listContentSize.get(nCount).toString();
-            width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
-            nTotalWidth+=width;
-            height=  (int)textViewGroupLeaderName.getHeight();
-            profileAdapter.addItem(new SingerProfileItem(strHead, profileAdapter.ITEM_VIEW_TEXT,nTotalWidth,height));
-            //profileAdapter.addItem(new SingerProfileItem("내용", profileAdapter.ITEM_VIEW_TEXT));
-        }
-
-    }
-
     public void GetMaxProfile(){
         int nlistCount=listUserInfo.size();
         if(nlistCount!=0) {
@@ -514,31 +466,114 @@ public class GroupActivity extends AppCompatActivity {
             listHeadSize.add(strSelectedUserName);
         }
     }
-    public  void GetMaxContent(){
-        int nlistCount=listGridContent.size();
-        if(nlistCount!=0)
-        {
-            for(int nCount=0;nCount<nlistCount;nCount++)
-            {
-                //1개씩 가져와서 파싱후, 가장 긴것 고르기
-                String strContent=listGridContent.get(nCount);
-                if(strContent=="null")
-                    break;
-                //#기준으로파싱하기
-                String[] words=strContent.split("#");
-                int nLen=-1;
-                String strWord="";
-                for(String wd : words){
-                    int wdLen=wd.length();
-                    if(wdLen>nLen) {
-                        nLen = wdLen;
-                        strWord = wd;
-                    }
+
+    public void LoadList(){
+        //listHeadSize와 listContentSize에 가장 긴 이름들이 들어있다.
+        //어댑터생성
+
+        int nCategoryCnt=0;
+        for(int nCount=0;nCount<nCategoryNum;nCount++){
+            listAdapter=new ListAdapter(getApplicationContext());
+            int width=0;
+            int height=0;
+            if(nCount==0){
+                width =  (int)textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(0).toString());
+                width+=100;
+            }
+            else {
+                width = (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(0).toString());
+            }
+            height=  (int)textViewGroupLeaderName.getHeight();
+
+
+            //헤더넣기
+            if(nCount==0)
+                listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT,width,height));
+            else{
+                String strHead=listGridHead.get(nCount).toString();
+                listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT,width,height));
+            }
+
+
+
+
+            int nListHeight=0;
+
+            //유저수 만큼 이터레이터
+            //for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
+            for(int nUserCount=0;nUserCount<30;nUserCount++){
+                if(nCount==0){
+                    //프로필
+                    String strUserName=listUserInfo.get(0).getUserID();
+                    String strHeadAndContent=listHeadSize.get(0).toString();
+                    listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE,width,height));
                 }
-                listContentSize.add(strWord);
+                else{
+                    String strUserContent=listUserInfo.get(0).getContent(nCategoryCnt);
+                    listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT,width,height));
+
+                }
+                nListHeight+=height;
+            }
+            if(nCount==0) {
+
+                test1.setAdapter(listAdapter);
+                linearLayout.addView(test1);
+                test1.getLayoutParams().width=width;
+                test1.getLayoutParams().height=nListHeight;
 
             }
-        }
-    }
+            else if(nCount==1){
 
+                test2.setAdapter(listAdapter);
+                linearLayout.addView(test2);
+                test2.getLayoutParams().width=width;
+                test2.getLayoutParams().height=nListHeight;
+
+
+            }
+            else if(nCount==2) {
+
+                test3.setAdapter(listAdapter);
+                linearLayout.addView(test3);
+                test3.getLayoutParams().width=width;
+                test3.getLayoutParams().height=nListHeight;
+
+
+            }
+            else if(nCount==3) {
+
+                test4.setAdapter(listAdapter);
+                linearLayout.addView(test4);
+                test4.getLayoutParams().width=width;
+                test4.getLayoutParams().height=nListHeight;
+
+
+            }
+            else if(nCount==4) {
+
+                test5.setAdapter(listAdapter);
+                linearLayout.addView(test5);
+                test5.getLayoutParams().width=width;
+                test5.getLayoutParams().height=nListHeight;
+
+
+            }
+
+
+            //arrayListView.get(nCount).setAdapter(listAdapter);
+            //arrayListView.get(nCount).getLayoutParams().width=width;
+            //arrayListView.get(nCount).getLayoutParams().height=height;
+            //ListView listTemp=arrayListView.get(nCount);
+            //linearLayout.addView(listTemp);
+            nCategoryCnt++;
+
+
+        }
+
+
+
+
+
+    }
 }
