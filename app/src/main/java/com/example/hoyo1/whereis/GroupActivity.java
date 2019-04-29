@@ -476,7 +476,7 @@ public class GroupActivity extends AppCompatActivity {
         nTotalWidth+=width;
         int height=(int)textViewGroupLeaderName.getHeight();
         //카테고리수+1(프로필)=전체 헤더길이
-        // /리스트초기화(헤더)
+        //리스트초기화(헤더)
         //+50의 값은 이미지값이다.
         profileAdapter.addItem(new SingerProfileItem("프로필", profileAdapter.ITEM_VIEW_TEXT,nTotalWidth,height));
         for(int nCount=0;nCount<nCategoryNum;nCount++) {

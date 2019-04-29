@@ -1,8 +1,11 @@
 package com.example.hoyo1.whereis;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 public class NoVerticalScrollListView extends ListView {
@@ -35,4 +38,5 @@ public class NoVerticalScrollListView extends ListView {
         return super.dispatchTouchEvent(ev);
     }
     */
+
 }

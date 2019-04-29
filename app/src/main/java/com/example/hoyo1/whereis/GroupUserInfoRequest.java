@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GroupUserInfoRequest extends StringRequest {
-    final static private String url = "";
+    final static private String url = "http://106.10.36.131/eodie_GroupUserInfo.php";
     private Map<String, String> parameters;
 
     public GroupUserInfoRequest(String groupNumber,Response.Listener<String> listener) {

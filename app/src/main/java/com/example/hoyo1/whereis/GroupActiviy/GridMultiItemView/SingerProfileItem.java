@@ -37,6 +37,8 @@ public class SingerProfileItem {
 
 
 
+
+
     public int getType(){
         return this.type;
     }

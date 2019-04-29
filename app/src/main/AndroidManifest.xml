@@ -23,7 +23,8 @@
         <activity android:name=".GroupAddActivity" />
         <activity android:name=".GroupActivity" />
         <activity android:name=".GroupMemberAddActivity" />
-        <activity android:name=".Group2Activity"></activity>
+        <activity android:name=".Group2Activity" />
+        <activity android:name=".dataPopUpActivity" android:theme="@android:style/Theme.Dialog"></activity>
     </application>
 
 </manifest>

@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.example.hoyo1.whereis.Group2Activity;
+import com.example.hoyo1.whereis.R;
+
 import java.util.ArrayList;
 
 public class ListAdapter extends BaseAdapter {
@@ -16,11 +19,18 @@ public class ListAdapter extends BaseAdapter {
 
     ArrayList<SingerProfileItem> profileItems=new ArrayList<SingerProfileItem>();
     public Context adapterContext;
+    int nAdapterNum;                //호용 20190429 : 몇번째 카테고리에 해당하는 어댑터인지
 
 
     public ListAdapter (Context context){
         adapterContext=context;
     }
+    public ListAdapter(Context context,int nCategoryNum){
+        adapterContext=context;
+        nAdapterNum=nCategoryNum;
+    }
+
+
 
     @Override
     public int getItemViewType(int position) {
@@ -73,20 +83,22 @@ public class ListAdapter extends BaseAdapter {
             switch (viewType) {
                 case ITEM_VIEW_TEXT:
                     GridTextView gridTextView = new GridTextView(adapterContext);
+                    gridTextView.setId(R.id.gridTextViewLayout);
                     gridTextView.setGravity(Gravity.CENTER);
                     gridTextView.setContent(item.getContent());
                     convertView = gridTextView;
                     convertView.setLayoutParams(gridTextViewParams);//테스트
-
-
+                    Group2Activity.mapSelectedTextView.put(gridTextView,this);
                     break;
                 case ITEM_VIEW_PROFILE:
                     GridProfileView gridProfileView = new GridProfileView(adapterContext);
+                    gridProfileView.setId(R.id.gridProfileViewLayout);
                     gridProfileView.setGravity(Gravity.CENTER);
                     gridProfileView.setProfileName(item.getName());
                     gridProfileView.setProfileImage(item.getResId());
                     convertView = gridProfileView;
                     convertView.setLayoutParams(gridProfileViewParams);//테스트
+                    Group2Activity.mapSelectedProfileView.put(gridProfileView,this);
                     break;
             }
         }
