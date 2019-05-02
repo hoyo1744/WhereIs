@@ -24,7 +24,10 @@
         <activity android:name=".GroupActivity" />
         <activity android:name=".GroupMemberAddActivity" />
         <activity android:name=".Group2Activity" />
-        <activity android:name=".dataPopUpActivity" android:theme="@android:style/Theme.Dialog"></activity>
+        <activity
+            android:name=".dataPopUpActivity"
+            android:theme="@android:style/Theme.Dialog"/>
+        <activity android:name=".ChangeContent"></activity>
     </application>
 
 </manifest>

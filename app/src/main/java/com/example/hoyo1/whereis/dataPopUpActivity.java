@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class dataPopUpActivity extends AppCompatActivity {
+public class dataPopUpActivity extends Activity {
 
     TextView textView;
     Button okButton;
@@ -25,6 +26,7 @@ public class dataPopUpActivity extends AppCompatActivity {
     public void Init(){
         textView=(TextView)findViewById(R.id.txtText);
         okButton=(Button)findViewById(R.id.okButton);
+
         //리스너달기
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override

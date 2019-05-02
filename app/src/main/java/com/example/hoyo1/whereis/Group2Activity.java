@@ -38,6 +38,8 @@ import java.util.Map;
 
 public class Group2Activity extends AppCompatActivity {
     public final static int REQUEST_TEXT_POPUP=100;
+    public final static int REQUEST_NAME_POPUP=101;
+    public final static int REQUEST_CHANGE_CONTENT=102;
 
 
 
@@ -197,6 +199,22 @@ public class Group2Activity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_group, menu);
         return true;
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_TEXT_POPUP){
+            if(resultCode==RESULT_OK){
+                //팝업정상완료
+            }
+        }
+        else if(requestCode==REQUEST_NAME_POPUP){
+            if(resultCode==RESULT_OK){
+                //팝업정상완료
+            }
+        }
 
     }
 
@@ -558,11 +576,16 @@ public class Group2Activity extends AppCompatActivity {
     }
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
         //여기서 v는 리스트를 의미한다.
-        //selectedUserInfo변수에 정보를 저장한다.
-        //저장해야할정보 : 회원아이디,
-        //현재 선택된 리스트의 어댑터저장하기.
+
+
+
+        AdapterView.AdapterContextMenuInfo info=(AdapterView.AdapterContextMenuInfo)menuInfo;
+        int pos=info.position;
+
+        //헤더는 제외하기
+        if(pos==0)
+            return ;
 
 
 
@@ -581,8 +604,6 @@ public class Group2Activity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         //return super.onContextItemSelected(item);
-
-
         AdapterView.AdapterContextMenuInfo info= (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         View view=info.targetView; //여기서 view는 gridProfileView또는 TextView이다.
@@ -596,25 +617,41 @@ public class Group2Activity extends AppCompatActivity {
         }
         else if(view.getId()==R.id.gridProfileViewLayout){
             profileView=(GridProfileView)view;
-            selectedAdapt=mapSelectedTextView.get(profileView);
+            selectedAdapt=mapSelectedProfileView.get(profileView);
         }
 
 
         int index=info.position;
+        //헤더는 예외처리
+        if(index==0)
+            return false;
+        SingerProfileItem selectedItem = (SingerProfileItem)selectedAdapt.getItem(index);
         switch (item.getItemId()) {
             case R.id.itemChange:
                 //선택된 뷰의 내용을 바꿈
+                Intent intentInProfile=new Intent(getApplicationContext(),ChangeContent.class);
+
+                //인텐트에 객체담기
+                startActivityForResult(intentInProfile,REQUEST_CHANGE_CONTENT);
+
+
+
                 return true;
             case R.id.itemContent:
                 //선택된 뷰의 내용을 보여줌
                 //팝업으로 보여줌
 
-                SingerProfileItem selectedItem = (SingerProfileItem)selectedAdapt.getItem(index);
+                Intent intentInText=new Intent(getApplicationContext(),dataPopUpActivity.class);
                 if (selectedItem.getType() == ListAdapter.ITEM_VIEW_TEXT) {
-                    Toast.makeText(this,selectedItem.getContent(),Toast.LENGTH_LONG).show();
+
+                    //인텐트를 통해서 객체넣기기
+                    String content=selectedItem.getContent();
+                    intentInText.putExtra("data",content);
+                    startActivityForResult(intentInText,REQUEST_TEXT_POPUP);
                 } else if (selectedItem.getType() == ListAdapter.ITEM_VIEW_PROFILE) {
-                    Intent intent=new Intent(getApplicationContext(),dataPopUpActivity.class);
-                    startActivityForResult(intent,REQUEST_TEXT_POPUP);
+                    String content=selectedItem.getName();
+                    intentInText.putExtra("data",content);
+                    startActivityForResult(intentInText,REQUEST_NAME_POPUP);
                 }
                 return true;
         }

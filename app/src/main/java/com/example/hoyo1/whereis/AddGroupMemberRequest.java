@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AddGroupMemberRequest extends StringRequest {
 
-    final static private String url = "http://106.10.36.131/eodie_AddGroupMember.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public AddGroupMemberRequest(String groupID, String userID, String groupCategory, Response.Listener<String> listener) {
