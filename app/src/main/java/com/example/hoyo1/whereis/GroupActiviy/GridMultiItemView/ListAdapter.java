@@ -31,7 +31,9 @@ public class ListAdapter extends BaseAdapter {
     }
 
 
-
+    public int getNumCategory(){
+        return this.nAdapterNum;
+    }
     @Override
     public int getItemViewType(int position) {
         return profileItems.get(position).getType();

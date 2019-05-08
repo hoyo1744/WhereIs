@@ -1,11 +1,14 @@
 package com.example.hoyo1.whereis;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,16 +36,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Group2Activity extends AppCompatActivity {
     public final static int REQUEST_TEXT_POPUP=100;
     public final static int REQUEST_NAME_POPUP=101;
     public final static int REQUEST_CHANGE_CONTENT=102;
-
-
-
 
 
     class UserInfo {
@@ -166,12 +168,11 @@ public class Group2Activity extends AppCompatActivity {
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
     ArrayList<Group2Activity.UserInfo> listUserInfo;
+    ArrayList<NoVerticalScrollListView> listNoVerticalView;
     ArrayList<String> listHeadSize;
     ArrayList<String> listContentSize;
 
-
     ListAdapter adapterSelectedView;
-
     ListAdapter listAdapter;
     LinearLayout linearLayout;
     ArrayList<ListAdapter> arrayListAdapterView;
@@ -185,6 +186,8 @@ public class Group2Activity extends AppCompatActivity {
     Intent intent;
     Handler handlerGroupList;
     int nCategoryNum;
+    String groupID;
+
 
 
 
@@ -213,6 +216,20 @@ public class Group2Activity extends AppCompatActivity {
         else if(requestCode==REQUEST_NAME_POPUP){
             if(resultCode==RESULT_OK){
                 //팝업정상완료
+            }
+        }
+        else if(requestCode==REQUEST_CHANGE_CONTENT){
+            if(resultCode==RESULT_OK){
+                //새로운정보저장했으니 리스트 리로드(listUserInfo리로드)
+
+                LoadListUserAndUserContent();
+                //리스트리로드완료
+            }
+            else {
+                //뭔가 잘못됐다.
+
+                //프로그램종료
+
             }
         }
 
@@ -246,6 +263,7 @@ public class Group2Activity extends AppCompatActivity {
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP | actionBar.DISPLAY_SHOW_TITLE);
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
+        listNoVerticalView=new ArrayList<>();
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
         textViewGroupLeaderName = (TextView) findViewById(R.id.groupLeaderNameTextView);
 
@@ -255,6 +273,8 @@ public class Group2Activity extends AppCompatActivity {
         String groupName = SingletonGroupList.getInstance().getGroupName(key);
         String groupLeaderName = SingletonGroupList.getInstance().getGroupLeader(key);
         String groupCategory = SingletonGroupList.getInstance().getGroupCategory(key);
+        groupID=SingletonGroupList.getInstance().getGroupID(key);
+
         setTitle(groupName);                                            //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
         nCategoryNum = Integer.parseInt(groupCategory) + 1;
         textViewGroupLeaderName.setText(groupLeaderName);
@@ -414,7 +434,8 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void LoadListUserAndUserContent() {
-
+        //listUserInfo초기화
+        listUserInfo.clear();
         //유저 및 유저컨텐트(프로필+유저컨텐트)
         //서브스레드 생성 및 서버와 통신
 
@@ -517,6 +538,47 @@ public class Group2Activity extends AppCompatActivity {
         //listHeadSize와 listContentSize에 가장 긴 이름들이 들어있다.
         //어댑터생성
 
+        linearLayout.removeAllViews();
+        //리스트 초기화
+        /*
+        for(int nIdx=0;nIdx<listNoVerticalView.size();nIdx++){
+            listNoVerticalView.get(nIdx).clearChoices();
+        }
+        */
+
+        //어댑터를 이용한 내용초기화
+        if(mapSelectedTextView.size()!=0){
+            for(int nIdx=0;nIdx<mapSelectedTextView.size();nIdx++){
+                ListAdapter adapter=new ListAdapter(getApplicationContext());
+                Set set=mapSelectedTextView.keySet();
+                Iterator iter=set.iterator();
+                while(iter.hasNext()){
+                    GridTextView key=(GridTextView)iter.next();
+                    adapter=(ListAdapter) mapSelectedTextView.get(key);
+                    adapter.removeAll();
+                    //여기서 listview에 대한 clearChoice를 해야함.
+
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+        if(mapSelectedProfileView.size()!=0){
+            for(int nIdx=0;nIdx<mapSelectedProfileView.size();nIdx++){
+                ListAdapter adapter=new ListAdapter(getApplicationContext());
+                Set set=mapSelectedProfileView.keySet();
+                Iterator iter=set.iterator();
+                while(iter.hasNext()){
+                    GridProfileView key=(GridProfileView)iter.next();
+                    adapter=(ListAdapter) mapSelectedProfileView.get(key);
+                    adapter.removeAll();
+                    //여기서 listview에 대한 clearChoice를 해야함.
+
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+
+
         int nCategoryCnt = 0;
         for (int nCount = 0; nCount < nCategoryNum; nCount++) {
             int nListHeight = 0;
@@ -561,6 +623,7 @@ public class Group2Activity extends AppCompatActivity {
 
             listChild.setVerticalScrollBarEnabled(false);
             listChild.setAdapter(listAdapter);
+            listNoVerticalView.add(listChild);
 
             linearLayout.addView(listChild);
             listChild.getLayoutParams().width = width;
@@ -587,12 +650,19 @@ public class Group2Activity extends AppCompatActivity {
         if(pos==0)
             return ;
 
+        //자신의 아이디가 일치하지 않으면 제외하기.
+        String strUserIdSource=listUserInfo.get(pos-1).getUserID().toString();
+        String strUserIdTarget=SingletonUser.getInstance().getUserId().toString();
+        if(!strUserIdSource.equals(strUserIdTarget))
+            return ;
 
 
 
         //메뉴팝업
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_context_person, menu);
+
+
 
 
 
@@ -614,6 +684,7 @@ public class Group2Activity extends AppCompatActivity {
         if(view.getId()==R.id.gridTextViewLayout){
             textView=(GridTextView)view;
             selectedAdapt=mapSelectedTextView.get(textView);
+            selectedAdapt.getNumCategory();
         }
         else if(view.getId()==R.id.gridProfileViewLayout){
             profileView=(GridProfileView)view;
@@ -625,14 +696,59 @@ public class Group2Activity extends AppCompatActivity {
         //헤더는 예외처리
         if(index==0)
             return false;
+
+
         SingerProfileItem selectedItem = (SingerProfileItem)selectedAdapt.getItem(index);
         switch (item.getItemId()) {
             case R.id.itemChange:
-                //선택된 뷰의 내용을 바꿈
-                Intent intentInProfile=new Intent(getApplicationContext(),ChangeContent.class);
 
-                //인텐트에 객체담기
-                startActivityForResult(intentInProfile,REQUEST_CHANGE_CONTENT);
+
+
+                //선택된 뷰의 내용을 바꿈
+                Intent intentInChangeContent=new Intent(getApplicationContext(),ChangeContent.class);
+
+                if (selectedItem.getType() == ListAdapter.ITEM_VIEW_TEXT) {
+
+                    //인텐트를 통해서 객체넣기기
+                    String beforeContent=selectedItem.getContent();
+                    intentInChangeContent.putExtra("data",beforeContent);
+
+                    //인텐트로 객체넘기기(그룹아이디,유저아이디,카테고리넘버(몇번째객체인지)
+                    intentInChangeContent.putExtra("GroupID",groupID);
+                    intentInChangeContent.putExtra("UserID",SingletonUser.getInstance().getUserNumber());
+                    intentInChangeContent.putExtra("CategoryNum",selectedAdapt.getNumCategory());
+                    //인텐트로 객체넘기기끝
+
+                    //인텐트에 객체담기
+                    startActivityForResult(intentInChangeContent,REQUEST_CHANGE_CONTENT);
+                }
+                else
+                {
+                    AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+
+                    //대화상자설정
+                    builder.setTitle("안내");
+                    builder.setMessage("프로필은 변경이 불가능합니다.");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+                    //예 버튼 추가
+                    //리스너는 이벤트함수를 연결해준다고 생각해주면 된다.
+                    builder.setPositiveButton("예",new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog,int whichButton){
+
+                        }
+                    });
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+
+
+
+
+                }
+
+
 
 
 
