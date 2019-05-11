@@ -50,11 +50,16 @@ public class Group2Activity extends AppCompatActivity {
     class UserInfo {
         private int nCategory;
         private String strUserID;
+        private String strUserPriv;
         private ArrayList<String> strArrContent = new ArrayList<>();
+
 
 
         public int getCategory() {
             return this.nCategory;
+        }
+
+        public String getUserPriv(){return this.strUserPriv;
         }
 
         public String getUserID() {
@@ -65,6 +70,9 @@ public class Group2Activity extends AppCompatActivity {
             return this.strArrContent.get(pos);
         }
 
+        public void setUserPriv(String strPriv){
+            this.strUserPriv=strPriv;
+        }
         public void setCategory(int nParam) {
             this.nCategory = nParam;
         }
@@ -165,8 +173,8 @@ public class Group2Activity extends AppCompatActivity {
     public static final int AM_GROUP_LIST_INIT = 40000;       //헤더 및 컨텐트 리스트 초기화
     public static final int AM_GROUP_USER_INIT = 40001;       //그룹에 속한 유저 및 유저컨텐트 초기화
     public static final int AM_GROUP_USER_LIST = 40002;       //그룹에 속한 유저 및 유저컨텐트 초기화
-    ArrayList<String> listGridHead;
-    ArrayList<String> listGridContent;
+    public static ArrayList<String> listGridHead;
+    public static ArrayList<String> listGridContent;
     ArrayList<Group2Activity.UserInfo> listUserInfo;
     ArrayList<NoVerticalScrollListView> listNoVerticalView;
     ArrayList<String> listHeadSize;
@@ -248,7 +256,12 @@ public class Group2Activity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_MEMBER_ADD);
                 break;
             case R.id.settingGroupMenu:
-                //그룹방 세팅(정렬)
+                //1.그룹나가기
+                //2.정렬
+
+
+
+
                 break;
             case android.R.id.home:
                 //뒤로가기(나가기)
@@ -415,7 +428,7 @@ public class Group2Activity extends AppCompatActivity {
             for (int nCount = 0; nCount < nlistCount; nCount++) {
                 //1개씩 가져와서 파싱후, 가장 긴것 고르기
                 String strContent = listGridContent.get(nCount);
-                if (strContent == "null")
+                if (strContent=="null" || strContent.equals("null") || strContent==null || strContent.equals(null))
                     break;
                 //#기준으로파싱하기
                 String[] words = strContent.split("#");
@@ -578,6 +591,26 @@ public class Group2Activity extends AppCompatActivity {
             }
         }
 
+        //미리 width계산하기
+        int TotalWidth=0;
+        int PieceWidth=0;
+        boolean bIsSmallthanTotalWidth=false;
+        for(int nCount=0;nCount<nCategoryNum;nCount++){
+
+            if(nCount==0){
+                TotalWidth+=(int)textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(0).toString());
+                TotalWidth+=100;
+            }
+            else
+                TotalWidth+= (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(0).toString());
+        }
+
+        //리스트의 넓이가 전체뷰의 넓이 보다 작다면. 맞춰줘야한다.
+        if(TotalWidth<MainActivity.viewWidth){
+            PieceWidth=(MainActivity.viewWidth/nCategoryNum);
+            bIsSmallthanTotalWidth=true;
+        }
+
 
         int nCategoryCnt = 0;
         for (int nCount = 0; nCount < nCategoryNum; nCount++) {
@@ -615,6 +648,8 @@ public class Group2Activity extends AppCompatActivity {
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height));
                 } else {
                     String strUserContent = listUserInfo.get(0).getContent(nCategoryCnt);
+                    if(strUserContent.equals("null"))
+                        strUserContent="-";
                     listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
                 }
                 nListHeight += height;
@@ -626,8 +661,11 @@ public class Group2Activity extends AppCompatActivity {
             listNoVerticalView.add(listChild);
 
             linearLayout.addView(listChild);
-            listChild.getLayoutParams().width = width;
             listChild.getLayoutParams().height = nListHeight;
+            if(bIsSmallthanTotalWidth)
+                listChild.getLayoutParams().width = PieceWidth;
+            else
+                listChild.getLayoutParams().width = width;
             adapterSelectedView=(ListAdapter) listChild.getAdapter();
             registerForContextMenu(listChild);
 
@@ -718,6 +756,7 @@ public class Group2Activity extends AppCompatActivity {
                     intentInChangeContent.putExtra("UserID",SingletonUser.getInstance().getUserNumber());
                     intentInChangeContent.putExtra("CategoryNum",selectedAdapt.getNumCategory());
                     //인텐트로 객체넘기기끝
+
 
                     //인텐트에 객체담기
                     startActivityForResult(intentInChangeContent,REQUEST_CHANGE_CONTENT);

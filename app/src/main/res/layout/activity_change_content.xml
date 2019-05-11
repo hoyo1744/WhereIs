@@ -16,21 +16,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:text="내용"/>
 
-        <EditText
+        <Spinner
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:id="@+id/editTextChangeContent"
-            />
-
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/spinner"
+            >
+        </Spinner>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:text="원래 내용"/>
 
 
@@ -38,9 +41,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="15dp"
+            android:layout_marginTop="5dp"
+            android:textSize="20dp"
             android:id="@+id/textViewbeforeContent"
             />
+
+
+
 
 
     </LinearLayout>

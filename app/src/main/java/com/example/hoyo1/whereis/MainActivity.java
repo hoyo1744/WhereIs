@@ -2,6 +2,7 @@ package com.example.hoyo1.whereis;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.support.annotation.IntRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     //메시지모음
     public static final int AM_GROUP_LIST_CREATE=20000;
-
+    public static int viewWidth;
+    public static int viewHeight;
 
     boolean bIsResponseCheck=false;
     ImageView userImageView;
@@ -144,12 +147,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+
+    }
+
     public void init(){
         groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
         listView=(ListView)findViewById(R.id.listView);
         userImageView=(ImageView)findViewById(R.id.profileImage);
         userNameTextView=(TextView)findViewById(R.id.profileText);
 
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        viewWidth = size.x;
+        viewHeight = size.y;
 
         //개인프로필이름 표시
         userNameTextView.setText(SingletonUser.getInstance().getUserId());

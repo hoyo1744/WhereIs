@@ -3,11 +3,17 @@ package com.example.hoyo1.whereis;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -21,11 +27,13 @@ public class ChangeContent extends AppCompatActivity {
 
     public final static int AM_CHANGE_CONTENT_SUCCESS=1905071024;
     public final static int AM_CHANGE_CONTENT_FAIL=1905071025;
-    EditText editTextChangeContent;
     TextView textViewBeforeContent;
     String strGroupID;
     String strUserID;
     Handler handlerChangeContent;
+    Spinner spinner;
+    ArrayAdapter<String> adapter;
+    String strSelectedContent;
 
     int nCategoryNum;
 
@@ -52,7 +60,19 @@ public class ChangeContent extends AppCompatActivity {
             case R.id.confirmMenu:
                 //확인
                 //저장작업시작
+                String strBeforeContent=textViewBeforeContent.getText().toString();
+                if(strBeforeContent.equals(strSelectedContent))
+                {
+                    //메시지박스
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(ChangeContent.this);
+                    dialog=builder.setMessage("이전 내용과 동일합니다.")
+                            .setPositiveButton("확인",null)
+                            .create();
+                    dialog.show();
 
+                    break;
+                }
                 UpdateContent();
 
                 break;
@@ -68,12 +88,11 @@ public class ChangeContent extends AppCompatActivity {
     }
 
     public void Init(){
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP | actionBar.DISPLAY_SHOW_TITLE);
 
 
         textViewBeforeContent=(TextView)findViewById(R.id.textViewbeforeContent);
-        editTextChangeContent=(EditText)findViewById(R.id.editTextChangeContent);
 
 
 
@@ -81,10 +100,32 @@ public class ChangeContent extends AppCompatActivity {
         Intent intent = getIntent();
         String data = intent.getStringExtra("data");
         textViewBeforeContent.setText(data);
-
         strGroupID=intent.getStringExtra("GroupID");
         strUserID=intent.getStringExtra("UserID");
         nCategoryNum=intent.getIntExtra("CategoryNum",-1);
+        spinner=(Spinner)findViewById(R.id.spinner);
+        String strContent = Group2Activity.listGridContent.get(nCategoryNum);
+        String[] items=strContent.split("#");
+        //adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
+        adapter=new ArrayAdapter<String>(this,R.layout.spinner_item,items);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+
+        //아이템 선택 이벤트 처리
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                strSelectedContent=adapter.getItem(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                strSelectedContent="";
+            }
+        });
+
+
         if(nCategoryNum==-1)
         {
             //예외처리(제대로 값이 넘어오지 않았다.)
@@ -127,7 +168,6 @@ public class ChangeContent extends AppCompatActivity {
         //서브스레드 생성 및 서버와 통신
 
         Thread threadGroupList=new Thread(new Runnable() {
-
             boolean isPlaying=false;
             @Override
             public void run() {
@@ -159,8 +199,8 @@ public class ChangeContent extends AppCompatActivity {
                         }
                     };
                     String strCategoryNum=Integer.toString(nCategoryNum);
-                    String strContent=editTextChangeContent.getText().toString();
-                    UpdateContentRequest updateContentRequest = new UpdateContentRequest(strUserID,strGroupID,strCategoryNum,strContent ,responseLister2);
+
+                    UpdateContentRequest updateContentRequest = new UpdateContentRequest(strUserID,strGroupID,strCategoryNum,strSelectedContent ,responseLister2);
                     RequestQueue queue2 = Volley.newRequestQueue(ChangeContent.this);
                     queue2.add(updateContentRequest);
                 }

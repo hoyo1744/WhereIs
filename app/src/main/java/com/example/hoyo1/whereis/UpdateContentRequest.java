@@ -19,7 +19,6 @@ public class UpdateContentRequest extends StringRequest {
         parameters.put("Content",strContent);
     }
 
-
         public Map<String, String> getParams() {
 
         return parameters;

@@ -47,6 +47,7 @@ public class GroupAddActivity extends AppCompatActivity {
 
     static final int AM_GROUP_CATEGORY_CREATE=30000;
     static final int AM_GROUP_MEMBER_ADD=30001;
+    static final int AM_GROUP_CONTENT_ADD=30002;
 
     //호용 20190317 : 그룹카테고리 추가전,후,나누기(아직 작업x)
     private enum GroupAddState{
@@ -270,11 +271,17 @@ public class GroupAddActivity extends AppCompatActivity {
                     case AM_GROUP_CATEGORY_CREATE:
                         //카테고리생성완료
 
-                        //서브쓰레드생성 후,그룹멤버에 추가
+                        //서브쓰레드생성 후,group_member추가
                         AddGroupMember((Member) msg.obj);
                         break;
                     case AM_GROUP_MEMBER_ADD:
-                        //핸들러에서 해당 메시지를 받으면 종료시켜야함. 여기서 종료시키면 안된다.
+                        //group_content추가(리더)
+                        AddGroupContent((Member)msg.obj);
+
+
+                        break;
+                    case AM_GROUP_CONTENT_ADD:
+
                         setResult(RESULT_OK);
                         finish();
                         break;
@@ -362,6 +369,56 @@ public class GroupAddActivity extends AppCompatActivity {
 
     }
 
+    public void AddGroupContent(Member member){
+
+        final String groupID=member.getGroupID();
+        final String groupCategory=member.getCategory();
+        final String userID=SingletonUser.getInstance().getUserNumber();
+        final String userPriv="1";
+
+        //서브스레드 생성 및 서버와 통신
+        Thread threadGroupContent=new Thread(new Runnable() {
+
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+
+                    //서버와 통신
+                    Response.Listener<String> responseLister3 = new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject responseLister3 = new JSONObject(response);
+                                boolean success = responseLister3.getBoolean("success");
+                                if (success) {
+
+
+
+                                    Message msg = handlerCategory.obtainMessage();
+                                    msg.what = AM_GROUP_CONTENT_ADD;
+                                    handlerCategory.sendMessage(msg);
+
+
+                                }
+                                else {
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    AddGroupContentRequest groupContentRequest = new AddGroupContentRequest(groupID,userID,groupCategory,userPriv,responseLister3);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
+                    queue3.add(groupContentRequest);
+                }
+            }
+        });
+
+        threadGroupContent.start();
+    }
 
     public void AddGroupMember(Member member){
 
@@ -389,9 +446,13 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
 
+                                    Member memberGroup=new Member();
+                                    memberGroup.setMember(groupID,groupCategory);
                                     Message msg = handlerCategory.obtainMessage();
+                                    msg.obj=memberGroup;
                                     msg.what = AM_GROUP_MEMBER_ADD;
                                     handlerCategory.sendMessage(msg);
+
 
                                 }
                                 else {
