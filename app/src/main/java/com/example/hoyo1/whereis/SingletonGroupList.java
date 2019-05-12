@@ -12,6 +12,7 @@ public class SingletonGroupList {
         public String groupID;
         public String groupName;
         public String groupLeader;
+        public String groupLeaderNo;
         public int groupLeaderImage;
         public String groupCategory;
     }
@@ -23,28 +24,32 @@ public class SingletonGroupList {
     }
     public void Initialize(){
         mapGroup=new HashMap<>();
+        mapGroup.clear();
     }
-    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,int groupLeaderResId,String groupCategory){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupLeaderNo,int groupLeaderResId,String groupCategory){
 
         GroupInfo groupInfo=new GroupInfo();
         groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
+        groupInfo.groupLeaderNo=groupLeaderNo;
         groupInfo.groupLeaderImage=groupLeaderResId;
         groupInfo.groupCategory=groupCategory;
 
 
         mapGroup.put(key,groupInfo);
     }
-    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupCategory){
+    public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupLeaderNo,String groupCategory){
         GroupInfo groupInfo=new GroupInfo();
         groupInfo.groupID=groupID;
         groupInfo.groupName=groupName;
         groupInfo.groupLeader=groupLeader;
+        groupInfo.groupLeaderNo=groupLeaderNo;
         groupInfo.groupCategory=groupCategory;
         groupInfo.groupLeaderImage=-1;
         mapGroup.put(key,groupInfo);
     }
+    public String getGroupLeaderNo(Integer key){return this.mapGroup.get(key).groupLeaderNo;}
     public String getGroupName(Integer key){
         return this.mapGroup.get(key).groupName;
     }

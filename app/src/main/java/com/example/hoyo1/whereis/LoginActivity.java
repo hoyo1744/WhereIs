@@ -25,9 +25,13 @@ import org.json.JSONObject;
 public class LoginActivity extends AppCompatActivity {
 
     final static int AM_LOGIN_SUCCESS=40000;
+    public final static int REQUEST_MAIN=400;
 
     private AlertDialog dialog;
     Handler handlerLogin;
+    Button loginButton;
+    EditText idText;
+    EditText passwordText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -52,9 +56,9 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
-        final EditText idText=(EditText)findViewById(R.id.idText);
-        final EditText passwordText=(EditText)findViewById(R.id.passwordText);
-        final Button loginButton=(Button)findViewById(R.id.loginButton);
+        idText=(EditText)findViewById(R.id.idText);
+        passwordText=(EditText)findViewById(R.id.passwordText);
+        loginButton=(Button)findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,12 +138,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                switch(msg.what){
-                    case AM_LOGIN_SUCCESS:
-                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
-                        LoginActivity.this.startActivity(intent);
-                        finish();
-                        break;
+                if(msg.what==AM_LOGIN_SUCCESS){
+                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        //LoginActivity.this.startActivity(intent);
+
+                        idText.setText("");
+                        passwordText.setText("");
+
+                        LoginActivity.this.startActivityForResult(intent,REQUEST_MAIN);
                 }
             }
         };
@@ -233,4 +239,14 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode==REQUEST_MAIN){
+            if(resultCode==RESULT_OK){
+                //로그아웃되었다.
+            }
+        }
+    }
 }

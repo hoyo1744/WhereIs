@@ -44,6 +44,9 @@ public class ChangeContent extends AppCompatActivity {
         setContentView(R.layout.activity_change_content);
         //초기화
         Init();
+
+
+
     }
 
     @Override
@@ -104,8 +107,12 @@ public class ChangeContent extends AppCompatActivity {
         strUserID=intent.getStringExtra("UserID");
         nCategoryNum=intent.getIntExtra("CategoryNum",-1);
         spinner=(Spinner)findViewById(R.id.spinner);
-        String strContent = Group2Activity.listGridContent.get(nCategoryNum);
+
+        //nCategoryNum-1은 프로필빼야하기때문이다.
+        String strContent = Group2Activity.listGridContent.get(nCategoryNum-1);
         String[] items=strContent.split("#");
+
+
         //adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,items);
         adapter=new ArrayAdapter<String>(this,R.layout.spinner_item,items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

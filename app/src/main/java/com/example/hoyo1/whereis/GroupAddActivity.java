@@ -1,6 +1,7 @@
 package com.example.hoyo1.whereis;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
@@ -62,7 +63,8 @@ public class GroupAddActivity extends AppCompatActivity {
     EditText groupCategoryNumberEditText;
     LinearLayout subGroupAdd;               //커스텀뷰를 추가할 하위 레이아웃
     Handler handlerCategory;
-
+    String groupLeaderID;
+    Intent intent;
 
 
 
@@ -257,6 +259,9 @@ public class GroupAddActivity extends AppCompatActivity {
         groupLeaderNameEditText.setText(SingletonUser.getInstance().getUserId());
         //호용 : 수정불가하도록 추가해야함.
 
+        intent = getIntent(); /*데이터 수신*/
+        groupLeaderID = (intent.getExtras().getString("groupLeaderID"));
+
         listGroup.clear();
 
 
@@ -321,6 +326,7 @@ public class GroupAddActivity extends AppCompatActivity {
                     String strGroupLeaderName=groupLeaderNameEditText.getText().toString();
                     String strGroupCategoryNum=groupCategoryNumberEditText.getText().toString();
 
+
                     for(int nIdx=1;nIdx<=Integer.parseInt(strGroupCategoryNum);nIdx++) {
                         categoryHead.add(listGroup.get(nIdx-1).getHead());
                         categoryContent.add(listGroup.get(nIdx-1).getContent());
@@ -358,7 +364,7 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    GroupCreateRequest groupCreateRequest = new GroupCreateRequest(strGroupName,strGroupLeaderName,strGroupCategoryNum,categoryHead,categoryContent,responseLister3);
+                    GroupCreateRequest groupCreateRequest = new GroupCreateRequest(strGroupName,strGroupLeaderName,groupLeaderID,strGroupCategoryNum,categoryHead,categoryContent,responseLister3);
                     RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
                     queue3.add(groupCreateRequest);
                 }
@@ -373,7 +379,7 @@ public class GroupAddActivity extends AppCompatActivity {
 
         final String groupID=member.getGroupID();
         final String groupCategory=member.getCategory();
-        final String userID=SingletonUser.getInstance().getUserNumber();
+        final String userNo=SingletonUser.getInstance().getUserNumber();
         final String userPriv="1";
 
         //서브스레드 생성 및 서버와 통신
@@ -410,7 +416,7 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    AddGroupContentRequest groupContentRequest = new AddGroupContentRequest(groupID,userID,groupCategory,userPriv,responseLister3);
+                    AddGroupContentRequest groupContentRequest = new AddGroupContentRequest(groupID,userNo,groupCategory,userPriv,responseLister3);
                     RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
                     queue3.add(groupContentRequest);
                 }
@@ -424,7 +430,8 @@ public class GroupAddActivity extends AppCompatActivity {
 
         final String groupID=member.getGroupID();
         final String groupCategory=member.getCategory();
-        final String userID=SingletonUser.getInstance().getUserNumber();
+        final String userNo=SingletonUser.getInstance().getUserNumber();
+        final String userID=SingletonUser.getInstance().getUserId();
 
         //서브스레드 생성 및 서버와 통신
         Thread threadGroupMember=new Thread(new Runnable() {
@@ -463,7 +470,7 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    AddGroupMemberRequest groupCreateRequest = new AddGroupMemberRequest(groupID,userID,groupCategory,responseLister3);
+                    AddGroupMemberRequest groupCreateRequest = new AddGroupMemberRequest(groupID,userNo,userID,groupCategory,responseLister3);
                     RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
                     queue3.add(groupCreateRequest);
                 }

@@ -122,9 +122,9 @@ public class GroupActivity extends AppCompatActivity {
                 Intent intent=new Intent(getApplicationContext(),GroupMemberAddActivity.class);
                 startActivityForResult(intent,REQUEST_MEMBER_ADD);
                 break;
-            case R.id.settingGroupMenu:
+            //case R.id.settingGroupMenu:
                 //그룹방 세팅(정렬)
-                break;
+              //  break;
             case android.R.id.home:
                 //뒤로가기(나가기)
                 finish();

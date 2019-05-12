@@ -37,12 +37,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+
     // 호용 20190322 : main에서의 요청은 100대
     public static final int REQUEST_GROUP_ADD = 101;
     public static final int REQUEST_GROUP = 102;
     public static final int MAX_GROUP_LIST= 10000;
     public static final int MAX_GROUP_LEADER=30000;
     public static final int MAX_GROUP_CATEGORY=50000;
+    public static final int MAX_GROUP_LEADER_NO=70000;
 
     //메시지모음
     public static final int AM_GROUP_LIST_CREATE=20000;
@@ -62,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("그룹");
         setContentView(R.layout.activity_main);
-
-
 
         init();
 
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main_sub,menu);
         return true;
 
     }
@@ -108,10 +109,13 @@ public class MainActivity extends AppCompatActivity {
                 //GroupAddactivity.class에서 액티비티는 컨텍스트를 상속받았기 때문에
                 //GroupAddActivity는 컨텍스트가 된다.
                 Intent intent=new Intent(getApplicationContext(),GroupAddActivity.class);
+                intent.putExtra("groupLeaderID", SingletonUser.getInstance().getUserNumber());
                 startActivityForResult(intent,REQUEST_GROUP_ADD);
                 break;
-            case R.id.settingMenu:
-                //설정메뉴
+            case R.id.itemLogout:
+
+                setResult(RESULT_OK);
+                finish();
                 break;
         }
 
@@ -143,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else if(requestCode==REQUEST_GROUP){
             //그룹메인
+            if(resultCode==RESULT_OK)
+                GetGroupList();
 
         }
     }
@@ -267,8 +273,6 @@ public class MainActivity extends AppCompatActivity {
                                 boolean success = jsonResponse2.getBoolean("success");
 
                                 if (success) {
-
-
                                     SingletonGroupList.getInstance().Initialize();
                                     int size = jsonResponse2.getInt("size");
                                     //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
@@ -277,13 +281,15 @@ public class MainActivity extends AppCompatActivity {
                                         String strGroupLeaderName = Integer.toString(nNo + MAX_GROUP_LIST);
                                         String strGroupID=Integer.toString(nNo+MAX_GROUP_LEADER);
                                         String strGroupCategory=Integer.toString(nNo+MAX_GROUP_CATEGORY);
+                                        String strGroupLeaderNo=Integer.toString(nNo+MAX_GROUP_LEADER_NO);
 
                                         String groupName = jsonResponse2.getString(strGroupName);
                                         String groupLeaderName = jsonResponse2.getString(strGroupLeaderName);
                                         String groupID= jsonResponse2.getString(strGroupID);
                                         String groupCategory=jsonResponse2.getString(strGroupCategory);
+                                        String groupLeaderNo=jsonResponse2.getString(strGroupLeaderNo);
                                         //key=그룹리스트1-n까지
-                                        SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName,groupCategory);
+                                        SingletonGroupList.getInstance().setGroupList(nNo,groupID, groupName, groupLeaderName,groupLeaderNo,groupCategory);
                                     }
 
 
@@ -321,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
     public void LoadList(){
         //리스트동적생성 시작
         int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
-
+        adapter.removeAll();
 
         for(int nGroupListCnt=1;nGroupListCnt<=nGroupListSize;nGroupListCnt++)
         {

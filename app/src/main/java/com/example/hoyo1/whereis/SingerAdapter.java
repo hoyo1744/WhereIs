@@ -21,6 +21,7 @@ class SingerAdapter extends BaseAdapter {
         return items.size();
     }
 
+    public void removeAll(){items.clear();}
     public void addItem(SingerItem item){
         items.add(item);
     }

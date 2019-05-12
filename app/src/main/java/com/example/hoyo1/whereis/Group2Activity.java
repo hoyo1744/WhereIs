@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -45,6 +46,7 @@ public class Group2Activity extends AppCompatActivity {
     public final static int REQUEST_TEXT_POPUP=100;
     public final static int REQUEST_NAME_POPUP=101;
     public final static int REQUEST_CHANGE_CONTENT=102;
+
 
 
     class UserInfo {
@@ -173,6 +175,7 @@ public class Group2Activity extends AppCompatActivity {
     public static final int AM_GROUP_LIST_INIT = 40000;       //헤더 및 컨텐트 리스트 초기화
     public static final int AM_GROUP_USER_INIT = 40001;       //그룹에 속한 유저 및 유저컨텐트 초기화
     public static final int AM_GROUP_USER_LIST = 40002;       //그룹에 속한 유저 및 유저컨텐트 초기화
+    public static final int AM_OUT_OF_GROUP    = 40003;
     public static ArrayList<String> listGridHead;
     public static ArrayList<String> listGridContent;
     ArrayList<Group2Activity.UserInfo> listUserInfo;
@@ -195,6 +198,7 @@ public class Group2Activity extends AppCompatActivity {
     Handler handlerGroupList;
     int nCategoryNum;
     String groupID;
+    String groupLeaderNo;
 
 
 
@@ -209,6 +213,7 @@ public class Group2Activity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_group, menu);
+        getMenuInflater().inflate(R.menu.menu_group_sub, menu);
         return true;
 
     }
@@ -240,6 +245,11 @@ public class Group2Activity extends AppCompatActivity {
 
             }
         }
+        else if(resultCode==REQUEST_MEMBER_ADD){
+            if(resultCode==RESULT_OK){
+                LoadListUserAndUserContent();
+            }
+        }
 
     }
 
@@ -253,18 +263,93 @@ public class Group2Activity extends AppCompatActivity {
             case R.id.memberAddGroupMenu:
                 //그룹멤버초대
                 Intent intent = new Intent(getApplicationContext(), GroupMemberAddActivity.class);
+                //intent.putExtra("groupID",groupID);
+                intent.putExtra("groupID",groupID);
+                intent.putExtra("groupCategory",nCategoryNum);
                 startActivityForResult(intent, REQUEST_MEMBER_ADD);
                 break;
-            case R.id.settingGroupMenu:
+
+                //case R.id.settingGroupMenu:
                 //1.그룹나가기
                 //2.정렬
+                //getMenuInflater().inflate(R.menu.menu_group_sub, menu);
+            case R.id.itemOutofGroup:
+
+
+                if(!groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
+
+                    //그룹리더!=사용자
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Group2Activity.this);
+
+                    //대화상자설정
+                    builder.setTitle("안내");
+                    builder.setMessage("그룹을 탈퇴하시겠습니까?");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+
+                    //예 버튼 추가
+                    //리스너는 이벤트함수를 연결해준다고 생각해주면 된다.
+                    builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            //그룹탈퇴스레드시작
+                            ExecutePersonOutOfGroup();
+                            //완료
+                        }
+                    }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                        }
+                    });
 
 
 
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                else{
+                    //그룹리더==사용자
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Group2Activity.this);
+
+                    //대화상자설정
+                    builder.setTitle("안내");
+                    builder.setMessage("그룹리더입니다. 그룹을 삭제하시겠습니까?");
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+
+
+                    //예 버튼 추가
+                    //리스너는 이벤트함수를 연결해준다고 생각해주면 된다.
+                    builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            //그룹탈퇴스레드시작
+                            ExecuteLeaderOutOfGroup();
+                            //완료
+                        }
+                    }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                        }
+                    });
+
+
+
+
+
+
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                }
 
                 break;
+
+
+
+
             case android.R.id.home:
                 //뒤로가기(나가기)
+                setResult(RESULT_OK);
                 finish();
                 break;
         }
@@ -287,6 +372,8 @@ public class Group2Activity extends AppCompatActivity {
         String groupLeaderName = SingletonGroupList.getInstance().getGroupLeader(key);
         String groupCategory = SingletonGroupList.getInstance().getGroupCategory(key);
         groupID=SingletonGroupList.getInstance().getGroupID(key);
+        groupLeaderNo=SingletonGroupList.getInstance().getGroupLeaderNo(key);
+
 
         setTitle(groupName);                                            //호용 20190317 : 임시로 작성(그룹클릭시 그룹이름이 들어가야함.)
         nCategoryNum = Integer.parseInt(groupCategory) + 1;
@@ -319,11 +406,18 @@ public class Group2Activity extends AppCompatActivity {
                     case AM_GROUP_USER_INIT:
                         LoadList();
                         break;
+
+                    case AM_OUT_OF_GROUP:
+                        setResult(RESULT_OK);
+                        finish();
+                        break;
+
                 }
 
             }
         };
         LoadListHeadAndContent();
+
 
 
     }
@@ -643,11 +737,11 @@ public class Group2Activity extends AppCompatActivity {
             for (int nUserCount = 0; nUserCount < listUserInfo.size(); nUserCount++) {
                 if (nCount == 0) {
                     //프로필
-                    String strUserName = listUserInfo.get(0).getUserID();
-                    String strHeadAndContent = listHeadSize.get(0).toString();
+                    String strUserName = listUserInfo.get(nUserCount).getUserID();
+                    //String strHeadAndContent = listHeadSize.get(nUserCount).toString();
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height));
                 } else {
-                    String strUserContent = listUserInfo.get(0).getContent(nCategoryCnt);
+                    String strUserContent = listUserInfo.get(nUserCount).getContent(nCategoryCnt);
                     if(strUserContent.equals("null"))
                         strUserContent="-";
                     listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
@@ -812,4 +906,87 @@ public class Group2Activity extends AppCompatActivity {
         }
         return false;
     }
+
+    public void ExecutePersonOutOfGroup(){
+           Thread thread = new Thread(new Runnable() {
+
+            boolean isPlaying = false;
+
+            @Override
+            public void run() {
+                if (isPlaying == false) {
+                    isPlaying = true;
+                    Response.Listener<String> responseLister2 = new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonResponse = new JSONObject(response);
+                                boolean success1 = jsonResponse.getBoolean("success1");
+                                boolean success2 = jsonResponse.getBoolean("success2");
+
+                                if (success1 && success2) {
+
+                                    Message msg = handlerGroupList.obtainMessage();
+                                    msg.what = AM_OUT_OF_GROUP;
+                                    handlerGroupList.sendMessage(msg);
+                                } else {
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    OutOfGroupRequest outOfGroupRequest = new OutOfGroupRequest(groupID,SingletonUser.getInstance().getUserNumber(), responseLister2);
+                    RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
+                    queue.add(outOfGroupRequest);
+                }
+            }
+        });
+        thread.start();
+
+
+    }
+
+    public void ExecuteLeaderOutOfGroup(){
+        Thread thread = new Thread(new Runnable() {
+
+            boolean isPlaying = false;
+
+            @Override
+            public void run() {
+                if (isPlaying == false) {
+                    isPlaying = true;
+                    Response.Listener<String> responseLister2 = new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonResponse = new JSONObject(response);
+                                boolean success1 = jsonResponse.getBoolean("success1");
+                                boolean success2 = jsonResponse.getBoolean("success2");
+
+                                if (success1 && success2) {
+
+                                    Message msg = handlerGroupList.obtainMessage();
+                                    msg.what = AM_OUT_OF_GROUP;
+                                    handlerGroupList.sendMessage(msg);
+                                } else {
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    OutOfGroupRequest outOfGroupRequest = new OutOfGroupRequest(groupID,SingletonUser.getInstance().getUserNumber(), responseLister2);
+                    RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
+                    queue.add(outOfGroupRequest);
+                }
+            }
+        });
+        thread.start();
+
+
+
+    }
+
+
 }
