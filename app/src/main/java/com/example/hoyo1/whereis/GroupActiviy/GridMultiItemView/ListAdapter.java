@@ -1,6 +1,7 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,7 @@ public class ListAdapter extends BaseAdapter {
         GridTextView textView = null;
         GridProfileView.LayoutParams gridProfileViewParams=null;
         GridTextView.LayoutParams gridTextViewParams=null;
+        int color;
 
         //테스트
         //ViewGroup.LayoutParams params=new ViewGroup.LayoutParams(1000,200);
@@ -82,6 +84,7 @@ public class ListAdapter extends BaseAdapter {
             //호용 : 가로,세로크기를 입력받아 그리드셀 크기를 조정해준다.
             gridProfileViewParams=new GridProfileView.LayoutParams(item.getParams().width,item.getParams().height);
             gridTextViewParams=new GridTextView.LayoutParams(item.getParams().width,item.getParams().height);
+            color=item.getColor();
             switch (viewType) {
                 case ITEM_VIEW_TEXT:
                     GridTextView gridTextView = new GridTextView(adapterContext);
@@ -90,6 +93,7 @@ public class ListAdapter extends BaseAdapter {
                     gridTextView.setContent(item.getContent());
                     convertView = gridTextView;
                     convertView.setLayoutParams(gridTextViewParams);//테스트
+                    convertView.setBackgroundColor(color);
                     Group2Activity.mapSelectedTextView.put(gridTextView,this);
                     break;
                 case ITEM_VIEW_PROFILE:
@@ -100,6 +104,7 @@ public class ListAdapter extends BaseAdapter {
                     gridProfileView.setProfileImage(item.getResId());
                     convertView = gridProfileView;
                     convertView.setLayoutParams(gridProfileViewParams);//테스트
+                    convertView.setBackgroundColor(color);
                     Group2Activity.mapSelectedProfileView.put(gridProfileView,this);
                     break;
             }

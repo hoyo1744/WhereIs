@@ -286,7 +286,8 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    AddGroupContentRequest addGroupContentRequest = new AddGroupContentRequest(groupID,userNo,strCategoryNum,"1",responseLister2);
+                    //일반유저니까 userPriv=4;
+                    AddGroupContentRequest addGroupContentRequest = new AddGroupContentRequest(groupID,userNo,strCategoryNum,"4",responseLister2);
                     RequestQueue queue = Volley.newRequestQueue(GroupMemberAddActivity.this);
                     queue.add(addGroupContentRequest);
                 }
@@ -302,6 +303,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         Thread thread = new Thread(new Runnable() {
 
             String userID=memberNameEditText.getText().toString();
+            String userPriv="4";
             boolean isPlaying = false;
 
             @Override
@@ -327,7 +329,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    AddGroupMemberRequest addGroupMemberRequest= new AddGroupMemberRequest(groupID,userNo,userID,strCategoryNum,responseLister2);
+                    AddGroupMemberRequest addGroupMemberRequest= new AddGroupMemberRequest(groupID,userNo,userID,userPriv,strCategoryNum,responseLister2);
                     RequestQueue queue = Volley.newRequestQueue(GroupMemberAddActivity.this);
                     queue.add(addGroupMemberRequest);
                 }

@@ -1,11 +1,13 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
+import android.graphics.Color;
 import android.view.ViewGroup;
 
 public class SingerProfileItem {
 
 
     ViewGroup.LayoutParams params;// 호용 : 이걸 통해서 그리드뷰 1개의셀의 크기를 정한다.
+    int color;
     private int type;
 
     String profileName;
@@ -18,6 +20,7 @@ public class SingerProfileItem {
         profileImageResId=resId;
         this.type=type;
     }
+
     public SingerProfileItem(String name,int resId,int type,int width,int height){
         profileName=name;
         profileImageResId=resId;
@@ -25,15 +28,28 @@ public class SingerProfileItem {
         params=new ViewGroup.LayoutParams(width,height);
     }
 
+    public SingerProfileItem(String name,int resId,int type,int width,int height,int color){
+        profileName=name;
+        profileImageResId=resId;
+        this.type=type;
+        params=new ViewGroup.LayoutParams(width,height);
+        this.color=color;
+    }
+
+
     public SingerProfileItem(String content,int type){
         this.content=content;
         this.type=type;
     }
+
     public SingerProfileItem(String content,int type,int width,int height){
         this.content=content;
         this.type=type;
         params=new ViewGroup.LayoutParams(width,height);
     }
+
+
+
 
 
 
@@ -49,6 +65,7 @@ public class SingerProfileItem {
         return this.content;
     }
     public ViewGroup.LayoutParams getParams(){return this.params;}
+    public int getColor(){return this.color;}
 
     public void setContent(String content){
         this.content=content;
@@ -66,4 +83,5 @@ public class SingerProfileItem {
         this.profileName=name;
     }
     public void setParams(int width,int height){this.params=new ViewGroup.LayoutParams(width,height);}
+    public void setColor(int color){this.color=color;}
 }

@@ -9,5 +9,11 @@
     <color name="colorBlack">#000000</color>
     <color name="colorSkyBlue">#f4f4f4</color>
     <color name="colorGroupSeperate">#e2e2e2</color>
+    <color name="colorLeader">#f44242</color>
+    <color name="colorOwner">#4286f4</color>
+    <color name="colorDefault">#FFFFFF</color>
+
+
+
 
 </resources>

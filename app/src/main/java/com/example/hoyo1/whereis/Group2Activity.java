@@ -3,9 +3,12 @@ package com.example.hoyo1.whereis;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,7 +38,11 @@ import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.SingerProfileIte
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,19 +56,21 @@ public class Group2Activity extends AppCompatActivity {
 
 
 
-    class UserInfo {
+    class UserInfo implements Comparable<UserInfo> {
+
+
         private int nCategory;
         private String strUserID;
-        private String strUserPriv;
+        private String strUserNo;
+        private int nUserPriv;
         private ArrayList<String> strArrContent = new ArrayList<>();
 
 
-
+        public String getUserNo(){return this.strUserNo;}
         public int getCategory() {
             return this.nCategory;
         }
-
-        public String getUserPriv(){return this.strUserPriv;
+        public int getUserPriv(){return this.nUserPriv;
         }
 
         public String getUserID() {
@@ -72,13 +81,13 @@ public class Group2Activity extends AppCompatActivity {
             return this.strArrContent.get(pos);
         }
 
-        public void setUserPriv(String strPriv){
-            this.strUserPriv=strPriv;
+        public void setUserPriv(int nPriv){
+            this.nUserPriv=nPriv;
         }
         public void setCategory(int nParam) {
             this.nCategory = nParam;
         }
-
+        public void setUserNo(String strParam){this.strUserNo=strParam;}
         public void setUserID(String strParam) {
             this.strUserID = strParam;
         }
@@ -86,6 +95,22 @@ public class Group2Activity extends AppCompatActivity {
         public void AddContent(String strParam) {
             this.strArrContent.add(strParam);
         }
+
+
+
+        @Override
+        public int compareTo(UserInfo other){
+            if(nUserPriv<other.nUserPriv)
+                return -1;
+            else if(nUserPriv==other.nUserPriv)
+                return 0;
+            else
+                return 1;
+        }
+
+
+
+
 
     }
 
@@ -245,7 +270,7 @@ public class Group2Activity extends AppCompatActivity {
 
             }
         }
-        else if(resultCode==REQUEST_MEMBER_ADD){
+        else if(requestCode==REQUEST_MEMBER_ADD){
             if(resultCode==RESULT_OK){
                 LoadListUserAndUserContent();
             }
@@ -577,6 +602,10 @@ public class Group2Activity extends AppCompatActivity {
                                             //에러처리
                                         }
                                         userInfo.setCategory(nCategoryNum);
+                                        int nUserPriv=obj.getInt("userPriv");
+                                        userInfo.setUserPriv(nUserPriv);
+                                        String strUserNo=obj.getString("userNo");
+                                        userInfo.setUserNo(strUserNo);
                                         String strUserID = obj.getString("userName");
                                         String strContent1 = obj.getString("content1");
                                         userInfo.AddContent(strContent1);
@@ -641,6 +670,7 @@ public class Group2Activity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void LoadList() {
         //listHeadSize와 listContentSize에 가장 긴 이름들이 들어있다.
         //어댑터생성
@@ -707,6 +737,9 @@ public class Group2Activity extends AppCompatActivity {
 
 
         int nCategoryCnt = 0;
+        //리더가 맨위에 오도록 정렬하기.
+        Collections.sort(listUserInfo);
+
         for (int nCount = 0; nCount < nCategoryNum; nCount++) {
             int nListHeight = 0;
             listAdapter = new ListAdapter(getApplicationContext(),nCount);      //컨텍스트,카테고리번호(내가 몇번째 어댑터인지)
@@ -731,6 +764,16 @@ public class Group2Activity extends AppCompatActivity {
                 listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT, width, height));
             }
 
+            
+
+
+
+
+
+
+
+
+
 
             //유저수 만큼 이터레이터
             //for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
@@ -738,12 +781,22 @@ public class Group2Activity extends AppCompatActivity {
                 if (nCount == 0) {
                     //프로필
                     String strUserName = listUserInfo.get(nUserCount).getUserID();
+                    String strUserNo=listUserInfo.get(nUserCount).getUserNo();
                     //String strHeadAndContent = listHeadSize.get(nUserCount).toString();
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height));
+                    if(strUserNo.equals(groupLeaderNo))
+                        //getResources().getColor(R.color.colorLeader)
+                        listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height,getResources().getColor(R.color.colorLeader)));
+                    else if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
+                        listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height,getResources().getColor(R.color.colorOwner)));
+                    else
+                        listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height,getResources().getColor(R.color.colorDefault)));
+                    //listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height));
                 } else {
                     String strUserContent = listUserInfo.get(nUserCount).getContent(nCategoryCnt);
+                    String strUserNo=listUserInfo.get(nUserCount).getUserNo();
                     if(strUserContent.equals("null"))
                         strUserContent="-";
+
                     listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
                 }
                 nListHeight += height;

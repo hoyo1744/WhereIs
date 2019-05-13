@@ -416,6 +416,7 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
+                    //그룹리더니까 userPriv=1
                     AddGroupContentRequest groupContentRequest = new AddGroupContentRequest(groupID,userNo,groupCategory,userPriv,responseLister3);
                     RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
                     queue3.add(groupContentRequest);
@@ -432,6 +433,7 @@ public class GroupAddActivity extends AppCompatActivity {
         final String groupCategory=member.getCategory();
         final String userNo=SingletonUser.getInstance().getUserNumber();
         final String userID=SingletonUser.getInstance().getUserId();
+        final String userPriv="1";
 
         //서브스레드 생성 및 서버와 통신
         Thread threadGroupMember=new Thread(new Runnable() {
@@ -470,7 +472,7 @@ public class GroupAddActivity extends AppCompatActivity {
                             }
                         }
                     };
-                    AddGroupMemberRequest groupCreateRequest = new AddGroupMemberRequest(groupID,userNo,userID,groupCategory,responseLister3);
+                    AddGroupMemberRequest groupCreateRequest = new AddGroupMemberRequest(groupID,userNo,userID,userPriv,groupCategory,responseLister3);
                     RequestQueue queue3 = Volley.newRequestQueue(GroupAddActivity.this);
                     queue3.add(groupCreateRequest);
                 }
