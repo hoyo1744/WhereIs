@@ -26,99 +26,30 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    final static int AM_LOGIN_SUCCESS=40000;
-    public final static int REQUEST_MAIN=400;
+    private final static int AM_LOGIN_SUCCESS=10000;
+    private final static int REQUEST_MAIN=400;
 
+
+    private TextView registerButton;
+    private EditText passwordText;
+    private Handler handlerLogin;
+    private Button loginButton;
     private AlertDialog dialog;
-    Handler handlerLogin;
-    Button loginButton;
-    EditText idText;
-    EditText passwordText;
+    private EditText idText;
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
         super.onCreate(savedInstanceState);
 
-
+        //액티비티관련 초기화
         init();
 
-
-
-
-
-        TextView registerButton=(TextView) findViewById(R.id.registerButton);
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent registerIntent=new Intent(LoginActivity.this,RegisterActivity.class);
-                LoginActivity.this.startActivity(registerIntent);
-            }
-
-
-        });
-
-        idText=(EditText)findViewById(R.id.idText);
-        passwordText=(EditText)findViewById(R.id.passwordText);
-        loginButton=(Button)findViewById(R.id.loginButton);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String userId=idText.getText().toString();
-                final String userPassword=passwordText.getText().toString();
-
-                Response.Listener<String> responseLister= new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try{
-
-                            JSONObject jsonResponse=new JSONObject(response);
-                            boolean success=jsonResponse.getBoolean("success");
-                            if(success)
-                            {
-                                AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
-                                dialog=builder.setMessage("로그인에 성공했습니다.")
-                                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                //싱글톤객체 초기화
-
-
-                                                GetInitialSingletonUser(userId,userPassword);
-                                                //로그인이 성공한다면 다음씬으로 넘어간다.
-
-                                            }
-                                        })
-                                        .create();
-                                dialog.show();
-
-
-                            }
-                            else
-                            {
-                                AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
-                                dialog=builder.setMessage("로그인에 실패했습니다.")
-                                        .setPositiveButton("확인", null)
-                                        .create();
-                                dialog.show();
-                            }
-                        }
-                        catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
-                LoginRequest loginRequest=new LoginRequest(userId,userPassword,responseLister);
-                RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
-                queue.add(loginRequest);
-
-
-            }
-        });
     }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -131,27 +62,46 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void init(){
-        //액션바와 타이틀바 숨기기
+
+
+        //액션바 및 타이틀바 설정
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
 
+
+        //객체참조
+        registerButton=(TextView) findViewById(R.id.registerButton);
+        idText=(EditText)findViewById(R.id.idText);
+        passwordText=(EditText)findViewById(R.id.passwordText);
+        loginButton=(Button)findViewById(R.id.loginButton);
+
+
+        //리스너연결
+        registerButton.setOnClickListener(registerButtonListener);
+        loginButton.setOnClickListener(loginButtonListener);
+
+
+        //핸들러
         handlerLogin=new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if(msg.what==AM_LOGIN_SUCCESS){
-                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-                        //LoginActivity.this.startActivity(intent);
+                    Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                    //LoginActivity.this.startActivity(intent);
 
-                        idText.setText("");
-                        passwordText.setText("");
+                    idText.setText("");
+                    passwordText.setText("");
 
-                        LoginActivity.this.startActivityForResult(intent,REQUEST_MAIN);
+                    LoginActivity.this.startActivityForResult(intent,REQUEST_MAIN);
                 }
             }
         };
+
     }
+
+
 
 
     public void GetInitialSingletonUser(final String userId, final String userPassword){
@@ -160,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //서브스레드 생성 및 서버와 통신
 
-        Thread threadGroupList=new Thread(new Runnable() {
+        Thread thread=new Thread(new Runnable() {
 
             boolean isPlaying=false;
             @Override
@@ -168,8 +118,6 @@ public class LoginActivity extends AppCompatActivity {
                 if(isPlaying==false) {
                     isPlaying=true;
 
-
-                    //새로운 Request를 통해서 값을 가져와서 싱글톤객체를 생성함.
                     Response.Listener<String> responseLister= new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -206,7 +154,6 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     };
 
-                    //LoginInfoRequest로 새로 만들자.
                     LoginInfoRequest loginInfoRequest=new LoginInfoRequest(userId,userPassword,responseLister);
                     RequestQueue queueInfo= Volley.newRequestQueue(LoginActivity.this);
                     queueInfo.add(loginInfoRequest);
@@ -221,21 +168,7 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
-        threadGroupList.start();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        thread.start();
 
 
 
@@ -247,8 +180,69 @@ public class LoginActivity extends AppCompatActivity {
 
         if(requestCode==REQUEST_MAIN){
             if(resultCode==RESULT_OK){
-                //로그아웃되었다.
             }
         }
     }
+    private View.OnClickListener registerButtonListener=new View.OnClickListener(){
+
+        @Override
+        public void onClick(View v) {
+            Intent registerIntent=new Intent(LoginActivity.this,RegisterActivity.class);
+            LoginActivity.this.startActivity(registerIntent);
+        }
+    };
+    private View.OnClickListener loginButtonListener= new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final String userId=idText.getText().toString();
+            final String userPassword=passwordText.getText().toString();
+
+            Response.Listener<String> responseLister= new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try{
+                        JSONObject jsonResponse=new JSONObject(response);
+                        boolean success=jsonResponse.getBoolean("success");
+                        if(success)
+                        {
+                            AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                            dialog=builder.setMessage("로그인에 성공했습니다.")
+                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            //싱글톤객체
+                                            GetInitialSingletonUser(userId,userPassword);
+
+
+                                        }
+                                    })
+                                    .create();
+                            dialog.show();
+
+
+                        }
+                        else
+                        {
+                            AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                            dialog=builder.setMessage("로그인에 실패했습니다.")
+                                    .setPositiveButton("확인", null)
+                                    .create();
+                            dialog.show();
+                        }
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            LoginRequest loginRequest=new LoginRequest(userId,userPassword,responseLister);
+            RequestQueue queue= Volley.newRequestQueue(LoginActivity.this);
+            queue.add(loginRequest);
+        }
+    };
+
 }
+
+
