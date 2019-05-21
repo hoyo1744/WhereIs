@@ -1,13 +1,12 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.example.hoyo1.whereis.Group2Activity;
+import com.example.hoyo1.whereis.Activity.Group2Activity;
 import com.example.hoyo1.whereis.R;
 
 import java.util.ArrayList;
@@ -99,7 +98,6 @@ public class ListAdapter extends BaseAdapter {
                 case ITEM_VIEW_PROFILE:
                     GridProfileView gridProfileView = new GridProfileView(adapterContext);
                     gridProfileView.setId(R.id.gridProfileViewLayout);
-                    gridProfileView.setGravity(Gravity.CENTER);
                     gridProfileView.setProfileName(item.getName());
                     gridProfileView.setProfileImage(item.getResId());
                     convertView = gridProfileView;

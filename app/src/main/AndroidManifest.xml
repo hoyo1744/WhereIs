@@ -11,23 +11,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".Activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".GroupAddActivity" />
-        <activity android:name=".GroupActivity" />
-        <activity android:name=".GroupMemberAddActivity" />
-        <activity android:name=".Group2Activity" />
+        <activity android:name=".Activity.RegisterActivity" />
+        <activity android:name=".Activity.MainActivity" />
+        <activity android:name=".Activity.GroupAddActivity" />
+        <activity android:name=".Activity.GroupActivity" />
+        <activity android:name=".Activity.GroupMemberAddActivity" />
+        <activity android:name=".Activity.Group2Activity" />
         <activity
-            android:name=".dataPopUpActivity"
+            android:name=".Activity.dataPopUpActivity"
             android:theme="@android:style/Theme.Dialog"/>
-        <activity android:name=".ChangeContent"></activity>
+        <activity android:name=".Activity.ChangeContent"></activity>
     </application>
 
 </manifest>

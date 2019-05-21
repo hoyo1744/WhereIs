@@ -18,7 +18,7 @@
             android:id="@+id/profileGridImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="left"
             android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             app:srcCompat="@drawable/ic_person_black_24dp" />
@@ -27,7 +27,7 @@
         android:id="@+id/profileGridTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="left"
         android:layout_toRightOf="@+id/profileGridImageView"
         android:text="엄호용"
         android:textSize="15dp"
