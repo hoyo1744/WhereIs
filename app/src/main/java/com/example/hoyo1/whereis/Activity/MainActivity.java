@@ -33,9 +33,12 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
 
-    // 호용 20190322 : main에서의 요청은 100대
-    public static final int REQUEST_GROUP_ADD = 101;
-    public static final int REQUEST_GROUP = 102;
+    //요청메시지
+    public static final int REQUEST_GROUP_ADD = 201;
+    public static final int REQUEST_GROUP = 202;
+
+
+    //데이터베이스 데이터 확인 상수
     public static final int MAX_GROUP_LIST= 10000;
     public static final int MAX_GROUP_LEADER=30000;
     public static final int MAX_GROUP_CATEGORY=50000;
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     //메시지모음
     public static final int AM_GROUP_LIST_CREATE=20000;
+
+    //앱 화면 크기
     public static int viewWidth;
     public static int viewHeight;
 
@@ -55,28 +60,22 @@ public class MainActivity extends AppCompatActivity {
     TextView groupSubTitleTextView;
     Handler handlerGroupList;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("그룹");
         setContentView(R.layout.activity_main);
 
+        //애플리케이션 화면크기 초기화
+        GetApplicationWidthAndHeight();
+
+        //초기화
         init();
 
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //SingerItem item=(SingerItem)adapter.getItem(position);
-                //리스트순서는 0부터 시작이다.
-                //Intent intent=new Intent(getApplicationContext(),GroupActivity.class);
-                Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
-                intent.putExtra("key", (position+1));
 
-
-                startActivityForResult(intent,REQUEST_GROUP);
-            }
-        });
 
 
     }
@@ -155,105 +154,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
+
+        //객체 참조
         groupSubTitleTextView=(TextView)findViewById(R.id.groupSubTitleText);
-        listView=(ListView)findViewById(R.id.listView);
-        userImageView=(ImageView)findViewById(R.id.profileImage);
         userNameTextView=(TextView)findViewById(R.id.profileText);
+        userImageView=(ImageView)findViewById(R.id.profileImage);
+        listView=(ListView)findViewById(R.id.listView);
+
+        //리스너참조
+        listView.setOnItemClickListener(listViewListener);
 
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        viewWidth = size.x;
-        viewHeight = size.y;
-
-        //개인프로필이름 표시
+        //객체 값 채워넣기
         userNameTextView.setText(SingletonUser.getInstance().getUserName());
-        //개인프로필사진 표시
         adapter = new SingerAdapter(getApplicationContext());
 
         handlerGroupList=new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
                 switch(msg.what){
-
                     case AM_GROUP_LIST_CREATE:
-                        //그룹리스트 동적생성
-
+                        //그룹리스트생성
                         LoadList();
-
-
                         break;
                 }
 
             }
         };
 
-        //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장)
+        //전체 그룹리스트 싱글톤저장
         GetGroupList();
-
-
-
-
-
-
-
-
-
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //초기화시작
-        /////////////////////////////////////////////////////////////////////////////////////
-
-
-
-        //리스트동적생성 완료
-        //adapter = new SingerAdapter(getApplicationContext());
-
-        /*
-        int nGroupListSize=SingletonGroupList.getInstance().getGroupCount();
-
-        //리스트동적생성 시작
-        for(int nGroupListCnt=0;nGroupListCnt<nGroupListSize;nGroupListCnt++)
-        {
-            String groupName,groupLeaderName;
-            groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
-            groupLeaderName=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
-            adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderName,R.drawable.ic_person_black_24dp));
-
-        }
-
-
-        // 호용 20190328 : 서버로부터 응답이 늦게 와서 리스트가 안만들어진다... 스레드를 써야할것같다.
-        */
-        /*
-        //리스트초기화
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        adapter.addItem(new SingerItem("그룹이름",R.drawable.ic_group_black_24dp,"그룹리더",R.drawable.ic_person_black_24dp));
-        listView.setAdapter(adapter);
-        groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
-        */
-
-        //그룹소제목초기화
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //초기화끝
-        /////////////////////////////////////////////////////////////////////////////////////
     }
 
     public void GetGroupList(){
-
-
-        //서브스레드 생성 및 서버와 통신
-
-        Thread threadGroupList=new Thread(new Runnable() {
-
+        Thread thread=new Thread(new Runnable() {
             boolean isPlaying=false;
             @Override
             public void run() {
@@ -308,17 +243,10 @@ public class MainActivity extends AppCompatActivity {
                     RequestQueue queue2 = Volley.newRequestQueue(MainActivity.this);
                     queue2.add(groupIDRequest);
                 }
-
-
-
             }
-
-
-
         });
 
-        threadGroupList.start();
-
+        thread.start();
 
     }
 
@@ -333,18 +261,11 @@ public class MainActivity extends AppCompatActivity {
             groupName=SingletonGroupList.getInstance().getGroupName(nGroupListCnt);
             groupLeaderID=SingletonGroupList.getInstance().getGroupLeader(nGroupListCnt);
             groupLeaderName=SingletonGroupList.getInstance().getGroupLeaderName(nGroupListCnt);
-
             adapter.addItem(new SingerItem(groupName,R.drawable.ic_group_black_24dp,groupLeaderID,groupLeaderName,R.drawable.ic_person_black_24dp));
-
         }
-
-
-
-
 
         listView.setAdapter(adapter);
         groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
-
     }
 
     public void RestartActivity(){
@@ -354,5 +275,21 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         */
         this.recreate();
+    }
+    private AdapterView.OnItemClickListener listViewListener=new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
+            intent.putExtra("key", (position+1));
+            startActivityForResult(intent,REQUEST_GROUP);
+        }
+    };
+
+    private void GetApplicationWidthAndHeight(){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        viewWidth = size.x;
+        viewHeight = size.y;
     }
 }

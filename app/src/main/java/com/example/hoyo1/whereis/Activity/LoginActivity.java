@@ -26,8 +26,11 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
+    //핸들메시지
     private final static int AM_LOGIN_SUCCESS=10000;
-    private final static int REQUEST_MAIN=400;
+
+    //액티비티요청메시지
+    private final static int REQUEST_MAIN=100;
 
 
     private TextView registerButton;
@@ -36,8 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private AlertDialog dialog;
     private EditText idText;
-
-
 
 
 
