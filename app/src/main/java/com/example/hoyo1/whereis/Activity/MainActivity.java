@@ -1,9 +1,13 @@
 package com.example.hoyo1.whereis.Activity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
@@ -52,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
     public static int viewWidth;
     public static int viewHeight;
 
+    //메인액티비티컨텍스트
+    public static Context mainContext;
     boolean bIsResponseCheck=false;
+
     ImageView userImageView;
     TextView userNameTextView;
     ListView listView;
@@ -67,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("그룹");
         setContentView(R.layout.activity_main);
+
+        //메인액티비티컨텍스트
+        mainContext=this;
 
         //애플리케이션 화면크기 초기화
         GetApplicationWidthAndHeight();
@@ -292,4 +302,32 @@ public class MainActivity extends AppCompatActivity {
         viewWidth = size.x;
         viewHeight = size.y;
     }
+
+    public void KillApp(){
+        ActivityCompat.finishAffinity(this);
+        System.runFinalizersOnExit(true);
+        System.exit(0);
+    }
+    public void ShowErrorMessage(String content){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //대화상자설정
+        builder.setTitle("에러");
+        builder.setMessage(content);
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+
+        //예 버튼 추가
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                KillApp();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+
 }
