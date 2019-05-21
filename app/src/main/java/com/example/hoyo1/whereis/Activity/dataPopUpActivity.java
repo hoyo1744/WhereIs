@@ -17,17 +17,20 @@ import org.w3c.dom.Text;
 
 public class dataPopUpActivity extends Activity {
 
-    TextView textView;
-    Button okButton;
+    private TextView textView;
+    private Button okButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_data_pop_up);
+
+        //초기화
         Init();
     }
     public void Init(){
+        //객체참조
         textView=(TextView)findViewById(R.id.txtText);
         okButton=(Button)findViewById(R.id.okButton);
 
@@ -48,7 +51,6 @@ public class dataPopUpActivity extends Activity {
     public void onClickOkButton(){
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
-        //액티비티(팝업) 닫기
         finish();
 
     }
