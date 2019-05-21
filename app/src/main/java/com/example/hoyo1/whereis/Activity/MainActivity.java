@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         else if(requestCode==REQUEST_GROUP){
             //그룹메인
             if(resultCode==RESULT_OK)
-                GetGroupList();
+                RestartActivity();
 
         }
     }
@@ -345,5 +345,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
         groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
 
+    }
+
+    public void RestartActivity(){
+        /*
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        */
+        this.recreate();
     }
 }
