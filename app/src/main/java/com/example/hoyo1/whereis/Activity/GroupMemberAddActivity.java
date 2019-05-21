@@ -27,96 +27,33 @@ import org.json.JSONObject;
 public class GroupMemberAddActivity extends AppCompatActivity {
 
 
-    public static final int AM_GET_USERINFO=19051200;
-    public static final int AM_GROUP_ADD_MEMBER=19051201;
-    public static final int AM_GROUP_ADD_CONTENT=19051202;
-    public static final int AM_GROUP_ADD_SUCCESS=19051203;
-    EditText memberNameEditText;
-    Button memberNameValidateButton;
+    //핸들러메시지
+    public static final int AM_GET_USERINFO=50001;
+    public static final int AM_GROUP_ADD_MEMBER=50002;
+    public static final int AM_GROUP_ADD_CONTENT=50003;
+    public static final int AM_GROUP_ADD_SUCCESS=50004;
+
+    private Button memberNameValidateButton;
+    private EditText memberNameEditText;
     private boolean validate=false;
+    private String strCategoryNum;
     private AlertDialog dialog;
-    String groupID;
-    String userNo;          //group_member에서 가져온다.
-    String userPriv;        //group_member에서 가져온다.
-    String strCategoryNum;
-    Intent intent;
-    Handler handler;
+    private String groupID;
+    private String userNo;          //group_member에서 가져온다.
+    private String userPriv;        //group_member에서 가져온다.
+    private Intent intent;
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("멤버추가");
         setContentView(R.layout.activity_group_member_add);
 
+        //초기화
         init();
-        //Toast.makeText(this,"테스트",Toast.LENGTH_LONG).show();
-        //자신의 아이디를 찾을 수 없도록 예외처리해야함.-->유저정보 싱글톤으로 유지한 후에!
-
-        memberNameValidateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String userID=memberNameEditText.getText().toString();
-                //if(validate)
-                // return ;
-
-                if(userID.equals("")) {
-                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
-                    dialog=builder.setMessage("아이디가 빈칸입니다.")
-                            .setPositiveButton("확인",null)
-                            .create();
-                    dialog.show();
-                    return ;
-
-                }
-                //response 리스너 구현
-                Response.Listener<String> responListener=new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try{
-                            JSONObject jsonObject=new JSONObject(response);
-                            boolean successGroupMember=jsonObject.getBoolean("successGroupMember");
-                            boolean successUser=jsonObject.getBoolean("successUser");
-
-                            if(successGroupMember){
-                                AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
-                                dialog=builder.setMessage("이미 존재합니다.")
-                                        .setPositiveButton("확인",null)
-                                        .create();
-                                dialog.show();
-                            }
-                            else if(successUser){
-                                AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
-                                dialog=builder.setMessage("아이디를 찾았습니다.")
-                                        .setPositiveButton("확인",null)
-                                        .create();
-                                dialog.show();
-                                //idText.setEnabled(false);
-                                validate=true;
 
 
-
-                            }
-                            else{
-
-                                AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
-                                dialog=builder.setMessage("아이디를 찾을 수 없습니다.")
-                                        .setPositiveButton("확인",null)
-                                        .create();
-                                dialog.show();
-
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
-
-
-                ValidateGroupMemberAndUser validateRequest=new ValidateGroupMemberAndUser(userID,groupID,responListener);
-                RequestQueue queue = Volley.newRequestQueue(GroupMemberAddActivity.this);
-                queue.add(validateRequest);
-            }
-        });
 
 
 
@@ -169,25 +106,26 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     }
 
     public void init(){
+        //액션바 및 타이틀바 설정
         android.support.v7.app.ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayOptions(actionBar.DISPLAY_HOME_AS_UP|actionBar.DISPLAY_SHOW_TITLE);
 
+        //객체참조
         memberNameEditText=(EditText)findViewById(R.id.memberNameEditText);
         memberNameValidateButton=(Button)findViewById(R.id.memberValidateButton);
 
-        intent = getIntent(); /*데이터 수신*/
-        groupID=intent.getExtras().getString("groupID");
-        int nCategoryNum=intent.getExtras().getInt("groupCategory");
-        nCategoryNum-=1;
-        strCategoryNum=Integer.toString(nCategoryNum);
+        //리스너연결
+        memberNameValidateButton.setOnClickListener(memberNameValidateButtonListener);
 
+        //데이터수신
+        GetInfomationAboutIntent();
+
+        //핸들러설정
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-
                 switch (msg.what) {
-
                     case AM_GET_USERINFO:
                         GetUserNo();
                         break;
@@ -218,7 +156,6 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     }
 
     public void GetUserNo(){
-
             Thread thread = new Thread(new Runnable() {
             String userID=memberNameEditText.getText().toString();
             boolean isPlaying = false;
@@ -255,14 +192,10 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         });
         thread.start();
 
-
-
     }
 
     public void AddGroupContent(){
-
         Thread thread = new Thread(new Runnable() {
-
             boolean isPlaying = false;
 
             @Override
@@ -338,7 +271,68 @@ public class GroupMemberAddActivity extends AppCompatActivity {
             }
         });
         thread.start();
+    }
+    //멤버네임벨리데잇버튼클릭리스너
+    private View.OnClickListener memberNameValidateButtonListener= new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final String userID=memberNameEditText.getText().toString();
+            if(userID.equals("")) {
+                AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                dialog=builder.setMessage("아이디가 빈칸입니다.")
+                        .setPositiveButton("확인",null)
+                        .create();
+                dialog.show();
+                return ;
 
+            }
+            ValidateGroupMemberAndUser validateRequest=new ValidateGroupMemberAndUser(userID,groupID,responMemberNameValidateButtonListener);
+            RequestQueue queue = Volley.newRequestQueue(GroupMemberAddActivity.this);
+            queue.add(validateRequest);
+        }
+    };
+    //리스폰멤버이름벨리데잇리스너
+    private Response.Listener<String> responMemberNameValidateButtonListener=new Response.Listener<String>() {
+        @Override
+        public void onResponse(String response) {
+            try{
+                JSONObject jsonObject=new JSONObject(response);
+                boolean successGroupMember=jsonObject.getBoolean("successGroupMember");
+                boolean successUser=jsonObject.getBoolean("successUser");
 
+                if(successGroupMember){
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                    dialog=builder.setMessage("이미 존재합니다.")
+                            .setPositiveButton("확인",null)
+                            .create();
+                    dialog.show();
+                }
+                else if(successUser){
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                    dialog=builder.setMessage("아이디를 찾았습니다.")
+                            .setPositiveButton("확인",null)
+                            .create();
+                    dialog.show();
+                    validate=true;
+                }
+                else{
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                    dialog=builder.setMessage("아이디를 찾을 수 없습니다.")
+                            .setPositiveButton("확인",null)
+                            .create();
+                    dialog.show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    public void GetInfomationAboutIntent(){
+        intent = getIntent(); /*데이터 수신*/
+        groupID=intent.getExtras().getString("groupID");
+        int nCategoryNum=intent.getExtras().getInt("groupCategory");
+        nCategoryNum-=1;
+        strCategoryNum=Integer.toString(nCategoryNum);
     }
 }
