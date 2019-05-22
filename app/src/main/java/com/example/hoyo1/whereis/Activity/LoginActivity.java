@@ -32,13 +32,14 @@ public class LoginActivity extends AppCompatActivity {
     //액티비티요청메시지
     private final static int REQUEST_MAIN=100;
 
-
+    private TextView informationTextView;
     private TextView registerButton;
     private EditText passwordText;
     private Handler handlerLogin;
     private Button loginButton;
     private AlertDialog dialog;
     private EditText idText;
+
 
 
 
@@ -76,11 +77,13 @@ public class LoginActivity extends AppCompatActivity {
         idText=(EditText)findViewById(R.id.idText);
         passwordText=(EditText)findViewById(R.id.passwordText);
         loginButton=(Button)findViewById(R.id.loginButton);
-
+        informationTextView=(TextView)findViewById(R.id.information);
 
         //리스너연결
         registerButton.setOnClickListener(registerButtonListener);
         loginButton.setOnClickListener(loginButtonListener);
+        informationTextView.setOnClickListener(informationListener);
+
 
 
         //핸들러
@@ -175,6 +178,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -184,6 +189,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+    private View.OnClickListener informationListener= new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent=new Intent(getApplicationContext(),InformationActivity.class);
+            startActivity(intent);
+        }
+    };
     private View.OnClickListener registerButtonListener=new View.OnClickListener(){
 
         @Override

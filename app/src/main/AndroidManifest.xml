@@ -14,13 +14,12 @@
         <activity android:name=".Common.SplashScreen">
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".Activity.LoginActivity"/>
+        <activity android:name=".Activity.LoginActivity" />
         <activity android:name=".Activity.RegisterActivity" />
         <activity android:name=".Activity.MainActivity" />
         <activity android:name=".Activity.GroupAddActivity" />
@@ -29,8 +28,11 @@
         <activity android:name=".Activity.Group2Activity" />
         <activity
             android:name=".Activity.dataPopUpActivity"
-            android:theme="@android:style/Theme.Dialog"/>
-        <activity android:name=".Activity.ChangeContent"></activity>
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".Activity.ChangeContent" />
+        <activity android:name=".Activity.InformationActivity"
+            android:theme="@style/AppTheme.Pop">
+        </activity>
     </application>
 
 </manifest>

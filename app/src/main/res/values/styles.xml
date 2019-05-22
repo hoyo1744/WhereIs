@@ -29,4 +29,10 @@
     <style name="ActionBarTextColor" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
         <item name="android:textColor">@color/colorBlack</item>
     </style>
+
+
+    <style name="AppTheme.Pop">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
 </resources>
