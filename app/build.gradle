@@ -34,6 +34,10 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.0'
     //그리드뷰 헤더/푸터 라이브러리
     implementation 'in.srain.cube:grid-view-with-header-footer:1.0.12'
+    implementation ('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+
 
 
 }

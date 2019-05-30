@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,12 @@ import com.example.hoyo1.whereis.Singleton.SingletonUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.Socket;
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+
+
 public class LoginActivity extends AppCompatActivity {
 
     //핸들메시지
@@ -32,6 +39,9 @@ public class LoginActivity extends AppCompatActivity {
     //액티비티요청메시지
     private final static int REQUEST_MAIN=100;
 
+    //소켓
+    public static io.socket.client.Socket mSocket;
+
     private TextView informationTextView;
     private TextView registerButton;
     private EditText passwordText;
@@ -39,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private AlertDialog dialog;
     private EditText idText;
+
 
 
 
@@ -93,10 +104,10 @@ public class LoginActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 if(msg.what==AM_LOGIN_SUCCESS){
                     Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-                    //LoginActivity.this.startActivity(intent);
-
                     idText.setText("");
                     passwordText.setText("");
+
+                    ConnectSocket();
 
                     LoginActivity.this.startActivityForResult(intent,REQUEST_MAIN);
                 }
@@ -257,6 +268,40 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    public void ConnectSocket(){
+        try {
+            mSocket = IO.socket("106.10.36.131:3000");
+            mSocket.connect();
+        } catch(URISyntaxException e) {
+            e.printStackTrace();
+            ShowErrorMessage("소켓연결오류");
+        }
+
+    }
+    public void KillApp(){
+        ActivityCompat.finishAffinity(this);
+        System.runFinalizersOnExit(true);
+        System.exit(0);
+    }
+    public void ShowErrorMessage(String content){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //대화상자설정
+        builder.setTitle("에러");
+        builder.setMessage(content);
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+
+
+        //예 버튼 추가
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                KillApp();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }
 
 
