@@ -56,6 +56,7 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
     private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
+
     private boolean bIsCreatedCategoryView;                          //커스텀뷰가 생성되었는지 확인
     private EditText groupCategoryNumberEditText;
     private EditText groupLeaderNameEditText;
@@ -63,6 +64,7 @@ public class GroupAddActivity extends AppCompatActivity {
     private LinearLayout subGroupAdd;                                //커스텀뷰를 추가할 하위 레이아웃
     private Handler handlerCategory;
     private String groupLeaderID;
+    private String createdGroupID;                                  //생성된 그룹아이디
     private AlertDialog dialog;
     private Intent intent;
 
@@ -145,6 +147,8 @@ public class GroupAddActivity extends AppCompatActivity {
                         AddGroupContent((Member)msg.obj);
                         break;
                     case AM_GROUP_CONTENT_ADD:
+                        //소켓그룹생성
+                        ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("create",createdGroupID);
                         setResult(RESULT_OK);
                         finish();
                         break;
@@ -310,7 +314,9 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
 
+
                     Member memberGroup=new Member();
+                    createdGroupID=groupID;
                     memberGroup.setMember(groupID,groupCategory);
                     Message msg = handlerCategory.obtainMessage();
                     msg.obj=memberGroup;

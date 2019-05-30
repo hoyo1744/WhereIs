@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis.Activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -107,6 +108,8 @@ public class Group2Activity extends AppCompatActivity {
     public static final int AM_GROUP_USER_INIT = 30001;
     public static final int AM_OUT_OF_GROUP    = 30002;
 
+    public static Context groupContext;
+
 
     public static HashMap<GridProfileView,ListAdapter> mapSelectedProfileView;
     public static HashMap<GridTextView,ListAdapter> mapSelectedTextView;
@@ -124,7 +127,7 @@ public class Group2Activity extends AppCompatActivity {
     private Handler handlerGroupList;
     private String groupLeaderNo;
     private int nCategoryNum;
-    private String groupID;
+    public String groupID;
     private Intent intent;
 
 
@@ -159,6 +162,9 @@ public class Group2Activity extends AppCompatActivity {
         }
         else if(requestCode==REQUEST_CHANGE_CONTENT){
             if(resultCode==RESULT_OK){
+                //MessageEvent(데이터변경메시지)
+                ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage();
+
                 //유저리로드
                 LoadListUserAndUserContent();
             }
@@ -231,7 +237,8 @@ public class Group2Activity extends AppCompatActivity {
                 }
                 break;
             case android.R.id.home:
-                //뒤로가기(나가기)
+                //소켓그룹나가기
+                ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("leave",groupID);
                 setResult(RESULT_OK);
                 finish();
                 break;
@@ -240,6 +247,11 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void Init() {
+
+
+
+        //컨텍스트설정
+        groupContext=this;
 
         //액션바 메뉴설정
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -262,6 +274,7 @@ public class Group2Activity extends AppCompatActivity {
         //인텐트정보를 통한 액티비티세팅
         GetInfomationAndSettingGroup();
 
+
         //핸들러
         handlerGroupList = new Handler() {
             @Override
@@ -277,6 +290,14 @@ public class Group2Activity extends AppCompatActivity {
                         LoadList();
                         break;
                     case AM_OUT_OF_GROUP:
+                        //소켓그룹나가기
+                        //리더일때는 delete
+                        if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber()))
+                            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("delete",groupID);
+                        else
+                            //회워일때는 leave
+                            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("leave",groupID);
+
                         setResult(RESULT_OK);
                         finish();
                         break;

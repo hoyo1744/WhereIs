@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         //메인액티비티컨텍스트
         mainContext=this;
 
+
         //애플리케이션 화면크기 초기화
         GetApplicationWidthAndHeight();
 
@@ -119,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.itemLogout:
 
+                //소켓연결끊기
+                ((LoginActivity)LoginActivity.loginContext).sendLogoutMessage();
+
                 setResult(RESULT_OK);
                 finish();
                 break;
@@ -135,15 +139,16 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==REQUEST_GROUP_ADD){
             //요청받은 메시지처리(그룹추가)
             if(resultCode==RESULT_OK){
-                //그룹추가 완료
 
 
-                Toast.makeText(MainActivity.this,"테스트",Toast.LENGTH_LONG).show();
                 //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장), 그룹리스트 리로드
                 GetGroupList();
 
-
-
+                //생성된 그룹액티비티
+                int position=adapter.getCount();
+                Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
+                intent.putExtra("key", (position));
+                startActivityForResult(intent,REQUEST_GROUP);
 
             }
             else if(resultCode==RESULT_CANCELED){
@@ -187,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     case AM_GROUP_LIST_CREATE:
                         //그룹리스트생성
                         LoadList();
+
                         break;
                 }
 
@@ -291,7 +297,14 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
             intent.putExtra("key", (position+1));
+
+            //소켓그룹참여
+            String groupID=SingletonGroupList.getInstance().getGroupID(position+1);
+            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("join",groupID);
+
             startActivityForResult(intent,REQUEST_GROUP);
+
+
         }
     };
 
@@ -327,6 +340,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
 
 
 

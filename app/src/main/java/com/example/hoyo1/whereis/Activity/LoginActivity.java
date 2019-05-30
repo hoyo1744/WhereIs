@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis.Activity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.LoginInfoRequest;
 import com.example.hoyo1.whereis.Request.LoginRequest;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 import com.example.hoyo1.whereis.Singleton.SingletonUser;
 
 import org.json.JSONException;
@@ -29,6 +31,7 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
+import io.socket.emitter.Emitter;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -38,6 +41,9 @@ public class LoginActivity extends AppCompatActivity {
 
     //액티비티요청메시지
     private final static int REQUEST_MAIN=100;
+
+    //로그인액티비티컨텍스트
+    public static Context loginContext;
 
     //소켓
     public static io.socket.client.Socket mSocket;
@@ -76,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void init(){
 
+        //로그인컨텍스트
+        loginContext=this;
 
         //액션바 및 타이틀바 설정
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -97,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+
         //핸들러
         handlerLogin=new Handler(){
             @Override
@@ -107,9 +116,16 @@ public class LoginActivity extends AppCompatActivity {
                     idText.setText("");
                     passwordText.setText("");
 
-                    ConnectSocket();
 
-                    LoginActivity.this.startActivityForResult(intent,REQUEST_MAIN);
+                    //소켓연결 및 이벤트 연결
+                    SingletonSocket.getInstance().on("response",onResponse);
+
+                    //로그인메시지
+                    sendLoginMessage();
+
+
+
+                    startActivityForResult(intent,REQUEST_MAIN);
                 }
             }
         };
@@ -270,7 +286,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void ConnectSocket(){
         try {
-            mSocket = IO.socket("106.10.36.131:3000");
+            mSocket = IO.socket("http://106.10.36.131:3000");
             mSocket.connect();
         } catch(URISyntaxException e) {
             e.printStackTrace();
@@ -302,6 +318,94 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+    public void sendLoginMessage(){
+        JSONObject data=new JSONObject();
+
+        try{
+            data.put("No",SingletonUser.getInstance().getUserNumber());
+            data.put("Id",SingletonUser.getInstance().getUserId());
+            //mSocket.emit("login",data);
+            SingletonSocket.getInstance().emit("login",data);
+        }catch(JSONException e){
+            e.printStackTrace();
+            ShowErrorMessage("소켓로그인에러");
+        }
+    }
+    public void sendLogoutMessage(){
+
+        JSONObject data=new JSONObject();
+
+        try{
+            data.put("No",SingletonUser.getInstance().getUserNumber());
+            data.put("Id",SingletonUser.getInstance().getUserId());
+            SingletonSocket.getInstance().emit("logout",data);
+        }catch(JSONException e){
+            e.printStackTrace();
+            ShowErrorMessage("소켓로그아웃에러");
+        }
+    }
+    public void sendDataChangeMessage(){
+        JSONObject data=new JSONObject();
+        try {
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient","group");
+            data.put("command","group");
+            data.put("data","group");
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+            ShowErrorMessage("소켓메시지이벤트에러");
+        }
+
+
+    }
+
+    public void sendRoomMessage(String strParam,String groupID){
+        JSONObject data=new JSONObject();
+        try{
+            data.put("roomId",groupID);
+            data.put("command",strParam);
+            SingletonSocket.getInstance().emit("room",data);
+
+        }catch(JSONException e){
+            e.printStackTrace();
+            ShowErrorMessage("소켓그룹생성이벤트에러");
+        }
+
+    }
+    //함수 문제발생.
+    public Emitter.Listener onResponse = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject dataJson=(JSONObject)args[0];
+            String code,message;
+
+            try {
+                code=dataJson.getString("code");
+                message=dataJson.getString("message");
+
+                //code에 따른 처리
+                if(!code.equals("200")) {
+                    ShowErrorMessage("웹서버처리오류");
+                }
+
+
+                //message에 따른 처리
+                if(message.equals("ContentChange"))
+                    ((Group2Activity)Group2Activity.groupContext).LoadListUserAndUserContent();
+
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                ShowErrorMessage("웹서버처리오류");
+            }
+
+
+
+        }
+    };
+
 }
 
 
