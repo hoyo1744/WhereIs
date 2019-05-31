@@ -1,5 +1,12 @@
 package com.example.hoyo1.whereis.Singleton;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
@@ -29,6 +36,7 @@ public class SingletonSocket {
     public void on(String event, Emitter.Listener listener){
         mSocket.on(event,listener);
     }
+
 
 
 

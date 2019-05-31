@@ -295,7 +295,7 @@ public class LoginActivity extends AppCompatActivity {
         System.exit(0);
     }
     public void ShowErrorMessage(String content){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 
         //대화상자설정
         builder.setTitle("에러");
@@ -322,7 +322,6 @@ public class LoginActivity extends AppCompatActivity {
             SingletonSocket.getInstance().emit("login",data);
         }catch(JSONException e){
             e.printStackTrace();
-            ShowErrorMessage("소켓로그인에러");
         }
     }
     public void sendLogoutMessage(){
@@ -335,7 +334,6 @@ public class LoginActivity extends AppCompatActivity {
             SingletonSocket.getInstance().emit("logout",data);
         }catch(JSONException e){
             e.printStackTrace();
-            ShowErrorMessage("소켓로그아웃에러");
         }
     }
 
@@ -349,7 +347,6 @@ public class LoginActivity extends AppCompatActivity {
             SingletonSocket.getInstance().emit("message",data);
         }catch (JSONException e){
             e.printStackTrace();
-            ShowErrorMessage("소켓메시지이벤트에러");
         }
 
     }
@@ -363,7 +360,6 @@ public class LoginActivity extends AppCompatActivity {
             SingletonSocket.getInstance().emit("message",data);
         }catch (JSONException e){
             e.printStackTrace();
-            ShowErrorMessage("소켓메시지이벤트에러");
         }
 
 
@@ -378,7 +374,6 @@ public class LoginActivity extends AppCompatActivity {
 
         }catch(JSONException e){
             e.printStackTrace();
-            ShowErrorMessage("소켓그룹생성이벤트에러");
         }
 
     }
@@ -396,14 +391,18 @@ public class LoginActivity extends AppCompatActivity {
                 message=dataJson.getString("message");
 
                 //code에 따른 처리
-                if(!code.equals("200")) {
-                    ShowErrorMessage("웹서버처리오류");
+                if(code.equals("404")) {
+                    //심각한 문제
+                    KillApp();
                 }
+                else if(code.equals("403")){
+                    //심각하지 않은 문제.
+                }
+
 
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                ShowErrorMessage("웹서버처리오류");
             }
 
 
@@ -433,7 +432,6 @@ public class LoginActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                ShowErrorMessage("웹서버처리오류");
             }
 
 
