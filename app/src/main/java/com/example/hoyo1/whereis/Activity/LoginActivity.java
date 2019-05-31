@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -119,6 +120,10 @@ public class LoginActivity extends AppCompatActivity {
 
                     //소켓연결 및 이벤트 연결
                     SingletonSocket.getInstance().on("response",onResponse);
+                    SingletonSocket.getInstance().on("message",onExecute);
+
+
+
 
                     //로그인메시지
                     sendLoginMessage();
@@ -284,16 +289,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    public void ConnectSocket(){
-        try {
-            mSocket = IO.socket("http://106.10.36.131:3000");
-            mSocket.connect();
-        } catch(URISyntaxException e) {
-            e.printStackTrace();
-            ShowErrorMessage("소켓연결오류");
-        }
 
-    }
     public void KillApp(){
         ActivityCompat.finishAffinity(this);
         System.runFinalizersOnExit(true);
@@ -344,11 +340,11 @@ public class LoginActivity extends AppCompatActivity {
             ShowErrorMessage("소켓로그아웃에러");
         }
     }
-    public void sendDataChangeMessage(){
+    public void sendDataChangeMessage(String groupID){
         JSONObject data=new JSONObject();
         try {
             data.put("sender",SingletonUser.getInstance().getUserNumber());
-            data.put("recepient","group");
+            data.put("recepient",groupID);
             data.put("command","group");
             data.put("data","group");
             SingletonSocket.getInstance().emit("message",data);
@@ -373,7 +369,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
-    //함수 문제발생.
+
+
+
     public Emitter.Listener onResponse = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -390,10 +388,31 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
 
-                //message에 따른 처리
-                if(message.equals("ContentChange"))
-                    ((Group2Activity)Group2Activity.groupContext).LoadListUserAndUserContent();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                ShowErrorMessage("웹서버처리오류");
+            }
 
+
+
+        }
+    };
+
+
+    public Emitter.Listener onExecute = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject dataJson=(JSONObject)args[0];
+            String data;
+
+            try {
+                data=dataJson.getString("data");
+
+                //message에 따른 처리
+                if(data.equals("group")) {
+
+                    ((Group2Activity) Group2Activity.groupContext).LoadListUserAndUserContent();
+                }
 
 
             } catch (JSONException e) {
@@ -405,6 +424,7 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     };
+
 
 }
 

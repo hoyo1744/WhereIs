@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -163,7 +164,7 @@ public class Group2Activity extends AppCompatActivity {
         else if(requestCode==REQUEST_CHANGE_CONTENT){
             if(resultCode==RESULT_OK){
                 //MessageEvent(데이터변경메시지)
-                ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage();
+                ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
 
                 //유저리로드
                 LoadListUserAndUserContent();
@@ -356,6 +357,7 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void LoadListUserAndUserContent() {
+
         listUserInfo.clear();
         Thread thread = new Thread(new Runnable() {
             boolean isPlaying = false;
