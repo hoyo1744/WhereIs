@@ -97,6 +97,7 @@ public class GroupAddActivity extends AppCompatActivity {
                 if(CheckEmptyBox())
                     break;
 
+
                 //그룹생성
                 CreateGroup();
                 break;
@@ -104,11 +105,9 @@ public class GroupAddActivity extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
                 finish();
                 break;
-
         }
         return super.onOptionsItemSelected(item);
     }
-
     public void init(){
         //액션바 및 타이틀바 설정
         android.support.v7.app.ActionBar actionBar=getSupportActionBar();

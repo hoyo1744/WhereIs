@@ -52,6 +52,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/subGroupCategoryTextView"
+            android:hint="'#'으로 구분해주세요."
             android:id="@+id/subGroupCategoryEditText"
             />
 
