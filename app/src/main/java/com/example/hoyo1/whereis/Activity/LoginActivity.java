@@ -91,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
 
-
         //객체참조
         registerButton=(TextView) findViewById(R.id.registerButton);
         idText=(EditText)findViewById(R.id.idText);
@@ -319,8 +318,7 @@ public class LoginActivity extends AppCompatActivity {
 
         try{
             data.put("No",SingletonUser.getInstance().getUserNumber());
-            data.put("Id",SingletonUser.getInstance().getUserId());
-            //mSocket.emit("login",data);
+            data.put("id",SingletonUser.getInstance().getUserId());
             SingletonSocket.getInstance().emit("login",data);
         }catch(JSONException e){
             e.printStackTrace();
@@ -333,12 +331,27 @@ public class LoginActivity extends AppCompatActivity {
 
         try{
             data.put("No",SingletonUser.getInstance().getUserNumber());
-            data.put("Id",SingletonUser.getInstance().getUserId());
+            data.put("id",SingletonUser.getInstance().getUserId());
             SingletonSocket.getInstance().emit("logout",data);
         }catch(JSONException e){
             e.printStackTrace();
             ShowErrorMessage("소켓로그아웃에러");
         }
+    }
+
+    public void sendInviteGroupMemberMessage(String userNo){
+        JSONObject data=new JSONObject();
+        try {
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient",userNo);
+            data.put("command","individual");
+            data.put("data","individual");
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+            ShowErrorMessage("소켓메시지이벤트에러");
+        }
+
     }
     public void sendDataChangeMessage(String groupID){
         JSONObject data=new JSONObject();
@@ -410,9 +423,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 //message에 따른 처리
                 if(data.equals("group")) {
-
                     ((Group2Activity) Group2Activity.groupContext).LoadListUserAndUserContent();
                 }
+                else if(data.equals("individual")){
+                    ((MainActivity)MainActivity.mainContext).GetGroupList();
+                }
+
 
 
             } catch (JSONException e) {

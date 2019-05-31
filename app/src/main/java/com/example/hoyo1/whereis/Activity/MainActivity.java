@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 //생성된 그룹액티비티
                 int position=adapter.getCount();
                 Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
-                intent.putExtra("key", (position));
+                intent.putExtra("key", (position+1));
                 startActivityForResult(intent,REQUEST_GROUP);
 
             }
@@ -224,6 +224,8 @@ public class MainActivity extends AppCompatActivity {
                                     int size = jsonResponse2.getInt("size");
                                     //사이즈만큼 그룹아이디를 담을 수 있는 자료구조를 생각해야함.
                                     for (int nNo = 1; nNo <= size; nNo++) {
+                                        if(SingletonGroupList.getInstance().checkExistGroup(nNo))
+                                            continue;
                                         String strGroupName = Integer.toString(nNo);
                                         String strGroupLeaderID = Integer.toString(nNo + MAX_GROUP_LIST);
                                         String strGroupID=Integer.toString(nNo+MAX_GROUP_LEADER);

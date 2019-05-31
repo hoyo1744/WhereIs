@@ -166,7 +166,7 @@ public class Group2Activity extends AppCompatActivity {
                 //MessageEvent(데이터변경메시지)
                 ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
 
-                //유저리로드
+                //유저리로드(위에서 메시지로 처리)
                 LoadListUserAndUserContent();
             }
             else {
@@ -333,6 +333,7 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void GetMaxContent() {
+        listContentSize.clear();
         int nlistCount = listGridContent.size();
         if (nlistCount != 0) {
             for (int nCount = 0; nCount < nlistCount; nCount++) {
@@ -378,6 +379,7 @@ public class Group2Activity extends AppCompatActivity {
         thread.start();
     }
     public void GetMaxProfile() {
+        listHeadSize.clear();
         int nlistCount = listUserInfo.size();
         if (nlistCount != 0) {
             String strSelectedUserName = listUserInfo.get(0).getUserName();//가장긴유저이름
@@ -712,6 +714,7 @@ public class Group2Activity extends AppCompatActivity {
                 boolean success = jsonResponse.getBoolean("success");
 
                 if (success) {
+                    listGridHead.clear();
                     //그룹헤드리스트 초기화
                     String strHead1 = jsonResponse.getString("groupHead1");
                     listGridHead.add((strHead1));
@@ -783,6 +786,7 @@ public class Group2Activity extends AppCompatActivity {
                 if (success) {
                     //유저수
                     int nUserCount = jsonResponse.getInt("size");
+                    listUserInfo.clear();
                     //유저수 만큼 이터레이터
                     for (int nIdx = 1; nIdx <= nUserCount; nIdx++) {
                         Group2Activity.UserInfo userInfo = new Group2Activity.UserInfo();

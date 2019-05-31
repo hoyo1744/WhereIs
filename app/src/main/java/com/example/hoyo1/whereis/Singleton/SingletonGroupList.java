@@ -25,6 +25,9 @@ public class SingletonGroupList {
         mapGroup=new HashMap<>();
         mapGroup.clear();
     }
+    public boolean checkExistGroup(Integer key){
+        return mapGroup.containsKey(key);
+    }
     public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupLeaderNo,String groupLeaderName,int groupLeaderResId,String groupCategory){
 
         GroupInfo groupInfo=new GroupInfo();

@@ -136,6 +136,11 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                         AddGroupContent();
                         break;
                     case AM_GROUP_ADD_SUCCESS:
+                        //소켓멤버초대
+                        ((LoginActivity)LoginActivity.loginContext).sendInviteGroupMemberMessage(userNo);
+                        //소켓그룹
+                        ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
+
                         setResult(RESULT_OK);
                         finish();
                         break;

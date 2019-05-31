@@ -149,6 +149,7 @@ public class GroupAddActivity extends AppCompatActivity {
                     case AM_GROUP_CONTENT_ADD:
                         //소켓그룹생성
                         ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("create",createdGroupID);
+
                         setResult(RESULT_OK);
                         finish();
                         break;
