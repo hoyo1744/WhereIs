@@ -1,5 +1,6 @@
 package com.example.hoyo1.whereis.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.LoginInfoRequest;
 import com.example.hoyo1.whereis.Request.LoginRequest;
@@ -49,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     //소켓
     public static io.socket.client.Socket mSocket;
 
+    private CustomLoadingDialog customLoadingDialog;
     private TextView informationTextView;
     private TextView registerButton;
     private EditText passwordText;
@@ -63,8 +66,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+
 
         //액티비티관련 초기화
         init();
@@ -98,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton=(Button)findViewById(R.id.loginButton);
         informationTextView=(TextView)findViewById(R.id.information);
 
+
         //리스너연결
         registerButton.setOnClickListener(registerButtonListener);
         loginButton.setOnClickListener(loginButtonListener);
@@ -112,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if(msg.what==AM_LOGIN_SUCCESS){
+                    customLoadingDialog.dismiss();
                     Intent intent=new Intent(getApplicationContext(),MainActivity.class);
                     idText.setText("");
                     passwordText.setText("");
@@ -242,6 +247,10 @@ public class LoginActivity extends AppCompatActivity {
             final String userId=idText.getText().toString();
             final String userPassword=passwordText.getText().toString();
 
+            customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
+            customLoadingDialog.show();
+
+
             Response.Listener<String> responseLister= new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -250,12 +259,13 @@ public class LoginActivity extends AppCompatActivity {
                         boolean success=jsonResponse.getBoolean("success");
                         if(success)
                         {
+                            customLoadingDialog.dismiss();
                             AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
                             dialog=builder.setMessage("로그인에 성공했습니다.")
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-
+                                            customLoadingDialog.show();
                                             //싱글톤객체
                                             GetInitialSingletonUser(userId,userPassword);
 

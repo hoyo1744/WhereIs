@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.UpdateContentRequest;
 
@@ -32,6 +33,7 @@ public class ChangeContent extends AppCompatActivity {
     public final static int AM_CHANGE_CONTENT_FAIL=40002;
 
 
+    private CustomLoadingDialog customLoadingDialog;
     private TextView textViewBeforeContent;
     private ArrayAdapter<String> adapter;
     private Handler handlerChangeContent;
@@ -78,7 +80,11 @@ public class ChangeContent extends AppCompatActivity {
                     dialog.show();
                     break;
                 }
+
+                customLoadingDialog=new CustomLoadingDialog(ChangeContent.this);
+                customLoadingDialog.show();
                 UpdateContent();
+                customLoadingDialog.dismiss();
                 break;
             case android.R.id.home:
                 //취소

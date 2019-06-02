@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.RegisterRequest;
 import com.example.hoyo1.whereis.Request.ValidateRequest;
@@ -25,6 +26,8 @@ import static android.widget.Toast.makeText;
 
 public class RegisterActivity extends AppCompatActivity {
 
+
+    private CustomLoadingDialog customLoadingDialog;
     private boolean validate=false;
     private String userPhoneNumber;
     private String userPassword;
@@ -109,7 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
                     validate=true;
                     idText.setBackgroundColor(getResources().getColor(R.color.colorGray));
                     validateButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
-
+                    customLoadingDialog.dismiss();
 
                 }
                 else{
@@ -132,6 +135,8 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener validateButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            customLoadingDialog=new CustomLoadingDialog(RegisterActivity.this);
+            customLoadingDialog.show();
             final String userID = idText.getText().toString();
             if (validate)
                 return;
@@ -170,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                             )
                             .create();
                     dialog.show();
+                    customLoadingDialog.dismiss();
                 }
                 else{
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
@@ -189,6 +195,8 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener registerButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            customLoadingDialog=new CustomLoadingDialog(RegisterActivity.this);
+            customLoadingDialog.show();
             String userID=idText.getText().toString();
             String userPassword=passwordText.getText().toString();
             String userEmail=emailText.getText().toString();

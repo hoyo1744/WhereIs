@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.GroupIdRequest;
 import com.example.hoyo1.whereis.List.SingerAdapter;
@@ -58,14 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
     //메인액티비티컨텍스트
     public static Context mainContext;
-    boolean bIsResponseCheck=false;
 
-    ImageView userImageView;
-    TextView userNameTextView;
-    ListView listView;
-    SingerAdapter adapter;
-    TextView groupSubTitleTextView;
-    Handler handlerGroupList;
+
+    //객체
+    private CustomLoadingDialog customLoadingDialog;
+    private TextView groupSubTitleTextView;
+    private TextView userNameTextView;
+    private Handler handlerGroupList;
+    private ImageView userImageView;
+    private SingerAdapter adapter;
+    private long backButtonPushTime;
+    private ListView listView;
+
+
+
 
 
 
@@ -139,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==REQUEST_GROUP_ADD){
             //요청받은 메시지처리(그룹추가)
             if(resultCode==RESULT_OK){
-
-
+                customLoadingDialog=new CustomLoadingDialog(MainActivity.this);
+                customLoadingDialog.show();
                 //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장), 그룹리스트 리로드
                 GetGroupList();
+                customLoadingDialog.dismiss();
 
                 //생성된 그룹액티비티
                 int position=adapter.getCount();
@@ -204,6 +212,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void GetGroupList(){
+
+        //로딩시작
+        customLoadingDialog=new CustomLoadingDialog(MainActivity.this);
+        customLoadingDialog.show();
+
         Thread thread=new Thread(new Runnable() {
             boolean isPlaying=false;
             @Override
@@ -284,6 +297,9 @@ public class MainActivity extends AppCompatActivity {
 
         listView.setAdapter(adapter);
         groupSubTitleTextView.setText("그룹"+"("+adapter.getCount()+")");
+
+        //로딩종료
+        customLoadingDialog.dismiss();
     }
 
     public void RestartActivity(){
@@ -303,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
             //소켓그룹참여
             String groupID=SingletonGroupList.getInstance().getGroupID(position+1);
             ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("join",groupID);
-
             startActivityForResult(intent,REQUEST_GROUP);
 
 
@@ -342,9 +357,32 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+    public void ShowCloseMessage(String title,String content){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //대화상자설정
+        builder.setTitle(title);
+        builder.setMessage(content);
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
 
 
+        //예 버튼 추가
+        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                KillApp();
+            }
+        });
 
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        if(System.currentTimeMillis()-backButtonPushTime>=2000){
+            backButtonPushTime=System.currentTimeMillis();
+        }else if(System.currentTimeMillis()-backButtonPushTime<2000){
+            ShowCloseMessage("종료하기","종료하시겠습니까?");
+        }
+    }
 }

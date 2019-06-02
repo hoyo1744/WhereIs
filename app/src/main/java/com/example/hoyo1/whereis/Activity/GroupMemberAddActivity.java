@@ -6,6 +6,9 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.EditText;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.AddGroupContentRequest;
 import com.example.hoyo1.whereis.Request.AddGroupMemberRequest;
@@ -23,6 +27,8 @@ import com.example.hoyo1.whereis.Request.ValidateGroupMemberAndUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.security.acl.Group;
 
 public class GroupMemberAddActivity extends AppCompatActivity {
 
@@ -33,16 +39,21 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     public static final int AM_GROUP_ADD_CONTENT=50003;
     public static final int AM_GROUP_ADD_SUCCESS=50004;
 
+
+    private CustomLoadingDialog customLoadingDialog;
     private Button memberNameValidateButton;
     private EditText memberNameEditText;
+    private String selectedUserName="";
     private boolean validate=false;
     private String strCategoryNum;
     private AlertDialog dialog;
     private String groupID;
     private String userNo;          //group_member에서 가져온다.
-    private String userPriv;        //group_member에서 가져온다.
+    private String userPriv;        //group_member에서 가져온다
     private Intent intent;
     private Handler handler;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +63,6 @@ public class GroupMemberAddActivity extends AppCompatActivity {
 
         //초기화
         init();
-
-
-
-
-
 
     }
     @Override
@@ -82,7 +88,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                     dialog.show();
                 }
                 else{
-                    //메시지르 통해서 group_content도 추가해야함.
+                    //메시지를 통해서 group_content도 추가해야함.
                     //유저이름파악완료
                     Message msg = handler.obtainMessage();
                     msg.what = AM_GET_USERINFO;
@@ -115,6 +121,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         memberNameValidateButton=(Button)findViewById(R.id.memberValidateButton);
 
         //리스너연결
+        memberNameEditText.addTextChangedListener(memberNameTextWatcher);
         memberNameValidateButton.setOnClickListener(memberNameValidateButtonListener);
 
         //데이터수신
@@ -127,6 +134,8 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case AM_GET_USERINFO:
+                        customLoadingDialog=new CustomLoadingDialog(GroupMemberAddActivity.this);
+                        customLoadingDialog.show();
                         GetUserNo();
                         break;
                     case AM_GROUP_ADD_MEMBER:
@@ -140,7 +149,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                         ((LoginActivity)LoginActivity.loginContext).sendInviteGroupMemberMessage(userNo);
                         //소켓그룹
                         ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
-
+                        customLoadingDialog.dismiss();
                         setResult(RESULT_OK);
                         finish();
                         break;
@@ -161,6 +170,8 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     }
 
     public void GetUserNo(){
+
+
             Thread thread = new Thread(new Runnable() {
             String userID=memberNameEditText.getText().toString();
             boolean isPlaying = false;
@@ -277,6 +288,37 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         });
         thread.start();
     }
+
+    //멤버네임텍스트왓처
+    private TextWatcher memberNameTextWatcher=new TextWatcher() {
+
+        String str="";
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            str=memberNameEditText.getText().toString();
+            if(!selectedUserName.equals(str)){
+                selectedUserName="";
+                validate=false;
+                memberNameValidateButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
+            }
+
+        }
+    };
+
+
+
+
     //멤버네임벨리데잇버튼클릭리스너
     private View.OnClickListener memberNameValidateButtonListener= new View.OnClickListener() {
         @Override
@@ -319,6 +361,9 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                             .create();
                     dialog.show();
                     validate=true;
+                    memberNameValidateButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    selectedUserName=memberNameEditText.getText().toString();
+
                 }
                 else{
                     AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);

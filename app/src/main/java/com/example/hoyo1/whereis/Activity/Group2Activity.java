@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridProfileView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridTextView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.ListAdapter;
@@ -109,6 +110,7 @@ public class Group2Activity extends AppCompatActivity {
     public static final int AM_GROUP_USER_INIT = 30001;
     public static final int AM_OUT_OF_GROUP    = 30002;
 
+    //컨텍스트
     public static Context groupContext;
 
 
@@ -117,7 +119,7 @@ public class Group2Activity extends AppCompatActivity {
     public static ArrayList<String> listGridContent;
     public static ArrayList<String> listGridHead;
 
-    //private ArrayList<NoVerticalScrollListView> listNoVerticalView;
+    private CustomLoadingDialog customLoadingDialog;
     private ArrayList<Group2Activity.UserInfo> listUserInfo;
     private ArrayList<String> listContentSize;
     private ArrayList<String> listHeadSize;
@@ -166,6 +168,8 @@ public class Group2Activity extends AppCompatActivity {
                 //MessageEvent(데이터변경메시지)
                 ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
 
+                customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
+                customLoadingDialog.show();
                 //유저리로드(위에서 메시지로 처리)
                 LoadListUserAndUserContent();
             }
@@ -176,6 +180,8 @@ public class Group2Activity extends AppCompatActivity {
         }
         else if(requestCode==REQUEST_MEMBER_ADD){
             if(resultCode==RESULT_OK){
+                customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
+                customLoadingDialog.show();
                 //유저리로드
                 LoadListUserAndUserContent();
             }
@@ -205,6 +211,8 @@ public class Group2Activity extends AppCompatActivity {
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
+                            customLoadingDialog.show();
                             //그룹탈퇴스레드시작
                             ExecutePersonOutOfGroup();
 
@@ -225,6 +233,8 @@ public class Group2Activity extends AppCompatActivity {
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
+                            customLoadingDialog.show();
                             //그룹탈퇴스레드시작
                             ExecuteLeaderOutOfGroup();
                         }
@@ -289,6 +299,7 @@ public class Group2Activity extends AppCompatActivity {
                         break;
                     case AM_GROUP_USER_INIT:
                         LoadList();
+                        customLoadingDialog.dismiss();
                         break;
                     case AM_OUT_OF_GROUP:
                         //소켓그룹나가기
@@ -298,7 +309,7 @@ public class Group2Activity extends AppCompatActivity {
                         else
                             //회워일때는 leave
                             ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("leave",groupID);
-
+                        customLoadingDialog.dismiss();
                         setResult(RESULT_OK);
                         finish();
                         break;
@@ -306,11 +317,15 @@ public class Group2Activity extends AppCompatActivity {
             }
         };
 
+
+        customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
+        customLoadingDialog.show();
         //그룹헤더와 컨텐트가져오기
         LoadListHeadAndContent();
     }
 
     public void LoadListHeadAndContent() {
+
         Thread thread= new Thread(new Runnable() {
             boolean isPlaying = false;
 

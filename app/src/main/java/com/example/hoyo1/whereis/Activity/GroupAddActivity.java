@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
+import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.AddGroupContentRequest;
 import com.example.hoyo1.whereis.Request.AddGroupMemberRequest;
@@ -55,8 +56,9 @@ public class GroupAddActivity extends AppCompatActivity {
     static final int AM_GROUP_CONTENT_ADD=40002;
 
 
-    private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
 
+    private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
+    private CustomLoadingDialog customLoadingDialog;
     private boolean bIsCreatedCategoryView;                          //커스텀뷰가 생성되었는지 확인
     private EditText groupCategoryNumberEditText;
     private EditText groupLeaderNameEditText;
@@ -97,6 +99,8 @@ public class GroupAddActivity extends AppCompatActivity {
                 if(CheckEmptyBox())
                     break;
 
+                customLoadingDialog=new CustomLoadingDialog(GroupAddActivity.this);
+                customLoadingDialog.show();
 
                 //그룹생성
                 CreateGroup();
@@ -150,6 +154,7 @@ public class GroupAddActivity extends AppCompatActivity {
                         ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("create",createdGroupID);
 
                         setResult(RESULT_OK);
+                        customLoadingDialog.dismiss();
                         finish();
                         break;
                 }
