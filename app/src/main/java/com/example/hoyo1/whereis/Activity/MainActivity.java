@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -146,11 +145,11 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode==REQUEST_GROUP_ADD){
             //요청받은 메시지처리(그룹추가)
             if(resultCode==RESULT_OK){
-                customLoadingDialog=new CustomLoadingDialog(MainActivity.this);
-                customLoadingDialog.show();
+
+
                 //그룹아이디리퀘스트(그룹리스트싱글톤에 리스트저장), 그룹리스트 리로드
                 GetGroupList();
-                customLoadingDialog.dismiss();
+
 
                 //생성된 그룹액티비티
                 int position=adapter.getCount();
@@ -213,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void GetGroupList(){
 
-        //로딩시작
         customLoadingDialog=new CustomLoadingDialog(MainActivity.this);
         customLoadingDialog.show();
 
@@ -300,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
         //로딩종료
         customLoadingDialog.dismiss();
+
     }
 
     public void RestartActivity(){

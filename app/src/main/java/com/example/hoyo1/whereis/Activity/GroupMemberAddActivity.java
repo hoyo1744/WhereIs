@@ -6,7 +6,6 @@ import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -27,8 +26,6 @@ import com.example.hoyo1.whereis.Request.ValidateGroupMemberAndUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.security.acl.Group;
 
 public class GroupMemberAddActivity extends AppCompatActivity {
 
@@ -149,8 +146,9 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                         ((LoginActivity)LoginActivity.loginContext).sendInviteGroupMemberMessage(userNo);
                         //소켓그룹
                         ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
-                        customLoadingDialog.dismiss();
+
                         setResult(RESULT_OK);
+                        customLoadingDialog.dismiss();
                         finish();
                         break;
 

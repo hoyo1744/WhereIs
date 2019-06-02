@@ -27,6 +27,7 @@ import static android.widget.Toast.makeText;
 public class RegisterActivity extends AppCompatActivity {
 
 
+
     private CustomLoadingDialog customLoadingDialog;
     private boolean validate=false;
     private String userPhoneNumber;
@@ -103,6 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
                 JSONObject jsonObject=new JSONObject(response);
                 boolean success=jsonObject.getBoolean("success");
                 if(success){
+                    customLoadingDialog.dismiss();;
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("사용할 수 있는 아이디입니다.")
                             .setPositiveButton("확인",null)
@@ -112,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
                     validate=true;
                     idText.setBackgroundColor(getResources().getColor(R.color.colorGray));
                     validateButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                    customLoadingDialog.dismiss();
+
 
                 }
                 else{
@@ -133,10 +135,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     //벨리데잇버튼클릭리스너
     private View.OnClickListener validateButtonListener= new View.OnClickListener() {
+
         @Override
         public void onClick(View v) {
             customLoadingDialog=new CustomLoadingDialog(RegisterActivity.this);
             customLoadingDialog.show();
+
             final String userID = idText.getText().toString();
             if (validate)
                 return;
@@ -164,6 +168,7 @@ public class RegisterActivity extends AppCompatActivity {
                 JSONObject jsonObject=new JSONObject(response);
                 boolean success=jsonObject.getBoolean("success");
                 if(success){
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("회원가입이 완료되었습니다.")
                             .setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -175,7 +180,8 @@ public class RegisterActivity extends AppCompatActivity {
                             )
                             .create();
                     dialog.show();
-                    customLoadingDialog.dismiss();
+
+
                 }
                 else{
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
@@ -195,8 +201,8 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener registerButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            customLoadingDialog=new CustomLoadingDialog(RegisterActivity.this);
-            customLoadingDialog.show();
+
+
             String userID=idText.getText().toString();
             String userPassword=passwordText.getText().toString();
             String userEmail=emailText.getText().toString();
@@ -225,6 +231,8 @@ public class RegisterActivity extends AppCompatActivity {
                 return ;
             }
 
+            customLoadingDialog=new CustomLoadingDialog(RegisterActivity.this);
+            customLoadingDialog.show();
             RegisterRequest registerRequest=new RegisterRequest(userID,userPassword,userEmail,userName,userGenger,userPhoneNumber,responRegisterListener);
             RequestQueue queue = Volley.newRequestQueue(RegisterActivity.this);
             queue.add(registerRequest);

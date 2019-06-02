@@ -15,7 +15,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -30,10 +29,6 @@ import com.example.hoyo1.whereis.Singleton.SingletonUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.Socket;
-import java.net.URISyntaxException;
-
-import io.socket.client.IO;
 import io.socket.emitter.Emitter;
 
 
@@ -116,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if(msg.what==AM_LOGIN_SUCCESS){
-                    customLoadingDialog.dismiss();
+
                     Intent intent=new Intent(getApplicationContext(),MainActivity.class);
                     idText.setText("");
                     passwordText.setText("");
@@ -132,6 +127,9 @@ public class LoginActivity extends AppCompatActivity {
                     //로그인메시지
                     sendLoginMessage();
 
+                    //로딩완료
+                    customLoadingDialog.dismiss();
+
 
 
                     startActivityForResult(intent,REQUEST_MAIN);
@@ -145,7 +143,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void GetInitialSingletonUser(final String userId, final String userPassword){
-
+        customLoadingDialog = new CustomLoadingDialog(LoginActivity.this);
+        customLoadingDialog.show();
 
 
         //서브스레드 생성 및 서버와 통신
@@ -244,11 +243,12 @@ public class LoginActivity extends AppCompatActivity {
     private View.OnClickListener loginButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
+            customLoadingDialog.show();
             final String userId=idText.getText().toString();
             final String userPassword=passwordText.getText().toString();
 
-            customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
-            customLoadingDialog.show();
+
 
 
             Response.Listener<String> responseLister= new Response.Listener<String>() {
@@ -265,7 +265,7 @@ public class LoginActivity extends AppCompatActivity {
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            customLoadingDialog.show();
+
                                             //싱글톤객체
                                             GetInitialSingletonUser(userId,userPassword);
 

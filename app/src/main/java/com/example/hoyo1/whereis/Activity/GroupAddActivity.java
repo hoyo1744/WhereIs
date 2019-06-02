@@ -58,6 +58,7 @@ public class GroupAddActivity extends AppCompatActivity {
 
 
     private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
+
     private CustomLoadingDialog customLoadingDialog;
     private boolean bIsCreatedCategoryView;                          //커스텀뷰가 생성되었는지 확인
     private EditText groupCategoryNumberEditText;
@@ -99,8 +100,7 @@ public class GroupAddActivity extends AppCompatActivity {
                 if(CheckEmptyBox())
                     break;
 
-                customLoadingDialog=new CustomLoadingDialog(GroupAddActivity.this);
-                customLoadingDialog.show();
+
 
                 //그룹생성
                 CreateGroup();
@@ -154,7 +154,9 @@ public class GroupAddActivity extends AppCompatActivity {
                         ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("create",createdGroupID);
 
                         setResult(RESULT_OK);
+
                         customLoadingDialog.dismiss();
+
                         finish();
                         break;
                 }
@@ -173,6 +175,9 @@ public class GroupAddActivity extends AppCompatActivity {
     }
 
     public void CreateGroup(){
+
+        customLoadingDialog=new CustomLoadingDialog(GroupAddActivity.this);
+        customLoadingDialog.show();
         Thread thread=new Thread(new Runnable() {
             boolean isPlaying=false;
             @Override

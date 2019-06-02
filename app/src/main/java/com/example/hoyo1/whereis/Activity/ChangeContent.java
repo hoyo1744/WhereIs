@@ -81,10 +81,9 @@ public class ChangeContent extends AppCompatActivity {
                     break;
                 }
 
-                customLoadingDialog=new CustomLoadingDialog(ChangeContent.this);
-                customLoadingDialog.show();
+
                 UpdateContent();
-                customLoadingDialog.dismiss();
+
                 break;
             case android.R.id.home:
                 //취소
@@ -145,11 +144,13 @@ public class ChangeContent extends AppCompatActivity {
                 switch(msg.what){
 
                     case AM_CHANGE_CONTENT_SUCCESS:
+                        customLoadingDialog.dismiss();
                         //저장작업완료
                         setResult(RESULT_OK);
                         finish();
                         break;
                     case AM_CHANGE_CONTENT_FAIL:
+                        customLoadingDialog.dismiss();
                         ((MainActivity)MainActivity.mainContext).ShowErrorMessage("컨텐트변경에 실패했습니다.");
                         break;
                 }
@@ -158,6 +159,9 @@ public class ChangeContent extends AppCompatActivity {
         };
     }
     public void UpdateContent(){
+        customLoadingDialog=new CustomLoadingDialog(ChangeContent.this);
+        customLoadingDialog.show();
+
         Thread thread=new Thread(new Runnable() {
             boolean isPlaying=false;
             @Override
