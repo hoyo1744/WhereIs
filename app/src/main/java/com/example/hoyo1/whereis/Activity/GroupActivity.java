@@ -108,9 +108,7 @@ public class GroupActivity extends AppCompatActivity {
         int menuId=item.getItemId();
         switch (menuId)
         {
-            case R.id.searchGroupMenu:
-                //그룹멤버검색
-                break;
+
             case R.id.memberAddGroupMenu:
                 //그룹멤버초대
                 Intent intent=new Intent(getApplicationContext(),GroupMemberAddActivity.class);

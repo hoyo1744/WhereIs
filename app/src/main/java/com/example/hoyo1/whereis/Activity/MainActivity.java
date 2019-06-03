@@ -112,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
         int menuId=item.getItemId();
         switch (menuId)
         {
-            case R.id.searchMenu:
-                //검색액티비티
-                break;
             case R.id.groupAddMenu:
                 //그룹추가액티비티
                 //getApplicationContext : 애플리케이션 컨텍스트가져오기

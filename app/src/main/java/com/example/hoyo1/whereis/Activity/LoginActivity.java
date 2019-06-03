@@ -64,6 +64,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
+        customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
+        customLoadingDialog.show();
+
         //액티비티관련 초기화
         init();
 

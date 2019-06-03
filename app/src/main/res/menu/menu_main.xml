@@ -4,12 +4,7 @@
 
 
 
-    <item
-        android:id="@+id/searchMenu"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/menu_main_search"
 
-        app:showAsAction="always" />
 
     <item
         android:id="@+id/groupAddMenu"
