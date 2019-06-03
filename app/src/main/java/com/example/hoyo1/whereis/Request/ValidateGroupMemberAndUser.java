@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidateGroupMemberAndUser extends StringRequest {
-    final static private String url="http://106.10.36.131/eodie_ValidateGroupMemberAndUser.php";
+    final static private String url="";
     public Map<String,String> parameters;
 
     public ValidateGroupMemberAndUser(String userId,String groupId,Response.Listener<String> listener) {

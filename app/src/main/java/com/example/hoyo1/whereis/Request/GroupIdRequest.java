@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class GroupIdRequest extends StringRequest {
 
-    final static private String url = "http://106.10.36.131/eodie_GroupIDForUser.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public GroupIdRequest(String userNumber,Response.Listener<String> listener) {

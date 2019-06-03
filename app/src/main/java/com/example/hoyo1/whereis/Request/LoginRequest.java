@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class LoginRequest extends StringRequest {
 
-    final static private String url = "http://106.10.36.131/eodie_UserLogin.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public LoginRequest(String userId, String userPassword,Response.Listener<String> listener) {

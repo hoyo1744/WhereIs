@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OutOfGroupLeaderRequest extends StringRequest {
-    final static private String url = "http://106.10.36.131/eodie_OutOfGroupLeader.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public OutOfGroupLeaderRequest(String strGroupID,String strUserID, Response.Listener<String> listener) {

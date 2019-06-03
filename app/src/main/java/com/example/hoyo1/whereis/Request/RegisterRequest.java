@@ -11,7 +11,7 @@ import java.util.Map;
 import android.widget.Toast;
 
 public class RegisterRequest extends StringRequest {
-    final static private String url = "http://106.10.36.131/eodie_UserRegister.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public RegisterRequest(String userId, String userPassword, String userEmail, String userName, String userGender, String userPhoneNumber, Response.Listener<String> listener) {

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UpdateContentRequest extends StringRequest {
-    final static private String url = "http://106.10.36.131/eodie_UpdateContent.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public UpdateContentRequest(String userId, String groupId, String strCategoryNum,String strContent,Response.Listener<String> listener) {

@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class GroupCreateRequest extends StringRequest {
 
-    final static private String url = "http://106.10.36.131/eodie_CreateGroup.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public GroupCreateRequest(String groupName, String groupLeader,String groupLeaderName,String groupLeaderID ,String groupCategoryNum, ArrayList<String> categoryHead,ArrayList<String> categoryContent, Response.Listener<String> listener) {

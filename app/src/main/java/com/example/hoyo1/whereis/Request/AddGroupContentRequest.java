@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class AddGroupContentRequest extends StringRequest {
 
-    final static private String url = "http://106.10.36.131/eodie_AddGroupContent.php";
+    final static private String url = "";
     private Map<String, String> parameters;
 
     public AddGroupContentRequest(String groupID, String userID, String groupCategory,String userPriv ,Response.Listener<String> listener) {
