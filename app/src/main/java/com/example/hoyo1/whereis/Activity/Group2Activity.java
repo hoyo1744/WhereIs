@@ -3,9 +3,12 @@ package com.example.hoyo1.whereis.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
@@ -13,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,6 +48,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Group2Activity extends AppCompatActivity {
+
+
 
     //유저인포 자료형
     class UserInfo implements Comparable<UserInfo> {
@@ -110,6 +117,7 @@ public class Group2Activity extends AppCompatActivity {
     public static Context groupContext;
 
 
+
     public static HashMap<GridProfileView,ListAdapter> mapSelectedProfileView;
     public static HashMap<GridTextView,ListAdapter> mapSelectedTextView;
     public static ArrayList<String> listGridContent;
@@ -119,10 +127,15 @@ public class Group2Activity extends AppCompatActivity {
 
     private ArrayList<Group2Activity.UserInfo> listUserInfo;
     private CustomLoadingDialog customLoadingDialog;
+    private ArrayList<ListAdapter> listUser;
     private ArrayList<String> listContentSize;
     private ArrayList<String> listHeadSize;
     private LinearLayout linearLayout;
+    private LinearLayout linearLayoutUser;
+    private ListAdapter listAdapterUser;
     private ListAdapter listAdapter;
+
+
 
     private TextView textViewGroupLeaderName;
     private Handler handlerGroupList;
@@ -265,6 +278,8 @@ public class Group2Activity extends AppCompatActivity {
         //객체참조
         textViewGroupLeaderName = (TextView) findViewById(R.id.groupLeaderNameTextView);
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+        linearLayoutUser= (LinearLayout) findViewById(R.id.linearLayoutUser);
+
 
 
         mapSelectedTextView=new HashMap<>();
@@ -272,6 +287,7 @@ public class Group2Activity extends AppCompatActivity {
         listGridHead = new ArrayList<>();           //그룹리스트헤더모음
         listGridContent = new ArrayList<>();        //그룹리스트컨텐트모음
         listUserInfo = new ArrayList<>();           //유저 정보모음.(유저아이디,컨텐트)
+        listUser=new ArrayList<>();                 //본인데이터 모음.
         listHeadSize = new ArrayList<>();           //헤더최대크기모음
         listContentSize = new ArrayList<>();        //컨텐트최대크기모음
         //listNoVerticalView=new ArrayList<>();
@@ -293,6 +309,7 @@ public class Group2Activity extends AppCompatActivity {
                         break;
                     case AM_GROUP_USER_INIT:
                         LoadList();
+                        //LoadUser();
                         customLoadingDialog.dismiss();
                         break;
                     case AM_OUT_OF_GROUP:
@@ -411,8 +428,10 @@ public class Group2Activity extends AppCompatActivity {
 
     public void LoadList() {
         //리스트 클리어
-        linearLayout.removeAllViews();
 
+        linearLayout.removeAllViews();
+        linearLayoutUser.removeAllViews();
+        listUser.clear();
         //어댑터를 이용한 내용초기화
         ExecuteListClear();
 
@@ -440,7 +459,9 @@ public class Group2Activity extends AppCompatActivity {
         int nCategoryCnt = 0;
         for (int nCount = 0; nCount < nCategoryNum; nCount++) {
             int nListHeight = 0;
+
             listAdapter = new ListAdapter(getApplicationContext(),nCount);      //컨텍스트,카테고리번호(내가 몇번째 어댑터인지)
+            listAdapterUser=new ListAdapter(getApplicationContext(),nCount);
 
             int width = 0;
             int height = 0;
@@ -455,10 +476,12 @@ public class Group2Activity extends AppCompatActivity {
             nListHeight += height;
             //헤더넣기
             if (nCount == 0) {
-                if(!bIsSmallthanTotalWidth)
+                if(!bIsSmallthanTotalWidth) {
                     listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT, width, height));
-                else
+
+                }else {
                     listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
+                }
             }
             else {
                 String strHead = listGridHead.get(nCategoryCnt).toString();
@@ -480,16 +503,33 @@ public class Group2Activity extends AppCompatActivity {
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
                         else
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorLeader)));
+
+
+
+                        //상단 본인 표시
+                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber())){
+                            if(!bIsSmallthanTotalWidth)
+                                listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
+                            else
+                                listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorLeader)));
+
+                        }
+
                     }
                     else if(strUserNo.equals(SingletonUser.getInstance().getUserNumber())) {
-                        if(!bIsSmallthanTotalWidth)
+                        if(!bIsSmallthanTotalWidth) {
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
-                        else
+                            listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
+
+                        } else {
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorOwner)));
+                            listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorOwner)));
+                        }
                     }
                     else {
                         if(!bIsSmallthanTotalWidth)
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorDefault)));
+
                         else
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorDefault)));
                     }
@@ -498,27 +538,40 @@ public class Group2Activity extends AppCompatActivity {
                     String strUserNo=listUserInfo.get(nUserCount).getUserNo();
                     if(strUserContent.equals("null"))
                         strUserContent="-";
-                    if(!bIsSmallthanTotalWidth)
+                    if(!bIsSmallthanTotalWidth) {
                         listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
-                    else
+                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
+                            listAdapterUser.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
+                    } else {
                         listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
+                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
+                            listAdapterUser.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
+                    }
                 }
                 nListHeight += height;
             }
             NoVerticalScrollListView listChild = new NoVerticalScrollListView(getApplicationContext());
+            NoVerticalScrollListView listUserChild= new NoVerticalScrollListView(getApplicationContext());
 
             listChild.setVerticalScrollBarEnabled(false);
             listChild.setAdapter(listAdapter);
-            //listNoVerticalView.add(listChild);
+            listUserChild.setVerticalScrollBarEnabled(false);
+            listUserChild.setAdapter(listAdapterUser);
 
+
+            linearLayoutUser.addView(listUserChild);
             linearLayout.addView(listChild);
             listChild.getLayoutParams().height = nListHeight+(10*listUserInfo.size());
-            if(bIsSmallthanTotalWidth)
+            listUserChild.getLayoutParams().height = nListHeight+(10*listUserInfo.size());
+            if(bIsSmallthanTotalWidth) {
                 listChild.getLayoutParams().width = PieceWidth;
-            else
+                listUserChild.getLayoutParams().width = PieceWidth;
+            } else {
                 listChild.getLayoutParams().width = width;
-
+                listUserChild.getLayoutParams().width = width;
+            }
             registerForContextMenu(listChild);
+            registerForContextMenu(listUserChild);
 
             if (nCount != 0)
                 nCategoryCnt++;
@@ -533,6 +586,7 @@ public class Group2Activity extends AppCompatActivity {
         //헤더는 제외하기
         if(pos==0)
             return ;
+
 
         //자신의 아이디가 일치하지 않으면 제외하기.
         String strUserIdSource=listUserInfo.get(pos-1).getUserID().toString();
@@ -898,6 +952,15 @@ public class Group2Activity extends AppCompatActivity {
             else
                 total[0]+= (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(0).toString());
         }
+
+    }
+
+    //상단 본인 출력
+
+    public void LoadUser(){
+
+
+
 
     }
 
