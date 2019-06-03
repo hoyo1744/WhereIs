@@ -130,6 +130,7 @@ public class Group2Activity extends AppCompatActivity {
     private ArrayList<ListAdapter> listUser;
     private ArrayList<String> listContentSize;
     private ArrayList<String> listHeadSize;
+    private ArrayList<String> listProfileSize;
     private LinearLayout linearLayout;
     private LinearLayout linearLayoutUser;
     private ListAdapter listAdapterUser;
@@ -285,7 +286,8 @@ public class Group2Activity extends AppCompatActivity {
         listGridContent = new ArrayList<>();        //그룹리스트컨텐트모음
         listUserInfo = new ArrayList<>();           //유저 정보모음.(유저아이디,컨텐트)
         listUser=new ArrayList<>();                 //본인데이터 모음.
-        listHeadSize = new ArrayList<>();           //헤더최대크기모음
+        listProfileSize = new ArrayList<>();        //프로필최대크기모음
+        listHeadSize=new ArrayList<>();             //헤더크기모음
         listContentSize = new ArrayList<>();        //컨텐트최대크기모음
         //listNoVerticalView=new ArrayList<>();
 
@@ -358,6 +360,20 @@ public class Group2Activity extends AppCompatActivity {
         thread.start();
     }
 
+    public void GetMaxHead(){
+        listHeadSize.clear();
+        int nListCount=listGridHead.size();
+        if(nListCount!=0){
+            for(int nCount=0;nCount<nListCount;nCount++){
+                String strHead=listGridHead.get(nCount);
+                if (strHead=="null" || strHead.equals("null") || strHead ==null || strHead.equals(null))
+                    break;
+                listHeadSize.add(listGridHead.get(nCount));
+            }
+        }
+
+    }
+
     public void GetMaxContent() {
         listContentSize.clear();
         int nlistCount = listGridContent.size();
@@ -405,7 +421,7 @@ public class Group2Activity extends AppCompatActivity {
         thread.start();
     }
     public void GetMaxProfile() {
-        listHeadSize.clear();
+        listProfileSize.clear();
         int nlistCount = listUserInfo.size();
         if (nlistCount != 0) {
             String strSelectedUserName = listUserInfo.get(0).getUserName();//가장긴유저이름
@@ -419,7 +435,7 @@ public class Group2Activity extends AppCompatActivity {
                 }
             }
             //프로필이름중에 가장 긴 이름 완료.
-            listHeadSize.add(strSelectedUserName);
+            listProfileSize.add(strSelectedUserName);
         }
     }
 
@@ -431,6 +447,7 @@ public class Group2Activity extends AppCompatActivity {
         listUser.clear();
         //어댑터를 이용한 내용초기화
         ExecuteListClear();
+
 
         //call-by-reference를 위함.
         int[] ArrTotalWidth={0};
@@ -457,16 +474,18 @@ public class Group2Activity extends AppCompatActivity {
         for (int nCount = 0; nCount < nCategoryNum; nCount++) {
             int nListHeight = 0;
 
+
             listAdapter = new ListAdapter(getApplicationContext(),nCount);      //컨텍스트,카테고리번호(내가 몇번째 어댑터인지)
             listAdapterUser=new ListAdapter(getApplicationContext(),nCount);
 
             int width = 0;
             int height = 0;
             if (nCount == 0) {
-                width = (int) textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(0).toString());
+                width = (int) textViewGroupLeaderName.getPaint().measureText(listProfileSize.get(0).toString());
                 width += 100;
             } else {
-                width = (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(0).toString());
+                width = (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(nCategoryCnt).toString()) > (int) textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(nCategoryCnt).toString()) ? (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(nCategoryCnt).toString())  : (int) textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(nCategoryCnt).toString());
+                width+=20;
             }
             height = (int) textViewGroupLeaderName.getHeight();
 
@@ -826,8 +845,9 @@ public class Group2Activity extends AppCompatActivity {
                     String strContent10 = jsonResponse.getString("groupContent10");
                     listGridContent.add(strContent10);
 
-                    //여기에서 컨텐트 파싱시작.
+                    //여기에서 컨텐트와 헤더파싱시작.
                     GetMaxContent();
+                    GetMaxHead();
 
                     Message msg = handlerGroupList.obtainMessage();
                     msg.what = AM_GROUP_LIST_INIT;
@@ -940,14 +960,20 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void CaculateWidth(int[] total,int[] piece){
+
+        int nContentCount=0;
         for(int nCount=0;nCount<nCategoryNum;nCount++){
 
             if(nCount==0){
-                total[0]+=(int)textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(0).toString());
+                total[0]+=(int)textViewGroupLeaderName.getPaint().measureText(listProfileSize.get(0).toString());
                 total[0]+=100;
+            } else {
+                if((int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(nContentCount).toString())>(int) textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(nContentCount).toString()))
+                    total[0] += (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(nContentCount).toString());
+                else
+                    total[0]+=(int) textViewGroupLeaderName.getPaint().measureText(listHeadSize.get(nContentCount).toString());
+                nContentCount++;
             }
-            else
-                total[0]+= (int) textViewGroupLeaderName.getPaint().measureText(listContentSize.get(0).toString());
         }
 
     }

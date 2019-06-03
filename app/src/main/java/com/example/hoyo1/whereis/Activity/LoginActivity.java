@@ -63,10 +63,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
-        customLoadingDialog.show();
-
         //액티비티관련 초기화
         init();
 
@@ -104,8 +100,6 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(registerButtonListener);
         loginButton.setOnClickListener(loginButtonListener);
         informationTextView.setOnClickListener(informationListener);
-
-
 
 
         //핸들러

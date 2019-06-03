@@ -76,7 +76,7 @@ public class GroupActivity extends AppCompatActivity {
     ArrayList<String> listGridHead;
     ArrayList<String> listGridContent;
     ArrayList<UserInfo> listUserInfo;
-    ArrayList<String> listHeadSize;
+    ArrayList<String> listProfileSize;
     ArrayList<String> listContentSize;
 
 
@@ -138,7 +138,7 @@ public class GroupActivity extends AppCompatActivity {
         listGridHead=new ArrayList<>();
         listGridContent=new ArrayList<>();
         listUserInfo=new ArrayList<>();         //유저 정보모음.(유저아이디,컨텐트)
-        listHeadSize=new ArrayList<>();         //헤더최대크기모음
+        listProfileSize=new ArrayList<>();         //헤더최대크기모음
         listContentSize=new ArrayList<>();         //컨텐트최대크기모음
 
         gridView=(GridView)findViewById(R.id.gridView);
@@ -304,7 +304,7 @@ public class GroupActivity extends AppCompatActivity {
         for(int nUserCount=0;nUserCount<listUserInfo.size();nUserCount++){
             //프로필
             String strUserName=listUserInfo.get(nUserCount).getUserID();
-            String strHeadAndContent=listHeadSize.get(0).toString();
+            String strHeadAndContent=listProfileSize.get(0).toString();
             int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
             width+=500;
             nTotalWidth+=width;
@@ -461,7 +461,7 @@ public class GroupActivity extends AppCompatActivity {
         int nTotalWidth=0;
 
 
-        String strHeadAndContent=listHeadSize.get(0).toString();
+        String strHeadAndContent=listProfileSize.get(0).toString();
         int width =  (int)textViewGroupLeaderName.getPaint().measureText(strHeadAndContent);
         //int height=  Math.abs((int)(textViewGroupLeaderName.getPaint().ascent())+Math.abs((int)textViewGroupLeaderName.getPaint().descent()));
         width+=500;
@@ -503,7 +503,7 @@ public class GroupActivity extends AppCompatActivity {
             }
 
             //프로필이름중에 가장 긴 이름 완료.
-            listHeadSize.add(strSelectedUserName);
+            listProfileSize.add(strSelectedUserName);
         }
     }
     public  void GetMaxContent(){

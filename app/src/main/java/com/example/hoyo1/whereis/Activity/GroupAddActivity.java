@@ -353,6 +353,7 @@ public class GroupAddActivity extends AppCompatActivity {
             //입력되는 텍스트에 변화가 생겼을 때
 
             String strEditText=s.toString();
+
             if(!IsNumberCheckEditText(strEditText))
             {
                 AlertDialog.Builder builder=new AlertDialog.Builder(GroupAddActivity.this);
@@ -376,6 +377,21 @@ public class GroupAddActivity extends AppCompatActivity {
                 }
                 return ;
             }
+            if(Integer.parseInt(strEditText)>10){
+                AlertDialog.Builder builder=new AlertDialog.Builder(GroupAddActivity.this);
+                dialog=builder.setMessage("10개 초과는 불가능합니다.")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                groupCategoryNumberEditText.setText("");
+                            }
+                        })
+                        .create();
+                dialog.show();
+                return ;
+            }
+
+
         }
 
         @Override
@@ -413,6 +429,8 @@ public class GroupAddActivity extends AppCompatActivity {
 
             int nCategoryNum=Integer.parseInt(strEditText);
             bIsCreatedCategoryView=true;
+            subGroupAdd.removeAllViews();
+            listGroup.clear();
             for(int cnt=0;cnt<nCategoryNum;cnt++){
                 subGroupAddCategory subGroupAddCategoryView=new subGroupAddCategory(getApplicationContext());
                 listGroup.add(subGroupAddCategoryView);
