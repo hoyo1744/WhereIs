@@ -23,6 +23,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
+import com.example.hoyo1.whereis.Common.SaveSharedPreference;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.GroupIdRequest;
 import com.example.hoyo1.whereis.List.SingerAdapter;
@@ -125,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
                 //소켓연결끊기
                 ((LoginActivity)LoginActivity.loginContext).sendLogoutMessage();
+
+                //자동로그인설정해제
+                SaveSharedPreference.clearUserName(MainActivity.this);
 
                 setResult(RESULT_OK);
                 finish();

@@ -1,9 +1,11 @@
 package com.example.hoyo1.whereis.Activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
+import com.example.hoyo1.whereis.Common.SaveSharedPreference;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.LoginInfoRequest;
 import com.example.hoyo1.whereis.Request.LoginRequest;
@@ -48,7 +52,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private CustomLoadingDialog customLoadingDialog;
     private TextView informationTextView;
+    private CheckBox autoLoginCheckBox;
     private TextView registerButton;
+    private SharedPreferences auto;
     private EditText passwordText;
     private Handler handlerLogin;
     private Button loginButton;
@@ -59,12 +65,22 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         //액티비티관련 초기화
         init();
+
+
 
     }
     @Override
@@ -94,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordText=(EditText)findViewById(R.id.passwordText);
         loginButton=(Button)findViewById(R.id.loginButton);
         informationTextView=(TextView)findViewById(R.id.information);
-
+        autoLoginCheckBox=(CheckBox)findViewById(R.id.autoLogin);
 
         //리스너연결
         registerButton.setOnClickListener(registerButtonListener);
@@ -127,13 +143,10 @@ public class LoginActivity extends AppCompatActivity {
                     //로딩완료
                     customLoadingDialog.dismiss();
 
-
-
                     startActivityForResult(intent,REQUEST_MAIN);
                 }
             }
         };
-
     }
 
 
@@ -244,6 +257,11 @@ public class LoginActivity extends AppCompatActivity {
             customLoadingDialog.show();
             final String userId=idText.getText().toString();
             final String userPassword=passwordText.getText().toString();
+            if(autoLoginCheckBox.isChecked()){
+
+                SaveSharedPreference.setUserInfo(LoginActivity.this,userId,userPassword);
+            }
+
 
 
 
@@ -445,6 +463,8 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     };
+
+
 
 
 }
