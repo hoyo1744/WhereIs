@@ -36,6 +36,7 @@ import com.example.hoyo1.whereis.Request.GroupInfoRequest;
 import com.example.hoyo1.whereis.Request.GroupUserInfoRequest;
 import com.example.hoyo1.whereis.Request.OutOfGroupRequest;
 import com.example.hoyo1.whereis.Singleton.SingletonGroupList;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 import com.example.hoyo1.whereis.Singleton.SingletonUser;
 
 import org.json.JSONException;
@@ -178,7 +179,7 @@ public class Group2Activity extends AppCompatActivity {
         else if(requestCode==REQUEST_CHANGE_CONTENT){
             if(resultCode==RESULT_OK){
                 //MessageEvent(데이터변경메시지)
-                ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
+                SingletonSocket.getInstance().sendDataChangeMessage(groupID);
 
 
                 //유저리로드(위에서 메시지로 처리)
@@ -254,7 +255,7 @@ public class Group2Activity extends AppCompatActivity {
                 break;
             case android.R.id.home:
                 //소켓그룹나가기
-                ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("leave",groupID);
+                SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
                 setResult(RESULT_OK);
                 finish();
                 break;
@@ -315,10 +316,10 @@ public class Group2Activity extends AppCompatActivity {
                         //소켓그룹나가기
                         //리더일때는 delete
                         if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber()))
-                            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("delete",groupID);
+                            SingletonSocket.getInstance().sendRoomMessage("delete",groupID);
                         else
-                            //회워일때는 leave
-                            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("leave",groupID);
+                            //회원일때는 leave
+                            SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
 
                         customLoadingDialog.dismiss();
                         setResult(RESULT_OK);

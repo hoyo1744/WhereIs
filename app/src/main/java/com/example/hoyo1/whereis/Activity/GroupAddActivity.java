@@ -23,6 +23,7 @@ import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.AddGroupContentRequest;
 import com.example.hoyo1.whereis.Request.AddGroupMemberRequest;
 import com.example.hoyo1.whereis.Request.GroupCreateRequest;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 import com.example.hoyo1.whereis.Singleton.SingletonUser;
 import com.example.hoyo1.whereis.Common.subGroupAddCategory;
 
@@ -151,7 +152,7 @@ public class GroupAddActivity extends AppCompatActivity {
                         break;
                     case AM_GROUP_CONTENT_ADD:
                         //소켓그룹생성
-                        ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("create",createdGroupID);
+                        SingletonSocket.getInstance().sendRoomMessage("create",createdGroupID);
 
                         setResult(RESULT_OK);
 

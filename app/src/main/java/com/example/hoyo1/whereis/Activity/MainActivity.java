@@ -29,6 +29,7 @@ import com.example.hoyo1.whereis.Request.GroupIdRequest;
 import com.example.hoyo1.whereis.List.SingerAdapter;
 import com.example.hoyo1.whereis.List.SingerItem;
 import com.example.hoyo1.whereis.Singleton.SingletonGroupList;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 import com.example.hoyo1.whereis.Singleton.SingletonUser;
 
 import org.json.JSONException;
@@ -125,12 +126,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.itemLogout:
 
                 //소켓연결끊기
-                ((LoginActivity)LoginActivity.loginContext).sendLogoutMessage();
+                SingletonSocket.getInstance().sendLogoutMessage();
 
                 //자동로그인설정해제
                 SaveSharedPreference.clearUserName(MainActivity.this);
 
-                setResult(RESULT_OK);
+                Intent loginIntent=new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(loginIntent);
                 finish();
                 break;
         }
@@ -318,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
             //소켓그룹참여
             String groupID=SingletonGroupList.getInstance().getGroupID(position+1);
-            ((LoginActivity)LoginActivity.loginContext).sendRoomMessage("join",groupID);
+            SingletonSocket.getInstance().sendRoomMessage("join",groupID);
             startActivityForResult(intent,REQUEST_GROUP);
 
 

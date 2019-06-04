@@ -41,14 +41,11 @@ public class LoginActivity extends AppCompatActivity {
     //핸들메시지
     private final static int AM_LOGIN_SUCCESS=10000;
 
-    //액티비티요청메시지
-    private final static int REQUEST_MAIN=100;
 
     //로그인액티비티컨텍스트
     public static Context loginContext;
 
-    //소켓
-    public static io.socket.client.Socket mSocket;
+
 
     private CustomLoadingDialog customLoadingDialog;
     private TextView informationTextView;
@@ -131,19 +128,21 @@ public class LoginActivity extends AppCompatActivity {
 
 
                     //소켓연결 및 이벤트 연결
-                    SingletonSocket.getInstance().on("response",onResponse);
-                    SingletonSocket.getInstance().on("message",onExecute);
+                    SingletonSocket.getInstance().on("response",SingletonSocket.getInstance().onResponse);
+                    SingletonSocket.getInstance().on("message",SingletonSocket.getInstance().onExecute);
 
 
 
 
                     //로그인메시지
-                    sendLoginMessage();
+                    SingletonSocket.getInstance().sendLoginMessage();
 
                     //로딩완료
                     customLoadingDialog.dismiss();
 
-                    startActivityForResult(intent,REQUEST_MAIN);
+                    //startActivityForResult(intent,REQUEST_MAIN);
+                    startActivity(intent);
+                    finish();
                 }
             }
         };
@@ -229,10 +228,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==REQUEST_MAIN){
-            if(resultCode==RESULT_OK){
-            }
-        }
+
     }
 
     private View.OnClickListener informationListener= new View.OnClickListener() {
@@ -338,134 +334,6 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-    public void sendLoginMessage(){
-        JSONObject data=new JSONObject();
-
-        try{
-            data.put("No",SingletonUser.getInstance().getUserNumber());
-            data.put("id",SingletonUser.getInstance().getUserId());
-            SingletonSocket.getInstance().emit("login",data);
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-    }
-    public void sendLogoutMessage(){
-
-        JSONObject data=new JSONObject();
-
-        try{
-            data.put("No",SingletonUser.getInstance().getUserNumber());
-            data.put("id",SingletonUser.getInstance().getUserId());
-            SingletonSocket.getInstance().emit("logout",data);
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void sendInviteGroupMemberMessage(String userNo){
-        JSONObject data=new JSONObject();
-        try {
-            data.put("sender",SingletonUser.getInstance().getUserNumber());
-            data.put("recepient",userNo);
-            data.put("command","individual");
-            data.put("data","individual");
-            SingletonSocket.getInstance().emit("message",data);
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-
-    }
-    public void sendDataChangeMessage(String groupID){
-        JSONObject data=new JSONObject();
-        try {
-            data.put("sender",SingletonUser.getInstance().getUserNumber());
-            data.put("recepient",groupID);
-            data.put("command","group");
-            data.put("data","group");
-            SingletonSocket.getInstance().emit("message",data);
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public void sendRoomMessage(String strParam,String groupID){
-        JSONObject data=new JSONObject();
-        try{
-            data.put("roomId",groupID);
-            data.put("command",strParam);
-            SingletonSocket.getInstance().emit("room",data);
-
-        }catch(JSONException e){
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-    public Emitter.Listener onResponse = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            JSONObject dataJson=(JSONObject)args[0];
-            String code,message;
-
-            try {
-                code=dataJson.getString("code");
-                message=dataJson.getString("message");
-
-                //code에 따른 처리
-                if(code.equals("404")) {
-                    //심각한 문제
-                    KillApp();
-                }
-                else if(code.equals("403")){
-                    //심각하지 않은 문제.
-                }
-
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-
-        }
-    };
-
-
-    public Emitter.Listener onExecute = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            JSONObject dataJson=(JSONObject)args[0];
-            String data;
-
-            try {
-                data=dataJson.getString("data");
-
-                //message에 따른 처리
-                if(data.equals("group")) {
-                    ((Group2Activity) Group2Activity.groupContext).LoadListUserAndUserContent();
-                }
-                else if(data.equals("individual")){
-                    ((MainActivity)MainActivity.mainContext).GetGroupList();
-                }
-
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-
-        }
-    };
-
-
-
 
 }
 

@@ -23,6 +23,7 @@ import com.example.hoyo1.whereis.Request.AddGroupContentRequest;
 import com.example.hoyo1.whereis.Request.AddGroupMemberRequest;
 import com.example.hoyo1.whereis.Request.GetUserInfoAboutGroupRequest;
 import com.example.hoyo1.whereis.Request.ValidateGroupMemberAndUser;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,9 +144,9 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                         break;
                     case AM_GROUP_ADD_SUCCESS:
                         //소켓멤버초대
-                        ((LoginActivity)LoginActivity.loginContext).sendInviteGroupMemberMessage(userNo);
+                        SingletonSocket.getInstance().sendInviteGroupMemberMessage(userNo);
                         //소켓그룹
-                        ((LoginActivity)LoginActivity.loginContext).sendDataChangeMessage(groupID);
+                        SingletonSocket.getInstance().sendDataChangeMessage(groupID);
 
                         setResult(RESULT_OK);
                         customLoadingDialog.dismiss();
