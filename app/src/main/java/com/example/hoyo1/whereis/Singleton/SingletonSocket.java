@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.example.hoyo1.whereis.Activity.Group2Activity;
 import com.example.hoyo1.whereis.Activity.MainActivity;
@@ -24,11 +25,15 @@ public class SingletonSocket {
     //소켓
     private io.socket.client.Socket mSocket;
     private Activity activity;
+    private boolean check;
 
     public SingletonSocket(){
         try {
-            mSocket = IO.socket("http://106.10.36.131:3000");
-            mSocket.connect();
+            if(check==false) {
+                check = true;
+                mSocket = IO.socket("http://106.10.36.131:3000");
+                mSocket.connect();
+            }
         } catch(URISyntaxException e) {
             e.printStackTrace();
         }
@@ -77,6 +82,20 @@ public class SingletonSocket {
         }catch (JSONException e){
             e.printStackTrace();
         }
+
+    }
+    public void sendGroupDeleteMessage(String groupID){
+        JSONObject data=new JSONObject();
+        try {
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient",groupID);
+            data.put("command","delete");
+            data.put("data","delete");
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
 
     }
     public void sendDataChangeMessage(String groupID){
@@ -142,18 +161,61 @@ public class SingletonSocket {
     public Emitter.Listener onExecute = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+
+
             JSONObject dataJson=(JSONObject)args[0];
             String data;
 
             try {
+
                 data=dataJson.getString("data");
+
 
                 //message에 따른 처리
                 if(data.equals("group")) {
-                    ((Group2Activity) Group2Activity.groupContext).LoadListUserAndUserContent();
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                ((Group2Activity) Group2Activity.groupContext).LoadListUserAndUserContent();
+                            }
+
+                        }
+                    });
+
                 }
                 else if(data.equals("individual")){
-                    ((MainActivity)MainActivity.mainContext).GetGroupList();
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                ((MainActivity)MainActivity.mainContext).GetGroupList();
+                            }
+
+                        }
+                    });
+
+
+                }
+                else if(data.equals("delete")){
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                ((Group2Activity) Group2Activity.groupContext).GetOutOfDeleteGroup();
+                            }
+
+                        }
+                    });
                 }
 
 

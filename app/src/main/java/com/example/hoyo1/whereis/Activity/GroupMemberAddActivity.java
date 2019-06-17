@@ -59,6 +59,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         setTitle("멤버추가");
         setContentView(R.layout.activity_group_member_add);
 
+        SingletonSocket.getInstance().setActivity(this);
         //초기화
         init();
 

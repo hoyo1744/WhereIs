@@ -80,6 +80,7 @@ public class GroupAddActivity extends AppCompatActivity {
         setTitle("그룹추가");
         setContentView(R.layout.activity_group_add);
 
+        SingletonSocket.getInstance().setActivity(this);
         //액티비티초기화
         init();
 

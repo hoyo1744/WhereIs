@@ -21,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.UpdateContentRequest;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +53,7 @@ public class ChangeContent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("내용바꾸기");
         setContentView(R.layout.activity_change_content);
+        SingletonSocket.getInstance().setActivity(this);
 
         //초기화
         Init();

@@ -53,6 +53,7 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
         splashContext=this;
+        SingletonSocket.getInstance().setActivity(this);
         StartAnimations();
     }
 

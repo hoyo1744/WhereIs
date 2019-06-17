@@ -19,6 +19,7 @@ import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.RegisterRequest;
 import com.example.hoyo1.whereis.Request.ValidateRequest;
+import com.example.hoyo1.whereis.Singleton.SingletonSocket;
 
 import org.json.JSONObject;
 
@@ -60,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_register);
 
-
+        SingletonSocket.getInstance().setActivity(this);
         //객체 초기화 및 참조
         Init();
 

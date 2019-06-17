@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,6 +35,7 @@ import com.example.hoyo1.whereis.Common.NoVerticalScrollListView;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.GroupInfoRequest;
 import com.example.hoyo1.whereis.Request.GroupUserInfoRequest;
+import com.example.hoyo1.whereis.Request.OutOfGroupLeaderRequest;
 import com.example.hoyo1.whereis.Request.OutOfGroupRequest;
 import com.example.hoyo1.whereis.Singleton.SingletonGroupList;
 import com.example.hoyo1.whereis.Singleton.SingletonSocket;
@@ -111,6 +113,7 @@ public class Group2Activity extends AppCompatActivity {
 
     //핸들러메시지
     public static final int AM_GROUP_LIST_INIT = 30000;
+    public static final int AM_GROUP_LIST_ERROR = 30003;
     public static final int AM_GROUP_USER_INIT = 30001;
     public static final int AM_OUT_OF_GROUP    = 30002;
 
@@ -152,6 +155,8 @@ public class Group2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group2);
 
+        SingletonSocket.getInstance().setActivity(this);
+
         //초기화
         Init();
     }
@@ -159,7 +164,10 @@ public class Group2Activity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_group, menu);
-        getMenuInflater().inflate(R.menu.menu_group_sub, menu);
+        if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber()))
+            getMenuInflater().inflate(R.menu.menu_group_sub_for_leader, menu);
+        else
+            getMenuInflater().inflate(R.menu.menu_group_sub, menu);
         return true;
     }
 
@@ -303,6 +311,15 @@ public class Group2Activity extends AppCompatActivity {
                 super.handleMessage(msg);
 
                 switch (msg.what) {
+                    case AM_GROUP_LIST_ERROR:
+                        //삭제되거나 존재하지 않는 그룹을 선택한 경우.
+                        Intent intentInText=new Intent(getApplicationContext(),dataPopUpActivity.class);
+                        //인텐트를 통해서 객체넣기
+                        intentInText.putExtra("data","삭제되었거나 존재하지 않는 그룹입니다.");
+                        startActivityForResult(intentInText,REQUEST_TEXT_POPUP);
+                        setResult(RESULT_OK);
+                        finish();
+                        break;
                     case AM_GROUP_LIST_INIT:
                         //회원정보가져오기
                         LoadListUserAndUserContent();
@@ -315,9 +332,11 @@ public class Group2Activity extends AppCompatActivity {
                     case AM_OUT_OF_GROUP:
                         //소켓그룹나가기
                         //리더일때는 delete
-                        if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber()))
-                            SingletonSocket.getInstance().sendRoomMessage("delete",groupID);
-                        else
+
+                        if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
+                            SingletonSocket.getInstance().sendGroupDeleteMessage(groupID);
+                            SingletonSocket.getInstance().sendRoomMessage("delete", groupID);
+                        }else
                             //회원일때는 leave
                             SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
 
@@ -351,6 +370,7 @@ public class Group2Activity extends AppCompatActivity {
                     //해당 그룹 group_db에서 검색하기 위한 키값 얻기.
                     int key = (intent.getExtras().getInt("key"));
                     String strGroupID = SingletonGroupList.getInstance().getGroupID(key);
+
 
                     GroupInfoRequest groupInfoRequest = new GroupInfoRequest(strGroupID, responseGroupInfoListener);
                     RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
@@ -766,9 +786,9 @@ public class Group2Activity extends AppCompatActivity {
             public void run() {
                 if (isPlaying == false) {
                     isPlaying = true;
-                    OutOfGroupRequest outOfGroupRequest = new OutOfGroupRequest(groupID,SingletonUser.getInstance().getUserNumber(), responseLeaderOutOfGroupListener);
+                    OutOfGroupLeaderRequest outOfGroupLeaderRequest = new OutOfGroupLeaderRequest(groupID,SingletonUser.getInstance().getUserNumber(), responseLeaderOutOfGroupListener);
                     RequestQueue queue = Volley.newRequestQueue(Group2Activity.this);
-                    queue.add(outOfGroupRequest);
+                    queue.add(outOfGroupLeaderRequest);
                 }
             }
         });
@@ -798,8 +818,9 @@ public class Group2Activity extends AppCompatActivity {
                 JSONObject jsonResponse = new JSONObject(response);
                 boolean success1 = jsonResponse.getBoolean("success1");
                 boolean success2 = jsonResponse.getBoolean("success2");
+                boolean success3 = jsonResponse.getBoolean("success3");
 
-                if (success1 && success2) {
+                if (success1 && success2 && success3) {
 
                     Message msg = handlerGroupList.obtainMessage();
                     msg.what = AM_OUT_OF_GROUP;
@@ -895,7 +916,9 @@ public class Group2Activity extends AppCompatActivity {
                     handlerGroupList.sendMessage(msg);
 
                 } else {
-
+                    Message msg = handlerGroupList.obtainMessage();
+                    msg.what = AM_GROUP_LIST_ERROR;
+                    handlerGroupList.sendMessage(msg);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1019,13 +1042,15 @@ public class Group2Activity extends AppCompatActivity {
 
     }
 
-    //상단 본인 출력
-
-    public void LoadUser(){
-
-
-
-
+    public void GetOutOfDeleteGroup(){
+        if(!groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
+            Intent intentInText=new Intent(getApplicationContext(),dataPopUpActivity.class);
+            //인텐트를 통해서 객체넣기
+            intentInText.putExtra("data","그룹이 삭제되었습니다.");
+            startActivityForResult(intentInText,REQUEST_TEXT_POPUP);
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
 }

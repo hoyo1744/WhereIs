@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         setTitle("그룹");
         setContentView(R.layout.activity_main);
 
+        SingletonSocket.getInstance().setActivity(this);
+
         //메인액티비티컨텍스트
         mainContext=this;
 
@@ -202,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
                     case AM_GROUP_LIST_CREATE:
                         //그룹리스트생성
                         LoadList();
+                        //로딩종료
+                        customLoadingDialog.dismiss();
 
                         break;
                 }
@@ -264,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                                 else {
-
+                                    customLoadingDialog.dismiss();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

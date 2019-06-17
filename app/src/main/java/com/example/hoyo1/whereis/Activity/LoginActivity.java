@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        SingletonSocket.getInstance().setActivity(this);
 
         //액티비티관련 초기화
         init();
@@ -126,6 +126,8 @@ public class LoginActivity extends AppCompatActivity {
                     idText.setText("");
                     passwordText.setText("");
 
+                    //로그인메시지
+                    SingletonSocket.getInstance().sendLoginMessage();
 
                     //소켓연결 및 이벤트 연결
                     SingletonSocket.getInstance().on("response",SingletonSocket.getInstance().onResponse);
@@ -134,8 +136,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-                    //로그인메시지
-                    SingletonSocket.getInstance().sendLoginMessage();
+
 
                     //로딩완료
                     customLoadingDialog.dismiss();
