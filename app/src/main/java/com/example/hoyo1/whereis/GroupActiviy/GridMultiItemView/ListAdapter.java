@@ -1,6 +1,7 @@
 package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +91,7 @@ public class ListAdapter extends BaseAdapter {
                     gridTextView.setId(R.id.gridTextViewLayout);
                     gridTextView.setGravity(Gravity.CENTER);
                     gridTextView.setContent(item.getContent());
+                    gridTextView.gridTextView.setTextColor(Color.BLACK);
                     convertView = gridTextView;
                     convertView.setLayoutParams(gridTextViewParams);//테스트
                     convertView.setBackgroundColor(color);

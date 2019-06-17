@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.GroupAddActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorGray"
+                android:text="그룹명 : "
+                android:textSize="25dp"
+                android:enabled="false"
+                android:id="@+id/groupNameTextViewForModify"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/groupNameTextViewForModify"
+                android:id="@+id/groupNameEditTextForModify"
+                />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorGray"
+                android:text="그룹장 : "
+                android:textSize="25dp"
+                android:id="@+id/groupLeaderNameTextViewForModify"
+                android:enabled="false"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/groupLeaderNameTextViewForModify"
+                android:id="@+id/groupLeaderNameEditTextForModify"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorGray"
+                android:text="카테고리 개수 : "
+                android:textSize="25dp"
+                android:id="@+id/groupCategoryTextViewForModify"
+                android:enabled="false"
+
+                />
+
+            <EditText
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/groupCategoryTextViewForModify"
+                android:inputType="number"
+                android:focusable="false"
+                android:id="@+id/groupCategoryEditTextForModify"
+                />
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_remove_black_24dp"
+                android:layout_toRightOf="@+id/groupCategoryEditTextForModify"
+                android:id="@+id/minusButton"/>
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_add_black_24dp"
+                android:id="@+id/plusButton"
+                android:layout_toRightOf="@id/minusButton"
+                />
+
+
+        </RelativeLayout>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/subForModify">
+
+
+
+
+            </LinearLayout>
+        </ScrollView>
+
+
+
+
+
+
+
+
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

@@ -101,9 +101,6 @@ public class GroupAddActivity extends AppCompatActivity {
                 //빈칸확인 예외처리
                 if(CheckEmptyBox())
                     break;
-
-
-
                 //그룹생성
                 CreateGroup();
                 break;

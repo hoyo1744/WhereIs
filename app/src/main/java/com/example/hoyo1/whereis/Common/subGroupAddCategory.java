@@ -26,7 +26,12 @@ public class subGroupAddCategory extends LinearLayout {
         content=(EditText)findViewById(R.id.subGroupCategoryEditText);
     }
 
-
+    public void setContent(String content){
+        this.content.setText(content);
+    }
+    public void setHead(String head){
+        this.head.setText(head);
+    }
     public String getContent(){
         return this.content.getText().toString();
     }

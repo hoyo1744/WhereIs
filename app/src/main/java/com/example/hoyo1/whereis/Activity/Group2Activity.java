@@ -27,6 +27,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
+import com.example.hoyo1.whereis.Common.GroupInfo;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridProfileView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridTextView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.ListAdapter;
@@ -110,12 +111,14 @@ public class Group2Activity extends AppCompatActivity {
     public final static int REQUEST_NAME_POPUP=301;
     public final static int REQUEST_CHANGE_CONTENT=302;
     public static final int REQUEST_MEMBER_ADD = 303;
+    public static final int REQUEST_MODIFY_GROUP= 304;
 
     //핸들러메시지
     public static final int AM_GROUP_LIST_INIT = 30000;
-    public static final int AM_GROUP_LIST_ERROR = 30003;
     public static final int AM_GROUP_USER_INIT = 30001;
     public static final int AM_OUT_OF_GROUP    = 30002;
+    public static final int AM_GROUP_LIST_ERROR= 30003;
+
 
     //컨텍스트
     public static Context groupContext;
@@ -205,6 +208,15 @@ public class Group2Activity extends AppCompatActivity {
                 LoadListUserAndUserContent();
             }
         }
+        else if(requestCode==REQUEST_MODIFY_GROUP){
+            if(requestCode==RESULT_OK){
+                //MessageEvent(데이터변경메시지)
+                SingletonSocket.getInstance().sendDataChangeMessage(groupID);
+
+                //유저리로드
+                LoadListUserAndUserContent();
+            }
+        }
 
     }
     @Override
@@ -213,10 +225,10 @@ public class Group2Activity extends AppCompatActivity {
         switch (menuId) {
             case R.id.memberAddGroupMenu:
                 //그룹멤버초대
-                Intent intent = new Intent(getApplicationContext(), GroupMemberAddActivity.class);
-                intent.putExtra("groupID",groupID);
-                intent.putExtra("groupCategory",nCategoryNum);
-                startActivityForResult(intent, REQUEST_MEMBER_ADD);
+                Intent intentForGroupMember = new Intent(getApplicationContext(), GroupMemberAddActivity.class);
+                intentForGroupMember.putExtra("groupID",groupID);
+                intentForGroupMember.putExtra("groupCategory",nCategoryNum);
+                startActivityForResult(intentForGroupMember, REQUEST_MEMBER_ADD);
                 break;
             case R.id.itemOutofGroup:
                 if(!groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
@@ -261,12 +273,34 @@ public class Group2Activity extends AppCompatActivity {
                     dialog.show();
                 }
                 break;
+
+            case R.id.itemChange:
+                intent=getIntent();
+                int key = (intent.getExtras().getInt("key"));
+                String groupName = SingletonGroupList.getInstance().getGroupName(key);
+                String groupLeaderName = SingletonGroupList.getInstance().getGroupLeaderName(key);
+                String groupCategory = SingletonGroupList.getInstance().getGroupCategory(key);
+
+                Intent intentForNewActivity=new Intent(getApplicationContext(),GroupModifyActivity.class);
+                GroupInfo groupInfo=new GroupInfo();
+                groupInfo.groupName=groupName;
+                groupInfo.groupLeaderName=groupLeaderName;
+                groupInfo.groupCategoryNum=groupCategory;
+                groupInfo.listContent=listGridContent;
+                groupInfo.listHead=listGridHead;
+                intentForNewActivity.putExtra("groupInfo",groupInfo);
+                intentForNewActivity.putExtra("groupLeaderID", SingletonUser.getInstance().getUserNumber());
+                intentForNewActivity.putExtra("groupID",groupID);
+                startActivityForResult(intentForNewActivity,REQUEST_MODIFY_GROUP);
+                break;
             case android.R.id.home:
                 //소켓그룹나가기
                 SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
                 setResult(RESULT_OK);
                 finish();
                 break;
+
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -344,6 +378,8 @@ public class Group2Activity extends AppCompatActivity {
                         setResult(RESULT_OK);
                         finish();
                         break;
+
+
                 }
             }
         };

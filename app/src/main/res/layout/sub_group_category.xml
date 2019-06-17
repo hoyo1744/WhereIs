@@ -14,12 +14,14 @@
             android:layout_marginTop="10dp"
             android:background="@color/colorGray"
             android:text="카테고리 헤더: "
+            android:textColor="@color/colorBlack"
             android:textSize="25dp"
             android:id="@+id/subGroupCategoryHeaderTextView"
             />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/subGroupCategoryHeaderTextView"
@@ -41,6 +43,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/colorGray"
             android:text="카테고리 내용 : "
+            android:textColor="@color/colorBlack"
             android:textSize="25dp"
             android:inputType="number"
             android:id="@+id/subGroupCategoryTextView"
@@ -49,10 +52,12 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/subGroupCategoryTextView"
             android:hint="'#'으로 구분해주세요."
+            android:textColorHint="@color/colorPrimary"
             android:id="@+id/subGroupCategoryEditText"
             />
 

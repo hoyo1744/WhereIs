@@ -30,9 +30,10 @@
             android:name=".Activity.dataPopUpActivity"
             android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".Activity.ChangeContent" />
-        <activity android:name=".Activity.InformationActivity"
-            android:theme="@style/AppTheme.Pop">
-        </activity>
+        <activity
+            android:name=".Activity.InformationActivity"
+            android:theme="@style/AppTheme.Pop"></activity>
+        <activity android:name=".Activity.GroupModifyActivity"></activity>
     </application>
 
 </manifest>

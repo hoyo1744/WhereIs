@@ -322,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent=new Intent(getApplicationContext(),Group2Activity.class);
             intent.putExtra("key", (position+1));
 
+
             //소켓그룹참여
             String groupID=SingletonGroupList.getInstance().getGroupID(position+1);
             SingletonSocket.getInstance().sendRoomMessage("join",groupID);

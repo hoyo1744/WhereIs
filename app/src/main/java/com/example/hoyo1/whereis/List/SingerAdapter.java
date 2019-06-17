@@ -1,6 +1,7 @@
 package com.example.hoyo1.whereis.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -39,11 +40,15 @@ public class SingerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         SingerItemView view=null;
-        if(convertView!=null)
-            view=(SingerItemView)convertView;
-        else
+        if(convertView!=null) {
+
+            view = (SingerItemView) convertView;
+
+        }else
         {
             view=new SingerItemView(adpaterContext.getApplicationContext());
+            view.textView.setTextColor(Color.BLACK);
+            view.textLeaderNameView.setTextColor(Color.BLACK);
         }
 
 
