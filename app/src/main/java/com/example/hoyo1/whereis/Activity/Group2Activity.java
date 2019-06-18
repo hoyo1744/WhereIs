@@ -209,12 +209,18 @@ public class Group2Activity extends AppCompatActivity {
             }
         }
         else if(requestCode==REQUEST_MODIFY_GROUP){
-            if(requestCode==RESULT_OK){
-                //MessageEvent(데이터변경메시지)
-                SingletonSocket.getInstance().sendDataChangeMessage(groupID);
+            if(resultCode==RESULT_OK){
 
-                //유저리로드
-                LoadListUserAndUserContent();
+                //전역변수변경(프로필포함)
+                nCategoryNum= data.getIntExtra("result",0)+1;
+
+                //싱글톤그룹리스트변경(프로필미포함)
+                intent=getIntent();
+                int key = (intent.getExtras().getInt("key"));
+                SingletonGroupList.getInstance().setGroupCategory(key,Integer.toString(nCategoryNum-1));
+
+                //소켓그룹수정
+                SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
             }
         }
 
@@ -438,7 +444,7 @@ public class Group2Activity extends AppCompatActivity {
             for (int nCount = 0; nCount < nlistCount; nCount++) {
                 //1개씩 가져와서 파싱후, 가장 긴것 고르기
                 String strContent = listGridContent.get(nCount);
-                if (strContent=="null" || strContent.equals("null") || strContent==null || strContent.equals(null))
+                if (strContent=="null" || strContent.equals("null") || strContent.equals(null))
                     break;
                 //#기준으로파싱하기
                 String[] words = strContent.split("#");
@@ -457,7 +463,6 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void LoadListUserAndUserContent() {
-
         listUserInfo.clear();
         Thread thread = new Thread(new Runnable() {
             boolean isPlaying = false;
@@ -629,7 +634,7 @@ public class Group2Activity extends AppCompatActivity {
                 } else {
                     String strUserContent = listUserInfo.get(nUserCount).getContent(nCategoryCnt);
                     String strUserNo=listUserInfo.get(nUserCount).getUserNo();
-                    if(strUserContent.equals("null"))
+                    if(strUserContent.equals("null") || strUserContent.equals("NULL"))
                         strUserContent="-";
                     /*
                     if(!bIsSmallthanTotalWidth) {
@@ -921,6 +926,7 @@ public class Group2Activity extends AppCompatActivity {
                     String strHead10 = jsonResponse.getString("groupHead10");
                     listGridHead.add((strHead10));
 
+                    listGridContent.clear();
                     //그룹컨텐트 초기화(이후에 콤보박스로 구현하기)
                     String strContent1 = jsonResponse.getString("groupContent1");
                     listGridContent.add(strContent1);
@@ -1087,6 +1093,22 @@ public class Group2Activity extends AppCompatActivity {
             setResult(RESULT_OK);
             finish();
         }
+    }
+
+    public void UpdateGroup(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+        builder.setTitle("안내");
+        builder.setMessage("그룹이 수정되었습니다.");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("예",new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog,int whichButton){
+                //다시 로드
+                LoadListHeadAndContent();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
 }

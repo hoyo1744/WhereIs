@@ -18,15 +18,37 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.Common.GroupInfo;
 import com.example.hoyo1.whereis.Common.subGroupAddCategory;
 import com.example.hoyo1.whereis.R;
+import com.example.hoyo1.whereis.Request.DeleteGroupContentRequest;
+import com.example.hoyo1.whereis.Request.GroupCreateRequest;
+import com.example.hoyo1.whereis.Request.GroupModifyRequest;
+import com.example.hoyo1.whereis.Request.UpdateCategoryOfGroupMemberRequest;
 import com.example.hoyo1.whereis.Singleton.SingletonSocket;
+import com.example.hoyo1.whereis.Singleton.SingletonUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class GroupModifyActivity extends AppCompatActivity {
+
+
+    //핸들메시지
+    public static final int AM_UPDATE_GROUP=50000;
+    public static final int AM_DELETE_CONTENT=50001;
+    public static final int AM_UPDATE_SUCCESS=50002;
+
+
+
+
+
 
     private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
     private CustomLoadingDialog customLoadingDialog;
@@ -116,7 +138,22 @@ public class GroupModifyActivity extends AppCompatActivity {
                 super.handleMessage(msg);
 
                 switch(msg.what){
-
+                    case AM_UPDATE_GROUP:
+                        //그룹수정으로 인한 데이터 초기화
+                        InitialGroupContent();
+                        break;
+                    case AM_DELETE_CONTENT:
+                        //group_member의 category변경
+                        UpdateCategoryOfGroupMember();
+                        break;
+                    case AM_UPDATE_SUCCESS:
+                        Intent resultIntent = new Intent();
+                        int nCategory=Integer.parseInt(groupCategoryEditText.getText().toString());
+                        resultIntent.putExtra("result",nCategory);
+                        customLoadingDialog.dismiss();
+                        setResult(RESULT_OK,resultIntent);
+                        finish();
+                        break;
 
                 }
             }
@@ -320,7 +357,92 @@ public class GroupModifyActivity extends AppCompatActivity {
         customLoadingDialog=new CustomLoadingDialog(GroupModifyActivity.this);
         customLoadingDialog.show();
 
+        Thread thread=new Thread(new Runnable() {
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+                    ArrayList<String> categoryHead=new ArrayList<>();
+                    ArrayList<String> categoryContent=new ArrayList<>();
+                    String strGroupName=groupNameEditText.getText().toString();
+                    String strGroupLeaderName=groupLeaderNameEditText.getText().toString();
+                    String strGroupLeaderID= SingletonUser.getInstance().getUserId();
+                    String strGroupCategoryNum=groupCategoryEditText.getText().toString();
+                    for(int nIdx=1;nIdx<=Integer.parseInt(strGroupCategoryNum);nIdx++) {
+                        categoryHead.add(listGroup.get(nIdx-1).getHead());
+                        categoryContent.add(listGroup.get(nIdx-1).getContent());
+                    }
+                    GroupModifyRequest groupModifyRequest= new GroupModifyRequest(groupID,strGroupName,strGroupLeaderID,strGroupLeaderName,groupLeaderID,strGroupCategoryNum,categoryHead,categoryContent,responseModifyGroupListener);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupModifyActivity.this);
+                    queue3.add(groupModifyRequest);
+                }
+            }
+        });
+        thread.start();
+
     }
+    //리스폰그룹멤버카테고리업데이트리스너
+    private Response.Listener<String> responseUpdateCategoryOfGroupMemberListener= new Response.Listener<String>(){
+        @Override
+        public void onResponse(String response) {
+            try {
+                JSONObject responseLister3 = new JSONObject(response);
+                boolean success = responseLister3.getBoolean("success");
+                if (success ) {
+                    Message msg = handler.obtainMessage();
+                    msg.what = AM_UPDATE_SUCCESS;
+                    handler.sendMessage(msg);
+                }
+                else {
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    //리스폰그룹컨텐트삭제리스너
+    private Response.Listener<String> responseDeleteGroupContentListener = new Response.Listener<String>(){
+        @Override
+        public void onResponse(String response) {
+            try {
+                JSONObject responseLister3 = new JSONObject(response);
+                boolean success = responseLister3.getBoolean("success");
+                if (success ) {
+                    Message msg = handler.obtainMessage();
+                    msg.what = AM_DELETE_CONTENT;
+                    handler.sendMessage(msg);
+                }
+                else {
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    //리스폰그룹생성리스너
+    private Response.Listener<String> responseModifyGroupListener = new Response.Listener<String>(){
+        @Override
+        public void onResponse(String response) {
+            try {
+                JSONObject responseLister3 = new JSONObject(response);
+                boolean success = responseLister3.getBoolean("success");
+                if (success ) {
+                    Message msg = handler.obtainMessage();
+                    msg.what = AM_UPDATE_GROUP;
+                    handler.sendMessage(msg);
+                }
+                else {
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     //플러스버튼리스너
     private View.OnClickListener plusButtonListener= new View.OnClickListener() {
@@ -378,5 +500,37 @@ public class GroupModifyActivity extends AppCompatActivity {
         }
     }
 
+    public void InitialGroupContent(){
+        Thread thread=new Thread(new Runnable() {
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
 
+                    DeleteGroupContentRequest deleteGroupContentRequest= new DeleteGroupContentRequest(groupID,responseDeleteGroupContentListener);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupModifyActivity.this);
+                    queue3.add(deleteGroupContentRequest);
+                }
+            }
+        });
+        thread.start();
+
+    }
+    public void UpdateCategoryOfGroupMember(){
+        Thread thread=new Thread(new Runnable() {
+            boolean isPlaying=false;
+            @Override
+            public void run() {
+                if(isPlaying==false) {
+                    isPlaying=true;
+
+                    UpdateCategoryOfGroupMemberRequest updateCategryOfGroupMemberRequest= new UpdateCategoryOfGroupMemberRequest(groupID,groupCategoryEditText.getText().toString(),responseUpdateCategoryOfGroupMemberListener);
+                    RequestQueue queue3 = Volley.newRequestQueue(GroupModifyActivity.this);
+                    queue3.add(updateCategryOfGroupMemberRequest);
+                }
+            }
+        });
+        thread.start();
+    }
 }

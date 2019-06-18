@@ -84,6 +84,20 @@ public class SingletonSocket {
         }
 
     }
+
+    public void sendGroupUpdateMessage(String groupID){
+        JSONObject data=new JSONObject();
+        try {
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient",groupID);
+            data.put("command","update");
+            data.put("data","update");
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+    }
     public void sendGroupDeleteMessage(String groupID){
         JSONObject data=new JSONObject();
         try {
@@ -212,6 +226,20 @@ public class SingletonSocket {
                                 isPlaying=true;
                                 // 이벤트 수신 시 실행할 내용들
                                 ((Group2Activity) Group2Activity.groupContext).GetOutOfDeleteGroup();
+                            }
+
+                        }
+                    });
+                }
+                else if(data.equals("update")){
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                ((Group2Activity) Group2Activity.groupContext).UpdateGroup();
                             }
 
                         }
