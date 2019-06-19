@@ -524,7 +524,8 @@ public class Group2Activity extends AppCompatActivity {
 
         //리스트의 넓이가 전체뷰의 넓이 보다 작다면. 맞춰줘야한다.
         if(TotalWidth<MainActivity.viewWidth){
-            PieceWidth=(MainActivity.viewWidth/nCategoryNum);
+            int newTotalWidth=(int) textViewGroupLeaderName.getPaint().measureText(listProfileSize.get(0).toString())+100;
+            PieceWidth=(MainActivity.viewWidth-newTotalWidth)/(nCategoryNum-1);
             bIsSmallthanTotalWidth=true;
         }
 
@@ -555,16 +556,6 @@ public class Group2Activity extends AppCompatActivity {
             //헤더넣기
             if (nCount == 0) {
                 listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT, width, height));
-                /*
-                if(!bIsSmallthanTotalWidth) {
-                    listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT, width, height));
-
-                }
-
-                else {
-                    listAdapter.addItem(new SingerProfileItem("프로필", listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
-                }
-                */
             }
             else {
                 String strHead = listGridHead.get(nCategoryCnt).toString();
@@ -572,12 +563,7 @@ public class Group2Activity extends AppCompatActivity {
                     listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
                 else
                     listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT, width, height));
-                /*
-                if(!bIsSmallthanTotalWidth)
-                    listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT, width, height));
-                else
-                    listAdapter.addItem(new SingerProfileItem(strHead, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
-                */
+
             }
 
             //유저수 만큼 이터레이터
@@ -587,66 +573,25 @@ public class Group2Activity extends AppCompatActivity {
                     String strUserName = listUserInfo.get(nUserCount).getUserName();
                     String strUserNo=listUserInfo.get(nUserCount).getUserNo();
                     if(strUserNo.equals(groupLeaderNo)) {
-                        /*
-                        if(!bIsSmallthanTotalWidth)
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
-                        else
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorLeader)));
-                         */
                         listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
-
-
                         //상단 본인 표시
-                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber())){
-                            /*
-                            if(!bIsSmallthanTotalWidth)
-                                listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
-                            else
-                                listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorLeader)));
-                            */
+                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber())) {
                             listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorLeader)));
                         }
 
                     }
                     else if(strUserNo.equals(SingletonUser.getInstance().getUserNumber())) {
-                        listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
-                        listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
-                        /*
-                        if(!bIsSmallthanTotalWidth) {
                             listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
                             listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorOwner)));
-
-                        } else {
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorOwner)));
-                            listAdapterUser.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorOwner)));
-                        }
-                        */
-                    }
-                    else {
+                    } else {
                         listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorDefault)));
-                        /*
-                        if(!bIsSmallthanTotalWidth)
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, width, height, getResources().getColor(R.color.colorDefault)));
-                        else
-                            listAdapter.addItem(new SingerProfileItem(strUserName, R.drawable.ic_person_black_24dp, listAdapter.ITEM_VIEW_PROFILE, PieceWidth, height, getResources().getColor(R.color.colorDefault)));
-                        */
                     }
                 } else {
                     String strUserContent = listUserInfo.get(nUserCount).getContent(nCategoryCnt);
                     String strUserNo=listUserInfo.get(nUserCount).getUserNo();
                     if(strUserContent.equals("null") || strUserContent.equals("NULL"))
                         strUserContent="-";
-                    /*
-                    if(!bIsSmallthanTotalWidth) {
-                        listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
-                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
-                            listAdapterUser.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, width, height));
-                    } else {
-                        listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
-                        if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
-                            listAdapterUser.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
-                    }
-                    */
+
                     if(width<PieceWidth){
                         listAdapter.addItem(new SingerProfileItem(strUserContent, listAdapter.ITEM_VIEW_TEXT, PieceWidth, height));
                         if(strUserNo.equals(SingletonUser.getInstance().getUserNumber()))
@@ -672,19 +617,16 @@ public class Group2Activity extends AppCompatActivity {
             linearLayout.addView(listChild);
             listChild.getLayoutParams().height = nListHeight+(10*listUserInfo.size());
             listUserChild.getLayoutParams().height = nListHeight+(10*listUserInfo.size());
-            /*
-            if(bIsSmallthanTotalWidth) {
-                listChild.getLayoutParams().width = PieceWidth;
-                listUserChild.getLayoutParams().width = PieceWidth;
-            } else {
-                listChild.getLayoutParams().width = width;
-                listUserChild.getLayoutParams().width = width;
-            }
-            */
-            if(width<PieceWidth){
-                listChild.getLayoutParams().width = PieceWidth;
-                listUserChild.getLayoutParams().width = PieceWidth;
-            }else {
+
+            if(nCount!=0) {
+                if (width < PieceWidth) {
+                    listChild.getLayoutParams().width = PieceWidth;
+                    listUserChild.getLayoutParams().width = PieceWidth;
+                } else {
+                    listChild.getLayoutParams().width = width;
+                    listUserChild.getLayoutParams().width = width;
+                }
+            }else{
                 listChild.getLayoutParams().width = width;
                 listUserChild.getLayoutParams().width = width;
             }

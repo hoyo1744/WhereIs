@@ -3,31 +3,25 @@ package com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView;
 import android.graphics.Color;
 import android.view.ViewGroup;
 
+import com.example.hoyo1.whereis.R;
+
 public class SingerProfileItem {
 
 
     ViewGroup.LayoutParams params;// 호용 : 이걸 통해서 그리드뷰 1개의셀의 크기를 정한다.
-    int color;
-    private int type;
-
-    String profileName;
     int profileImageResId;
+    int color;
+    int type;
+    String profileName;
     String content;
-
-
-    public SingerProfileItem(String name,int resId,int type){
-        profileName=name;
-        profileImageResId=resId;
-        this.type=type;
-    }
 
     public SingerProfileItem(String name,int resId,int type,int width,int height){
         profileName=name;
         profileImageResId=resId;
         this.type=type;
         params=new ViewGroup.LayoutParams(width,height);
+        this.color=Color.WHITE;
     }
-
     public SingerProfileItem(String name,int resId,int type,int width,int height,int color){
         profileName=name;
         profileImageResId=resId;
@@ -35,17 +29,11 @@ public class SingerProfileItem {
         params=new ViewGroup.LayoutParams(width,height);
         this.color=color;
     }
-
-
-    public SingerProfileItem(String content,int type){
-        this.content=content;
-        this.type=type;
-    }
-
     public SingerProfileItem(String content,int type,int width,int height){
         this.content=content;
         this.type=type;
         params=new ViewGroup.LayoutParams(width,height);
+        this.color=Color.WHITE;
     }
 
 
