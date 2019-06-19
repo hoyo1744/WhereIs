@@ -61,8 +61,7 @@ public class MainActivity extends AppCompatActivity {
     //메인액티비티컨텍스트
     public static Context mainContext;
 
-
-    //객체
+    //멤버변수
     private CustomLoadingDialog customLoadingDialog;
     private TextView groupSubTitleTextView;
     private TextView userNameTextView;
@@ -74,31 +73,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("그룹");
         setContentView(R.layout.activity_main);
 
+        //현재 맨위에 있는 액티비티설정
         SingletonSocket.getInstance().setActivity(this);
 
         //메인액티비티컨텍스트
         mainContext=this;
-
 
         //애플리케이션 화면크기 초기화
         GetApplicationWidthAndHeight();
 
         //초기화
         init();
-
-
-
-
-
     }
 
 
@@ -191,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
         //리스너참조
         listView.setOnItemClickListener(listViewListener);
 
-
         //객체 값 채워넣기
         userNameTextView.setText(SingletonUser.getInstance().getUserName());
         adapter = new SingerAdapter(getApplicationContext());
@@ -204,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     case AM_GROUP_LIST_CREATE:
                         //그룹리스트생성
                         LoadList();
+
                         //로딩종료
                         customLoadingDialog.dismiss();
 
@@ -269,6 +260,12 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 else {
                                     customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                                    dialog=builder.setMessage("그룹리스트를 가져오는데 실패했습니다.")
+                                            .setPositiveButton("확인", null)
+                                            .create();
+                                    dialog.show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -281,7 +278,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         thread.start();
 
     }
@@ -353,7 +349,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(content);
         builder.setIcon(android.R.drawable.ic_dialog_alert);
 
-
         //예 버튼 추가
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -371,7 +366,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle(title);
         builder.setMessage(content);
         builder.setIcon(android.R.drawable.ic_dialog_alert);
-
 
         //예 버튼 추가
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {

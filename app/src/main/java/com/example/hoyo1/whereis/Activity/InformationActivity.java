@@ -23,8 +23,5 @@ public class InformationActivity extends Activity{
         int height=dm.heightPixels;
 
         getWindow().setLayout((int)(width*0.9),(int)(height*0.85));
-
-
-
     }
 }

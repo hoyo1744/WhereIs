@@ -45,23 +45,17 @@ public class GroupModifyActivity extends AppCompatActivity {
     public static final int AM_DELETE_CONTENT=50001;
     public static final int AM_UPDATE_SUCCESS=50002;
 
-
-
-
-
-
+    //멤버변수
     private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
     private CustomLoadingDialog customLoadingDialog;
     private boolean bIsCreatedCategoryView;                          //커스텀뷰가 생성되었는지 확인
     private LinearLayout subGroupAdd;                                //커스텀뷰를 추가할 하위 레이아웃
-    private Handler handler;
     private EditText groupLeaderNameEditText;
     private EditText groupCategoryEditText;
     private EditText groupNameEditText;
+    private Handler handler;
     private ImageButton minus;
     private ImageButton plus;
-
-
     private String groupName;
     private String groupLeaderName;
     private String groupCategory;
@@ -78,22 +72,16 @@ public class GroupModifyActivity extends AppCompatActivity {
         setTitle("그룹수정");
         setContentView(R.layout.activity_group_modify);
 
-        //현재 보고 있는 액티비티 표시.
+        //현재 보고 있는 액티비티 설정
         SingletonSocket.getInstance().setActivity(this);
-
 
         //초기화
         Init();
-
-
-
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_groupadd,menu);
         return true;
-
     }
     public void Init(){
         //액션바 및 타이틀바 설정
@@ -115,7 +103,6 @@ public class GroupModifyActivity extends AppCompatActivity {
 
 
         //리스너참조
-        //groupCategoryEditText.addTextChangedListener(groupCategoryEditTextWatcher);
         plus.setOnClickListener(plusButtonListener);
         minus.setOnClickListener(minusButtonListener);
 
@@ -127,8 +114,6 @@ public class GroupModifyActivity extends AppCompatActivity {
 
         //그룹데이터로 설정하기
         SetGroupData();
-
-
 
 
         //핸들러
@@ -154,12 +139,9 @@ public class GroupModifyActivity extends AppCompatActivity {
                         setResult(RESULT_OK,resultIntent);
                         finish();
                         break;
-
                 }
             }
         };
-
-
 
     }
     @Override
@@ -338,11 +320,8 @@ public class GroupModifyActivity extends AppCompatActivity {
     }
     //업데이트전 그룹정보로 채워넣기
     public void SetGroupData(){
-
         subGroupAdd.removeAllViews();
         int len=listGroup.size();
-
-
         for(int nIdx=0;nIdx<len;nIdx++){
             listGroup.get(nIdx).setHead(listHead.get(nIdx));
             listGroup.get(nIdx).setContent(listContent.get(nIdx));
@@ -395,7 +374,13 @@ public class GroupModifyActivity extends AppCompatActivity {
                     handler.sendMessage(msg);
                 }
                 else {
-
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupModifyActivity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -415,6 +400,14 @@ public class GroupModifyActivity extends AppCompatActivity {
                     handler.sendMessage(msg);
                 }
                 else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupModifyActivity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
+
 
                 }
             } catch (JSONException e) {
@@ -436,6 +429,13 @@ public class GroupModifyActivity extends AppCompatActivity {
                     handler.sendMessage(msg);
                 }
                 else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupModifyActivity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
 
                 }
             } catch (JSONException e) {
@@ -455,12 +455,7 @@ public class GroupModifyActivity extends AppCompatActivity {
                     nCategory=10;
                     AlertDialog.Builder builder=new AlertDialog.Builder(GroupModifyActivity.this);
                     dialog=builder.setMessage("10개 초과는 불가능합니다.")
-                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            })
+                            .setPositiveButton("확인", null)
                             .create();
                     dialog.show();
                     groupCategoryEditText.setText(Integer.toString(nCategory));

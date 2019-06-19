@@ -71,8 +71,6 @@ public class Group2Activity extends AppCompatActivity {
         }
         public int getUserPriv(){return this.nUserPriv;
         }
-
-
         public String getUserID() {
             return this.strUserID;
         }
@@ -124,14 +122,11 @@ public class Group2Activity extends AppCompatActivity {
     public static Context groupContext;
 
 
-
+    //멤버변수
     public static HashMap<GridProfileView,ListAdapter> mapSelectedProfileView;
     public static HashMap<GridTextView,ListAdapter> mapSelectedTextView;
     public static ArrayList<String> listGridContent;
     public static ArrayList<String> listGridHead;
-
-
-
     private ArrayList<Group2Activity.UserInfo> listUserInfo;
     private CustomLoadingDialog customLoadingDialog;
     private ArrayList<ListAdapter> listUser;
@@ -142,9 +137,6 @@ public class Group2Activity extends AppCompatActivity {
     private LinearLayout linearLayoutUser;
     private ListAdapter listAdapterUser;
     private ListAdapter listAdapter;
-
-
-
     private TextView textViewGroupLeaderName;
     private Handler handlerGroupList;
     private String groupLeaderNo;
@@ -158,6 +150,7 @@ public class Group2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group2);
 
+        //현재 보고 있는 액티비티 설정
         SingletonSocket.getInstance().setActivity(this);
 
         //초기화
@@ -245,14 +238,11 @@ public class Group2Activity extends AppCompatActivity {
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-
                             //그룹탈퇴스레드시작
                             ExecutePersonOutOfGroup();
-
                         }
                     }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-
                         }
                     });
                     AlertDialog dialog = builder.create();
@@ -312,9 +302,6 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void Init() {
-
-
-
         //컨텍스트설정
         groupContext=this;
 
@@ -338,7 +325,6 @@ public class Group2Activity extends AppCompatActivity {
         listProfileSize = new ArrayList<>();        //프로필최대크기모음
         listHeadSize=new ArrayList<>();             //헤더크기모음
         listContentSize = new ArrayList<>();        //컨텐트최대크기모음
-        //listNoVerticalView=new ArrayList<>();
 
         //인텐트정보를 통한 액티비티세팅
         GetInfomationAndSettingGroup();
@@ -352,6 +338,7 @@ public class Group2Activity extends AppCompatActivity {
 
                 switch (msg.what) {
                     case AM_GROUP_LIST_ERROR:
+
                         //삭제되거나 존재하지 않는 그룹을 선택한 경우.
                         Intent intentInText=new Intent(getApplicationContext(),dataPopUpActivity.class);
                         //인텐트를 통해서 객체넣기
@@ -366,13 +353,11 @@ public class Group2Activity extends AppCompatActivity {
                         break;
                     case AM_GROUP_USER_INIT:
                         LoadList();
-                        //LoadUser();
                         customLoadingDialog.dismiss();
                         break;
                     case AM_OUT_OF_GROUP:
                         //소켓그룹나가기
                         //리더일때는 delete
-
                         if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
                             SingletonSocket.getInstance().sendGroupDeleteMessage(groupID);
                             SingletonSocket.getInstance().sendRoomMessage("delete", groupID);
@@ -397,10 +382,8 @@ public class Group2Activity extends AppCompatActivity {
     }
 
     public void LoadListHeadAndContent() {
-
         customLoadingDialog=new CustomLoadingDialog(Group2Activity.this);
         customLoadingDialog.show();
-
         Thread thread= new Thread(new Runnable() {
             boolean isPlaying = false;
 
@@ -809,6 +792,13 @@ public class Group2Activity extends AppCompatActivity {
                     msg.what = AM_OUT_OF_GROUP;
                     handlerGroupList.sendMessage(msg);
                 } else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -830,6 +820,13 @@ public class Group2Activity extends AppCompatActivity {
                     msg.what = AM_OUT_OF_GROUP;
                     handlerGroupList.sendMessage(msg);
                 } else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -900,9 +897,18 @@ public class Group2Activity extends AppCompatActivity {
                     handlerGroupList.sendMessage(msg);
 
                 } else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+                    dialog=builder.setMessage("존재하지 않는 그룹이거나 서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
+                    /*
                     Message msg = handlerGroupList.obtainMessage();
                     msg.what = AM_GROUP_LIST_ERROR;
                     handlerGroupList.sendMessage(msg);
+                    */
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -970,6 +976,13 @@ public class Group2Activity extends AppCompatActivity {
                     msg.what = AM_GROUP_USER_INIT;
                     handlerGroupList.sendMessage(msg);
                 } else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

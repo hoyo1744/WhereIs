@@ -37,7 +37,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     public static final int AM_GROUP_ADD_CONTENT=50003;
     public static final int AM_GROUP_ADD_SUCCESS=50004;
 
-
+    //멤버변수
     private CustomLoadingDialog customLoadingDialog;
     private Button memberNameValidateButton;
     private EditText memberNameEditText;
@@ -59,7 +59,9 @@ public class GroupMemberAddActivity extends AppCompatActivity {
         setTitle("멤버추가");
         setContentView(R.layout.activity_group_member_add);
 
+        //현재 보고 있는 액티비티 설정
         SingletonSocket.getInstance().setActivity(this);
+
         //초기화
         init();
 
@@ -68,7 +70,6 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_groupadd,menu);
         return true;
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -194,6 +195,13 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                     msg.what = AM_GROUP_ADD_MEMBER;
                                     handler.sendMessage(msg);
                                 } else {
+                                    customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                                            .setPositiveButton("확인", null)
+                                            .create();
+                                    dialog.show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -231,6 +239,13 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                     msg.what = AM_GROUP_ADD_SUCCESS;
                                     handler.sendMessage(msg);
                                 } else {
+                                    customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                                            .setPositiveButton("확인", null)
+                                            .create();
+                                    dialog.show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -274,6 +289,13 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                     msg.what = AM_GROUP_ADD_CONTENT;
                                     handler.sendMessage(msg);
                                 } else {
+                                    customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
+                                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                                            .setPositiveButton("확인", null)
+                                            .create();
+                                    dialog.show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -323,6 +345,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     private View.OnClickListener memberNameValidateButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
             final String userID=memberNameEditText.getText().toString();
             if(userID.equals("")) {
                 AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
@@ -333,6 +356,10 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                 return ;
 
             }
+            //로딩
+            customLoadingDialog=new CustomLoadingDialog(GroupMemberAddActivity.this);
+            customLoadingDialog.show();
+
             ValidateGroupMemberAndUser validateRequest=new ValidateGroupMemberAndUser(userID,groupID,responMemberNameValidateButtonListener);
             RequestQueue queue = Volley.newRequestQueue(GroupMemberAddActivity.this);
             queue.add(validateRequest);
@@ -348,6 +375,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                 boolean successUser=jsonObject.getBoolean("successUser");
 
                 if(successGroupMember){
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
                     dialog=builder.setMessage("이미 존재합니다.")
                             .setPositiveButton("확인",null)
@@ -355,6 +383,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                     dialog.show();
                 }
                 else if(successUser){
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
                     dialog=builder.setMessage("아이디를 찾았습니다.")
                             .setPositiveButton("확인",null)
@@ -366,6 +395,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
 
                 }
                 else{
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(GroupMemberAddActivity.this);
                     dialog=builder.setMessage("아이디를 찾을 수 없습니다.")
                             .setPositiveButton("확인",null)

@@ -33,7 +33,7 @@ public class ChangeContent extends AppCompatActivity {
     public final static int AM_CHANGE_CONTENT_SUCCESS=40001;
     public final static int AM_CHANGE_CONTENT_FAIL=40002;
 
-
+    //멤버변수
     private CustomLoadingDialog customLoadingDialog;
     private TextView textViewBeforeContent;
     private ArrayAdapter<String> adapter;
@@ -45,14 +45,13 @@ public class ChangeContent extends AppCompatActivity {
     private Spinner spinner;
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("내용바꾸기");
         setContentView(R.layout.activity_change_content);
+
+        //현재 보고 있는 액티비티설정
         SingletonSocket.getInstance().setActivity(this);
 
         //초기화
@@ -113,7 +112,6 @@ public class ChangeContent extends AppCompatActivity {
         //nCategoryNum-1은 프로필빼야하기때문이다.
         String strContent = Group2Activity.listGridContent.get(nCategoryNum-1);
         String[] items=strContent.split("#");
-
 
         adapter=new ArrayAdapter<String>(this,R.layout.spinner_item,items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

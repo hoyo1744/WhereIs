@@ -57,9 +57,8 @@ public class GroupAddActivity extends AppCompatActivity {
     static final int AM_GROUP_CONTENT_ADD=40002;
 
 
-
+    //멤버변수
     private ArrayList<subGroupAddCategory> listGroup=new ArrayList<>();
-
     private CustomLoadingDialog customLoadingDialog;
     private boolean bIsCreatedCategoryView;                          //커스텀뷰가 생성되었는지 확인
     private EditText groupCategoryNumberEditText;
@@ -80,17 +79,16 @@ public class GroupAddActivity extends AppCompatActivity {
         setTitle("그룹추가");
         setContentView(R.layout.activity_group_add);
 
+        //현재 보고 있는 액티비티 설정
         SingletonSocket.getInstance().setActivity(this);
+
         //액티비티초기화
         init();
-
-
     }
     @Override
         public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_groupadd,menu);
         return true;
-
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,9 +151,7 @@ public class GroupAddActivity extends AppCompatActivity {
                         SingletonSocket.getInstance().sendRoomMessage("create",createdGroupID);
 
                         setResult(RESULT_OK);
-
                         customLoadingDialog.dismiss();
-
                         finish();
                         break;
                 }
@@ -248,19 +244,21 @@ public class GroupAddActivity extends AppCompatActivity {
                                 JSONObject responseLister3 = new JSONObject(response);
                                 boolean success = responseLister3.getBoolean("success");
                                 if (success) {
-
-
-
                                     Member memberGroup=new Member();
                                     memberGroup.setMember(groupID,groupCategory);
                                     Message msg = handlerCategory.obtainMessage();
                                     msg.obj=memberGroup;
                                     msg.what = AM_GROUP_MEMBER_ADD;
                                     handlerCategory.sendMessage(msg);
-
-
                                 }
                                 else {
+                                    customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupAddActivity.this);
+                                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                                            .setPositiveButton("확인", null)
+                                            .create();
+                                    dialog.show();
 
                                 }
                             } catch (JSONException e) {
@@ -289,18 +287,18 @@ public class GroupAddActivity extends AppCompatActivity {
                 JSONObject responseLister3 = new JSONObject(response);
                 boolean success = responseLister3.getBoolean("success");
                 if (success) {
-
-
-
-
-
                     Message msg = handlerCategory.obtainMessage();
                     msg.what = AM_GROUP_CONTENT_ADD;
                     handlerCategory.sendMessage(msg);
-
-
                 }
                 else {
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupAddActivity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
 
                 }
             } catch (JSONException e) {
@@ -321,9 +319,6 @@ public class GroupAddActivity extends AppCompatActivity {
                     String groupID=responseLister3.getString("groupID");
                     String groupCategory=responseLister3.getString("groupCategory");
 
-
-
-
                     Member memberGroup=new Member();
                     createdGroupID=groupID;
                     memberGroup.setMember(groupID,groupCategory);
@@ -334,7 +329,13 @@ public class GroupAddActivity extends AppCompatActivity {
 
                 }
                 else {
-
+                    customLoadingDialog.dismiss();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(GroupAddActivity.this);
+                    dialog=builder.setMessage("서버와 연결이 실패했습니다.")
+                            .setPositiveButton("확인", null)
+                            .create();
+                    dialog.show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -425,7 +426,6 @@ public class GroupAddActivity extends AppCompatActivity {
                 }
                 return ;
             }
-
             int nCategoryNum=Integer.parseInt(strEditText);
             bIsCreatedCategoryView=true;
             subGroupAdd.removeAllViews();

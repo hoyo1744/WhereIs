@@ -28,15 +28,10 @@ import static android.widget.Toast.makeText;
 public class RegisterActivity extends AppCompatActivity {
 
 
-
+    //멤버변수
     private CustomLoadingDialog customLoadingDialog;
     private boolean validate=false;
-    private String userPhoneNumber;
-    private String userPassword;
     private String userGenger;
-    private String userEmail;
-    private String userName;
-    private String userID;
     private AlertDialog dialog;
     private EditText idText;
     private EditText passwordText;
@@ -48,10 +43,6 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
 
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -61,7 +52,9 @@ public class RegisterActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_register);
 
+        //현재 맨위에 있는 액티비티설정
         SingletonSocket.getInstance().setActivity(this);
+
         //객체 초기화 및 참조
         Init();
 
@@ -105,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
                 JSONObject jsonObject=new JSONObject(response);
                 boolean success=jsonObject.getBoolean("success");
                 if(success){
-                    customLoadingDialog.dismiss();;
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("사용할 수 있는 아이디입니다.")
                             .setPositiveButton("확인",null)
@@ -115,11 +108,9 @@ public class RegisterActivity extends AppCompatActivity {
                     validate=true;
                     idText.setBackgroundColor(getResources().getColor(R.color.colorGray));
                     validateButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
-
-
                 }
                 else{
-
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("사용할 수 없는 아이디입니다.")
                             .setPositiveButton("확인",null)
@@ -185,6 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 }
                 else{
+                    customLoadingDialog.dismiss();
                     AlertDialog.Builder builder=new AlertDialog.Builder(RegisterActivity.this);
                     dialog=builder.setMessage("회원등록에 실패했습니다.")
                             .setPositiveButton("확인",null)
@@ -202,8 +194,6 @@ public class RegisterActivity extends AppCompatActivity {
     private View.OnClickListener registerButtonListener= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-
             String userID=idText.getText().toString();
             String userPassword=passwordText.getText().toString();
             String userEmail=emailText.getText().toString();

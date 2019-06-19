@@ -41,12 +41,10 @@ public class LoginActivity extends AppCompatActivity {
     //핸들메시지
     private final static int AM_LOGIN_SUCCESS=10000;
 
-
     //로그인액티비티컨텍스트
     public static Context loginContext;
 
-
-
+    //멤버변수
     private CustomLoadingDialog customLoadingDialog;
     private TextView informationTextView;
     private CheckBox autoLoginCheckBox;
@@ -57,14 +55,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private AlertDialog dialog;
     private EditText idText;
-
-
-
-
-
-
-
-
 
 
 
@@ -114,7 +104,6 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(loginButtonListener);
         informationTextView.setOnClickListener(informationListener);
 
-
         //핸들러
         handlerLogin=new Handler(){
             @Override
@@ -133,15 +122,9 @@ public class LoginActivity extends AppCompatActivity {
                     SingletonSocket.getInstance().on("response",SingletonSocket.getInstance().onResponse);
                     SingletonSocket.getInstance().on("message",SingletonSocket.getInstance().onExecute);
 
-
-
-
-
-
                     //로딩완료
                     customLoadingDialog.dismiss();
 
-                    //startActivityForResult(intent,REQUEST_MAIN);
                     startActivity(intent);
                     finish();
                 }
@@ -259,10 +242,6 @@ public class LoginActivity extends AppCompatActivity {
                 SaveSharedPreference.setUserInfo(LoginActivity.this,userId,userPassword);
             }
 
-
-
-
-
             Response.Listener<String> responseLister= new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -277,23 +256,24 @@ public class LoginActivity extends AppCompatActivity {
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-
                                             //싱글톤객체
                                             GetInitialSingletonUser(userId,userPassword);
-
-
                                         }
                                     })
                                     .create();
                             dialog.show();
-
-
                         }
                         else
                         {
+                            customLoadingDialog.dismiss();
                             AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
                             dialog=builder.setMessage("로그인에 실패했습니다.")
-                                    .setPositiveButton("확인", null)
+                                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    })
                                     .create();
                             dialog.show();
                         }
