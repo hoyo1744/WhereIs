@@ -17,10 +17,8 @@ import org.w3c.dom.Text;
 
 public class dataPopUpActivity extends Activity {
 
-
     private TextView textView;
     private Button okButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
