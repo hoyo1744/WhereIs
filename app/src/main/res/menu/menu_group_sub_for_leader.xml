@@ -9,6 +9,14 @@
         android:id="@+id/itemChange"
         android:title="그룹수정하기"
         />
+    <item
+        android:id="@+id/changeLeader"
+        android:title="리더변경하기"
+        />
+
+
+
+
 
 
 </menu>

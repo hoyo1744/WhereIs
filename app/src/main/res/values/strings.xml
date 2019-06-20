@@ -18,4 +18,8 @@
     <string name="menu_group_add">초대</string>
     <string name="menu_group_setting">설정</string>
 
+
+    /*체인지리더*/
+    <string name="menu_change_leader_confirm">확인</string>
+
 </resources>

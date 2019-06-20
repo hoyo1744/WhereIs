@@ -28,6 +28,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.Common.GroupInfo;
+import com.example.hoyo1.whereis.Common.UserInfo;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridProfileView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.GridTextView;
 import com.example.hoyo1.whereis.GroupActiviy.GridMultiItemView.ListAdapter;
@@ -54,7 +55,7 @@ import java.util.Set;
 public class Group2Activity extends AppCompatActivity {
 
 
-
+    /*
     //유저인포 자료형
     class UserInfo implements Comparable<UserInfo> {
         private int nCategory;
@@ -103,13 +104,14 @@ public class Group2Activity extends AppCompatActivity {
                 return 1;
         }
     }
-
+*/
     //요청메시지
     public final static int REQUEST_TEXT_POPUP=300;
     public final static int REQUEST_NAME_POPUP=301;
     public final static int REQUEST_CHANGE_CONTENT=302;
     public static final int REQUEST_MEMBER_ADD = 303;
     public static final int REQUEST_MODIFY_GROUP= 304;
+    public static final int REQUEST_CHANGE_LEADER= 305;
 
     //핸들러메시지
     public static final int AM_GROUP_LIST_INIT = 30000;
@@ -127,7 +129,8 @@ public class Group2Activity extends AppCompatActivity {
     public static HashMap<GridTextView,ListAdapter> mapSelectedTextView;
     public static ArrayList<String> listGridContent;
     public static ArrayList<String> listGridHead;
-    private ArrayList<Group2Activity.UserInfo> listUserInfo;
+    //private ArrayList<Group2Activity.UserInfo> listUserInfo;
+    private ArrayList<UserInfo> listUserInfo;
     private CustomLoadingDialog customLoadingDialog;
     private ArrayList<ListAdapter> listUser;
     private ArrayList<String> listContentSize;
@@ -185,25 +188,18 @@ public class Group2Activity extends AppCompatActivity {
                 //MessageEvent(데이터변경메시지)
                 SingletonSocket.getInstance().sendDataChangeMessage(groupID);
 
-
                 //유저리로드(위에서 메시지로 처리)
                 LoadListUserAndUserContent();
-            }
-            else {
-
-
             }
         }
         else if(requestCode==REQUEST_MEMBER_ADD){
             if(resultCode==RESULT_OK){
-
                 //유저리로드
                 LoadListUserAndUserContent();
             }
         }
         else if(requestCode==REQUEST_MODIFY_GROUP){
             if(resultCode==RESULT_OK){
-
                 //전역변수변경(프로필포함)
                 nCategoryNum= data.getIntExtra("result",0)+1;
 
@@ -216,7 +212,30 @@ public class Group2Activity extends AppCompatActivity {
                 SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
             }
         }
+        else if(requestCode==REQUEST_CHANGE_LEADER){
+            if(resultCode==RESULT_OK){
+                //싱글톤그룹리스트변경(ID,No,Name)
+                intent=getIntent();
+                int key = (intent.getExtras().getInt("key"));
 
+                String groupLeaderNum=data.getStringExtra("groupLeaderNo");
+                String groupLeaderID=data.getStringExtra("groupLeaderID");
+                String groupLeaderName=data.getStringExtra("groupLeaderName");
+
+
+                SingletonGroupList.getInstance().setGroupLeaderID(key,groupLeaderID);
+                SingletonGroupList.getInstance().setGroupLeaderNo(key,groupLeaderNum);
+                SingletonGroupList.getInstance().setGroupLeaderName(key,groupLeaderName);
+
+                groupLeaderNo=groupLeaderNum;
+
+                //소켓그룹수정
+                SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
+
+
+
+            }
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -295,8 +314,12 @@ public class Group2Activity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 finish();
                 break;
-
-
+            case R.id.changeLeader:
+                Intent intentForChangeLeader=new Intent(getApplicationContext(),ChangeLeaderActivity.class);
+                intentForChangeLeader.putExtra("userInfo",listUserInfo);
+                intentForChangeLeader.putExtra("groupID",groupID);
+                startActivityForResult(intentForChangeLeader,REQUEST_CHANGE_LEADER);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -626,6 +649,7 @@ public class Group2Activity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info=(AdapterView.AdapterContextMenuInfo)menuInfo;
         int pos=info.position;
 
+
         //헤더는 제외하기
         if(pos==0)
             return ;
@@ -634,12 +658,16 @@ public class Group2Activity extends AppCompatActivity {
         //자신의 아이디가 일치하지 않으면 제외하기.
         String strUserIdSource=listUserInfo.get(pos-1).getUserID().toString();
         String strUserIdTarget=SingletonUser.getInstance().getUserId().toString();
-        if(!strUserIdSource.equals(strUserIdTarget))
-            return ;
+        if(!strUserIdSource.equals(strUserIdTarget)){
 
-        //메뉴팝업
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_context_person, menu);
+        }else{
+            //메뉴팝업
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.menu_context_person, menu);
+        }
+
+
+
     }
 
 
@@ -815,7 +843,6 @@ public class Group2Activity extends AppCompatActivity {
                 boolean success2 = jsonResponse.getBoolean("success2");
 
                 if (success1 && success2) {
-
                     Message msg = handlerGroupList.obtainMessage();
                     msg.what = AM_OUT_OF_GROUP;
                     handlerGroupList.sendMessage(msg);
@@ -930,7 +957,8 @@ public class Group2Activity extends AppCompatActivity {
                     listUserInfo.clear();
                     //유저수 만큼 이터레이터
                     for (int nIdx = 1; nIdx <= nUserCount; nIdx++) {
-                        Group2Activity.UserInfo userInfo = new Group2Activity.UserInfo();
+                        //Group2Activity.UserInfo userInfo = new Group2Activity.UserInfo();
+                        UserInfo userInfo = new UserInfo();
 
                         JSONObject obj = jsonResponse.getJSONObject(Integer.toString(nIdx));
                         boolean successSub = obj.getBoolean("success");

@@ -45,6 +45,16 @@ public class SingletonGroupList {
     public void setGroupCategory(Integer key,String groupCategory){
         mapGroup.get(key).groupCategory=groupCategory;
     }
+    public void setGroupLeaderID(Integer key,String groupLeaderID){
+        mapGroup.get(key).groupLeader=groupLeaderID;
+    }
+    public void setGroupLeaderNo(Integer key,String groupLeaderNo){
+        mapGroup.get(key).groupLeaderNo=groupLeaderNo;
+    }
+    public void setGroupLeaderName(Integer key,String groupLeaderName){
+        mapGroup.get(key).groupLeaderName=groupLeaderName;
+    }
+
     public void setGroupList(Integer key,String groupID,String groupName,String groupLeader,String groupLeaderNo,String groupLeaderName,String groupCategory){
         GroupInfo groupInfo=new GroupInfo();
         groupInfo.groupID=groupID;

@@ -32,8 +32,9 @@
         <activity android:name=".Activity.ChangeContent" />
         <activity
             android:name=".Activity.InformationActivity"
-            android:theme="@style/AppTheme.Pop"></activity>
-        <activity android:name=".Activity.GroupModifyActivity"></activity>
+            android:theme="@style/AppTheme.Pop" />
+        <activity android:name=".Activity.GroupModifyActivity" />
+        <activity android:name=".Activity.ChangeLeaderActivity"></activity>
     </application>
 
 </manifest>
