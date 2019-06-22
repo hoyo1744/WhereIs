@@ -210,6 +210,9 @@ public class Group2Activity extends AppCompatActivity {
 
                 //소켓그룹수정
                 SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
+
+                //소켓알림
+                SingletonSocket.getInstance().sendAlarmMessage(groupID,"groupUpdate");
             }
         }
         else if(requestCode==REQUEST_CHANGE_LEADER){
@@ -222,15 +225,17 @@ public class Group2Activity extends AppCompatActivity {
                 String groupLeaderID=data.getStringExtra("groupLeaderID");
                 String groupLeaderName=data.getStringExtra("groupLeaderName");
 
-
                 SingletonGroupList.getInstance().setGroupLeaderID(key,groupLeaderID);
                 SingletonGroupList.getInstance().setGroupLeaderNo(key,groupLeaderNum);
                 SingletonGroupList.getInstance().setGroupLeaderName(key,groupLeaderName);
 
                 groupLeaderNo=groupLeaderNum;
 
-                //소켓그룹수정
-                SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
+                //소켓그룹리더체인지
+                SingletonSocket.getInstance().sendGroupLeaderChangeMessage(groupID,groupLeaderNo);
+
+                //소켓알림
+                SingletonSocket.getInstance().sendAlarmMessage(groupID,"leaderUpdate");
 
 
 
@@ -382,8 +387,15 @@ public class Group2Activity extends AppCompatActivity {
                         //소켓그룹나가기
                         //리더일때는 delete
                         if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
+
+                            //소켓그룹탈퇴
                             SingletonSocket.getInstance().sendGroupDeleteMessage(groupID);
                             SingletonSocket.getInstance().sendRoomMessage("delete", groupID);
+
+                            //소켓알림
+                            SingletonSocket.getInstance().sendAlarmMessage(groupID,"delete");
+
+
                         }else
                             //회원일때는 leave
                             SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
@@ -529,9 +541,9 @@ public class Group2Activity extends AppCompatActivity {
         boolean bIsSmallthanTotalWidth=false;
 
         //리스트의 넓이가 전체뷰의 넓이 보다 작다면. 맞춰줘야한다.
-        if(TotalWidth<MainActivity.viewWidth){
+        if(TotalWidth<Main2Activity.viewWidth){
             int newTotalWidth=(int) textViewGroupLeaderName.getPaint().measureText(listProfileSize.get(0).toString())+100;
-            PieceWidth=(MainActivity.viewWidth-newTotalWidth)/(nCategoryNum-1);
+            PieceWidth=(Main2Activity.viewWidth-newTotalWidth)/(nCategoryNum-1);
             bIsSmallthanTotalWidth=true;
         }
 
@@ -1093,5 +1105,40 @@ public class Group2Activity extends AppCompatActivity {
         dialog.show();
 
     }
+
+    public void UpdateGroupLeader(final String newLeaderID){
+        AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
+        builder.setTitle("안내");
+        builder.setMessage("그룹리더가 수정되었습니다.");
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("예",new DialogInterface.OnClickListener(){
+            public void onClick(DialogInterface dialog,int whichButton){
+                groupLeaderNo=newLeaderID;
+                intent=getIntent();
+                int key = (intent.getExtras().getInt("key"));
+
+                for(int idx=0;idx<listUserInfo.size();idx++){
+                    if(listUserInfo.get(idx).getUserNo().equals(groupLeaderNo)){
+                        String groupLeaderID=listUserInfo.get(idx).getUserID();
+                        String groupLeaderName=listUserInfo.get(idx).getUserName();
+
+                        SingletonGroupList.getInstance().setGroupLeaderID(key,groupLeaderID);
+                        SingletonGroupList.getInstance().setGroupLeaderNo(key,groupLeaderNo);
+                        SingletonGroupList.getInstance().setGroupLeaderName(key,groupLeaderName);
+                        break;
+                    }
+                }
+
+                LoadListHeadAndContent();
+
+
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
 
 }

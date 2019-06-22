@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.example.hoyo1.whereis.Activity.Group2Activity;
+import com.example.hoyo1.whereis.Activity.Main2Activity;
 import com.example.hoyo1.whereis.Activity.MainActivity;
 import com.example.hoyo1.whereis.Common.SplashScreen;
 
@@ -98,6 +99,18 @@ public class SingletonSocket {
         }
 
     }
+    public void sendGroupLeaderChangeMessage(String groupID,String leaderID){
+        JSONObject data=new JSONObject();
+        try {
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient",groupID);
+            data.put("command","groupLeader");
+            data.put("data",leaderID);
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
     public void sendGroupDeleteMessage(String groupID){
         JSONObject data=new JSONObject();
         try {
@@ -109,8 +122,6 @@ public class SingletonSocket {
         }catch (JSONException e){
             e.printStackTrace();
         }
-
-
     }
     public void sendDataChangeMessage(String groupID){
         JSONObject data=new JSONObject();
@@ -126,7 +137,28 @@ public class SingletonSocket {
 
 
     }
+    public void sendAlarmMessage(String groupID,String strParam){
+        JSONObject data=new JSONObject();
+        try {
+            String param="";
+            if(strParam=="groupUpdate"){
+                param="이/가 수정되었습니다.";
+            }else if(strParam=="delete"){
+                param="이/가 삭제되었습니다";
+            }else if(strParam=="leaderUpdate"){
+                param="이/가 리더가 변경되었습니다.";
+            }
+            data.put("sender",SingletonUser.getInstance().getUserNumber());
+            data.put("recepient",groupID);
+            data.put("command","groupMember");
+            data.put("data",param);
+            SingletonSocket.getInstance().emit("message",data);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
 
+
+    }
     public void sendRoomMessage(String strParam,String groupID){
         JSONObject data=new JSONObject();
         try{
@@ -139,6 +171,8 @@ public class SingletonSocket {
         }
 
     }
+
+
 
 
 
@@ -178,15 +212,16 @@ public class SingletonSocket {
 
 
             JSONObject dataJson=(JSONObject)args[0];
-            String data;
+
 
             try {
-
-                data=dataJson.getString("data");
-
+                final String userNo=dataJson.getString("sender");
+                final String groupNo=dataJson.getString("recepient");
+                final String data=dataJson.getString("data");
+                final String command=dataJson.getString("command");
 
                 //message에 따른 처리
-                if(data.equals("group")) {
+                if(command.equals("group")) {
                     activity.runOnUiThread(new Runnable() {
                         boolean isPlaying=false;
                         @Override
@@ -201,7 +236,7 @@ public class SingletonSocket {
                     });
 
                 }
-                else if(data.equals("individual")){
+                else if(command.equals("individual")){
                     activity.runOnUiThread(new Runnable() {
                         boolean isPlaying=false;
                         @Override
@@ -209,7 +244,7 @@ public class SingletonSocket {
                             if(isPlaying==false){
                                 isPlaying=true;
                                 // 이벤트 수신 시 실행할 내용들
-                                ((MainActivity)MainActivity.mainContext).GetGroupList();
+                                ((Main2Activity)Main2Activity.mainContext).GetGroupList();
                             }
 
                         }
@@ -217,7 +252,7 @@ public class SingletonSocket {
 
 
                 }
-                else if(data.equals("delete")){
+                else if(command.equals("delete")){
                     activity.runOnUiThread(new Runnable() {
                         boolean isPlaying=false;
                         @Override
@@ -231,7 +266,7 @@ public class SingletonSocket {
                         }
                     });
                 }
-                else if(data.equals("update")){
+                else if(command.equals("update")){
                     activity.runOnUiThread(new Runnable() {
                         boolean isPlaying=false;
                         @Override
@@ -245,6 +280,44 @@ public class SingletonSocket {
                         }
                     });
                 }
+                else if(command.equals("groupLeader")){
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                ((Group2Activity) Group2Activity.groupContext).UpdateGroupLeader(data);
+                            }
+
+                        }
+                    });
+                }
+                else if(command.equals("groupMember")){
+                    activity.runOnUiThread(new Runnable() {
+                        boolean isPlaying=false;
+                        @Override
+                        public void run() {
+                            if(isPlaying==false){
+                                isPlaying=true;
+                                // 이벤트 수신 시 실행할 내용들
+                                //1.알림처리(보류)
+
+
+
+                                //2.메시지DB에 저장
+                                ((Main2Activity)(Main2Activity.mainContext)).SaveAlarm(data,userNo,groupNo);
+
+
+                            }
+
+                        }
+                    });
+
+
+                }
+
 
 
 

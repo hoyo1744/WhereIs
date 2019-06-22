@@ -111,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 if(msg.what==AM_LOGIN_SUCCESS){
 
-                    Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                    //Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                    Intent intent=new Intent(getApplicationContext(),Main2Activity.class);
                     idText.setText("");
                     passwordText.setText("");
 
