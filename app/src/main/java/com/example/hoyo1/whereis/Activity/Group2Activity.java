@@ -118,6 +118,14 @@ public class Group2Activity extends AppCompatActivity {
     public static final int AM_GROUP_USER_INIT = 30001;
     public static final int AM_OUT_OF_GROUP    = 30002;
     public static final int AM_GROUP_LIST_ERROR= 30003;
+    public static final int AM_OUT_OF_ALARM    = 30004;
+    public static final int AM_ALARM_DELETE    = 30005;
+    public static final int AM_ALARM_LEADER_UPDATE    = 30006;
+    public static final int AM_ALARM_GROUP_UPDATE= 30007;
+    public static final int AM_ALARM_GROUP_UPDATE_FINAL= 30008;
+    public static final int AM_ALARM_LEADER_UPDATE_FINAL= 30009;
+
+
 
 
     //컨텍스트
@@ -141,7 +149,7 @@ public class Group2Activity extends AppCompatActivity {
     private ListAdapter listAdapterUser;
     private ListAdapter listAdapter;
     private TextView textViewGroupLeaderName;
-    private Handler handlerGroupList;
+    public Handler handlerGroupList;
     private String groupLeaderNo;
     private int nCategoryNum;
     public String groupID;
@@ -195,7 +203,7 @@ public class Group2Activity extends AppCompatActivity {
         else if(requestCode==REQUEST_MEMBER_ADD){
             if(resultCode==RESULT_OK){
                 //유저리로드
-                LoadListUserAndUserContent();
+                //LoadListUserAndUserContent();
             }
         }
         else if(requestCode==REQUEST_MODIFY_GROUP){
@@ -208,11 +216,18 @@ public class Group2Activity extends AppCompatActivity {
                 int key = (intent.getExtras().getInt("key"));
                 SingletonGroupList.getInstance().setGroupCategory(key,Integer.toString(nCategoryNum-1));
 
-                //소켓그룹수정
-                SingletonSocket.getInstance().sendGroupUpdateMessage(groupID);
+                String content=groupID+"이/가 변경되었습니다.";
+
+                //메시지저장
+                ((Main2Activity)(Main2Activity.mainContext)).SaveMessage(content,SingletonUser.getInstance().getUserNumber(),groupID,"groupUpdate");
 
                 //소켓알림
-                SingletonSocket.getInstance().sendAlarmMessage(groupID,"groupUpdate");
+                //SingletonSocket.getInstance().sendGroupUpdateAlarmMessage(groupID,"groupUpdate");
+
+                //소켓그룹수정
+                //SingletonSocket.getInstance().sendGroupUpdateMessage(groupID,nCategoryNum);
+
+
             }
         }
         else if(requestCode==REQUEST_CHANGE_LEADER){
@@ -230,12 +245,17 @@ public class Group2Activity extends AppCompatActivity {
                 SingletonGroupList.getInstance().setGroupLeaderName(key,groupLeaderName);
 
                 groupLeaderNo=groupLeaderNum;
-
-                //소켓그룹리더체인지
-                SingletonSocket.getInstance().sendGroupLeaderChangeMessage(groupID,groupLeaderNo);
+                //메시지저장
+                String content=groupID+"이/가 리더가 변경되었습니다.";
+                ((Main2Activity)(Main2Activity.mainContext)).SaveMessage(content,SingletonUser.getInstance().getUserNumber(),groupID,"groupLeaderUpdate");
 
                 //소켓알림
-                SingletonSocket.getInstance().sendAlarmMessage(groupID,"leaderUpdate");
+                //SingletonSocket.getInstance().sendLeaderUpdateAlarmMessage(groupID,"leaderUpdate");
+
+                //소켓그룹리더체인지
+                //SingletonSocket.getInstance().sendGroupLeaderChangeMessage(groupID,groupLeaderNo);
+
+
 
 
 
@@ -378,6 +398,7 @@ public class Group2Activity extends AppCompatActivity {
                     case AM_GROUP_LIST_INIT:
                         //회원정보가져오기
                         LoadListUserAndUserContent();
+                        customLoadingDialog.dismiss();
                         break;
                     case AM_GROUP_USER_INIT:
                         LoadList();
@@ -387,22 +408,60 @@ public class Group2Activity extends AppCompatActivity {
                         //소켓그룹나가기
                         //리더일때는 delete
                         if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
-
-                            //소켓그룹탈퇴
-                            SingletonSocket.getInstance().sendGroupDeleteMessage(groupID);
-                            SingletonSocket.getInstance().sendRoomMessage("delete", groupID);
-
-                            //소켓알림
-                            SingletonSocket.getInstance().sendAlarmMessage(groupID,"delete");
-
-
-                        }else
+                            String content=groupID+"이/가 삭제되었습니다.";
+                            //메시지저장
+                            ((Main2Activity)(Main2Activity.mainContext)).SaveMessage(content,SingletonUser.getInstance().getUserNumber(),groupID,"groupDelete");
+                        }else {
                             //회원일때는 leave
-                            SingletonSocket.getInstance().sendRoomMessage("leave",groupID);
-
+                            SingletonSocket.getInstance().sendRoomMessage("leave", groupID);
+                            customLoadingDialog.dismiss();
+                            setResult(RESULT_OK);
+                            finish();
+                        }
+                        break;
+                    case AM_ALARM_DELETE:
+                        if(groupLeaderNo.equals(SingletonUser.getInstance().getUserNumber())) {
+                            //소켓알림
+                            //SingletonSocket.getInstance().sendDeleteAlarmMessage(groupID, "delete");
+                            ((Main2Activity) (Main2Activity.mainContext)).customLoadingDialog.dismiss();
+                            Message newMsg = ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.obtainMessage();
+                            newMsg.what = Group2Activity.AM_OUT_OF_ALARM;
+                            ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.sendMessage(newMsg);
+                        }
+                        break;
+                    case AM_OUT_OF_ALARM:
+                        //소켓그룹탈퇴
+                        SingletonSocket.getInstance().sendGroupDeleteMessage(groupID);
+                        SingletonSocket.getInstance().sendRoomMessage("delete", groupID);
                         customLoadingDialog.dismiss();
                         setResult(RESULT_OK);
                         finish();
+                        break;
+
+                    case AM_ALARM_LEADER_UPDATE:
+                        //소켓알림
+                        //SingletonSocket.getInstance().sendLeaderUpdateAlarmMessage(groupID,groupLeaderNo);
+                        ((Main2Activity) (Main2Activity.mainContext)).customLoadingDialog.dismiss();
+                        Message newMsg1 = ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.obtainMessage();
+                        newMsg1.what = Group2Activity.AM_ALARM_LEADER_UPDATE_FINAL;
+                        ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.sendMessage(newMsg1);
+                        break;
+
+                    case AM_ALARM_GROUP_UPDATE:
+                        //소켓알림
+                        //SingletonSocket.getInstance().sendGroupUpdateAlarmMessage(groupID,"groupUpdate");
+                        ((Main2Activity) (Main2Activity.mainContext)).customLoadingDialog.dismiss();
+                        Message newMsg2 = ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.obtainMessage();
+                        newMsg2.what = Group2Activity.AM_ALARM_GROUP_UPDATE_FINAL;
+                        ((Group2Activity) (Group2Activity.groupContext)).handlerGroupList.sendMessage(newMsg2);
+                        break;
+                    case AM_ALARM_GROUP_UPDATE_FINAL:
+                        //소켓그룹수정
+                        SingletonSocket.getInstance().sendGroupUpdateMessage(groupID,nCategoryNum);
+                        break;
+                    case AM_ALARM_LEADER_UPDATE_FINAL:
+                        //소켓그룹리더체인지
+                        SingletonSocket.getInstance().sendGroupLeaderChangeMessage(groupID,groupLeaderNo);
                         break;
 
 
@@ -426,6 +485,7 @@ public class Group2Activity extends AppCompatActivity {
             public void run() {
                 if (isPlaying == false) {
                     isPlaying = true;
+
 
                     //해당 그룹 group_db에서 검색하기 위한 키값 얻기.
                     int key = (intent.getExtras().getInt("key"));
@@ -482,6 +542,8 @@ public class Group2Activity extends AppCompatActivity {
 
     public void LoadListUserAndUserContent() {
         listUserInfo.clear();
+        customLoadingDialog=new CustomLoadingDialog(this);
+        customLoadingDialog.show();
         Thread thread = new Thread(new Runnable() {
             boolean isPlaying = false;
             @Override
@@ -881,6 +943,7 @@ public class Group2Activity extends AppCompatActivity {
                 boolean success = jsonResponse.getBoolean("success");
 
                 if (success) {
+                    customLoadingDialog.dismiss();
                     listGridHead.clear();
                     //그룹헤드리스트 초기화
                     String strHead1 = jsonResponse.getString("groupHead1");
@@ -964,6 +1027,7 @@ public class Group2Activity extends AppCompatActivity {
                 boolean success = jsonResponse.getBoolean("success");
 
                 if (success) {
+                    customLoadingDialog.dismiss();
                     //유저수
                     int nUserCount = jsonResponse.getInt("size");
                     listUserInfo.clear();
@@ -1076,7 +1140,6 @@ public class Group2Activity extends AppCompatActivity {
                 nContentCount++;
             }
         }
-
     }
 
     public void GetOutOfDeleteGroup(){
@@ -1090,15 +1153,24 @@ public class Group2Activity extends AppCompatActivity {
         }
     }
 
-    public void UpdateGroup(){
+    public void UpdateGroup(final Integer data){
         AlertDialog.Builder builder=new AlertDialog.Builder(Group2Activity.this);
         builder.setTitle("안내");
         builder.setMessage("그룹이 수정되었습니다.");
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setPositiveButton("예",new DialogInterface.OnClickListener(){
             public void onClick(DialogInterface dialog,int whichButton){
-                //다시 로드
+
+
+                nCategoryNum=data;
+
+                //싱글톤그룹리스트변경(프로필미포함)
+                intent=getIntent();
+                int key = (intent.getExtras().getInt("key"));
+                SingletonGroupList.getInstance().setGroupCategory(key,Integer.toString(nCategoryNum-1));
+
                 LoadListHeadAndContent();
+
             }
         });
         AlertDialog dialog = builder.create();
@@ -1128,15 +1200,21 @@ public class Group2Activity extends AppCompatActivity {
                         break;
                     }
                 }
-
-                LoadListHeadAndContent();
-
-
-
+                RestartActivity();
             }
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+
+    public void RestartActivity(){
+        /*
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        */
+        recreate();
     }
 
 

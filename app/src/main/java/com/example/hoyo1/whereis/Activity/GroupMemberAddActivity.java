@@ -134,8 +134,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case AM_GET_USERINFO:
-                        customLoadingDialog=new CustomLoadingDialog(GroupMemberAddActivity.this);
-                        customLoadingDialog.show();
+
                         GetUserNo();
                         break;
                     case AM_GROUP_ADD_MEMBER:
@@ -145,13 +144,15 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                         AddGroupContent();
                         break;
                     case AM_GROUP_ADD_SUCCESS:
+
                         //소켓멤버초대
                         SingletonSocket.getInstance().sendInviteGroupMemberMessage(userNo);
                         //소켓그룹
                         SingletonSocket.getInstance().sendDataChangeMessage(groupID);
 
-                        setResult(RESULT_OK);
+
                         customLoadingDialog.dismiss();
+                        setResult(RESULT_OK);
                         finish();
                         break;
 
@@ -172,7 +173,8 @@ public class GroupMemberAddActivity extends AppCompatActivity {
 
     public void GetUserNo(){
 
-
+            customLoadingDialog=new CustomLoadingDialog(GroupMemberAddActivity.this);
+            customLoadingDialog.show();
             Thread thread = new Thread(new Runnable() {
             String userID=memberNameEditText.getText().toString();
             boolean isPlaying = false;
@@ -188,6 +190,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                 JSONObject jsonResponse = new JSONObject(response);
                                 boolean success = jsonResponse.getBoolean("success");
                                 if (success) {
+                                    customLoadingDialog.dismiss();
                                     userNo = jsonResponse.getString("userNo");
 
                                     //유저이름파악완료
@@ -219,6 +222,8 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     }
 
     public void AddGroupContent(){
+        customLoadingDialog=new CustomLoadingDialog(this);
+        customLoadingDialog.show();
         Thread thread = new Thread(new Runnable() {
             boolean isPlaying = false;
 
@@ -234,6 +239,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                 boolean success = jsonResponse.getBoolean("success");
 
                                 if (success) {
+                                    customLoadingDialog.dismiss();
                                     //유저이름파악완료
                                     Message msg = handler.obtainMessage();
                                     msg.what = AM_GROUP_ADD_SUCCESS;
@@ -266,6 +272,9 @@ public class GroupMemberAddActivity extends AppCompatActivity {
     }
 
     public void AddGroupMember(){
+
+        customLoadingDialog=new CustomLoadingDialog(GroupMemberAddActivity.this);
+        customLoadingDialog.show();
         Thread thread = new Thread(new Runnable() {
 
             String userID=memberNameEditText.getText().toString();
@@ -284,6 +293,7 @@ public class GroupMemberAddActivity extends AppCompatActivity {
                                 boolean success = jsonResponse.getBoolean("success");
 
                                 if (success) {
+                                    customLoadingDialog.dismiss();
                                     //유저이름파악완료
                                     Message msg = handler.obtainMessage();
                                     msg.what = AM_GROUP_ADD_CONTENT;
