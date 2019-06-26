@@ -3,11 +3,14 @@ package com.example.hoyo1.whereis.Singleton;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.hoyo1.whereis.Activity.Group2Activity;
+import com.example.hoyo1.whereis.Activity.LoginActivity;
 import com.example.hoyo1.whereis.Activity.Main2Activity;
 import com.example.hoyo1.whereis.Activity.MainActivity;
 import com.example.hoyo1.whereis.Common.SplashScreen;
@@ -34,6 +37,7 @@ public class SingletonSocket {
                 check = true;
                 mSocket = IO.socket("http://106.10.36.131:3000");
                 mSocket.connect();
+
             }
         } catch(URISyntaxException e) {
             e.printStackTrace();
@@ -216,11 +220,34 @@ public class SingletonSocket {
         @Override
         public void call(Object... args) {
             JSONObject dataJson=(JSONObject)args[0];
-            String code,message;
+            String code,message,command;
 
             try {
+                command=dataJson.getString("command");
                 code=dataJson.getString("code");
                 message=dataJson.getString("message");
+
+
+
+                //로그인응답처리
+                if(command.equals("login")){
+                    if(code.equals("200")){
+
+                        if(activity.equals(LoginActivity.loginContext)){
+                            //일반로그인
+                            Message msg1=((LoginActivity)(LoginActivity.loginContext)).handlerLogin.obtainMessage();
+                            msg1.what=((LoginActivity)(LoginActivity.loginContext)).AM_LOGIN_ALARM;
+                            ((LoginActivity)(LoginActivity.loginContext)).handlerLogin.sendMessage(msg1);
+                        }else if(activity.equals(SplashScreen.splashContext)){
+                            //자동로그인
+                            Message msg2=((SplashScreen)(SplashScreen.splashContext)).handlerSplash.obtainMessage();
+                            msg2.what=((SplashScreen)(SplashScreen.splashContext)).AM_SPLASH_LOGIN_SUCCESS;
+                            ((SplashScreen)(SplashScreen.splashContext)).handlerSplash.sendMessage(msg2);
+
+                        }
+
+                    }
+                }
 
                 //code에 따른 처리
                 if(code.equals("404")) {

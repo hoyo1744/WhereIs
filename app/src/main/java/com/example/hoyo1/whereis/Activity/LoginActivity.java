@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.example.hoyo1.whereis.Common.CustomLoadingDialog;
 import com.example.hoyo1.whereis.Common.SaveSharedPreference;
+import com.example.hoyo1.whereis.Common.SplashScreen;
 import com.example.hoyo1.whereis.R;
 import com.example.hoyo1.whereis.Request.LoginInfoRequest;
 import com.example.hoyo1.whereis.Request.LoginRequest;
@@ -39,7 +40,9 @@ import io.socket.emitter.Emitter;
 public class LoginActivity extends AppCompatActivity {
 
     //핸들메시지
-    private final static int AM_LOGIN_SUCCESS=10000;
+    public final static int AM_LOGIN_SUCCESS=10000;
+    public final static int AM_LOGIN_ALARM=10001;
+    public final static int AM_LOGIN_FAIL=10002;
 
     //로그인액티비티컨텍스트
     public static Context loginContext;
@@ -51,10 +54,12 @@ public class LoginActivity extends AppCompatActivity {
     private TextView registerButton;
     private SharedPreferences auto;
     private EditText passwordText;
-    private Handler handlerLogin;
+    public Handler handlerLogin;
     private Button loginButton;
+    private Thread timerThread;
     private AlertDialog dialog;
     private EditText idText;
+
 
 
 
@@ -112,22 +117,61 @@ public class LoginActivity extends AppCompatActivity {
                 if(msg.what==AM_LOGIN_SUCCESS){
 
                     //Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-                    Intent intent=new Intent(getApplicationContext(),Main2Activity.class);
-                    idText.setText("");
-                    passwordText.setText("");
+                    //Intent intent=new Intent(getApplicationContext(),Main2Activity.class);
+                    //idText.setText("");
+                    //passwordText.setText("");
 
-                    //로그인메시지
-                    SingletonSocket.getInstance().sendLoginMessage();
 
                     //소켓연결 및 이벤트 연결
                     SingletonSocket.getInstance().on("response",SingletonSocket.getInstance().onResponse);
                     SingletonSocket.getInstance().on("message",SingletonSocket.getInstance().onExecute);
 
+                    customLoadingDialog=new CustomLoadingDialog(LoginActivity.this);
+                    customLoadingDialog.show();
+                    //로그인메시지
+                    SingletonSocket.getInstance().sendLoginMessage();
+
+                    //타이머스레드
+                    StartTimer();
+
+                    //로딩완료
+                    //customLoadingDialog.dismiss();
+
+                    //startActivity(intent);
+                    //finish();
+                }else if(msg.what==AM_LOGIN_ALARM){
+                    timerThread.interrupt();
+                    AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                    dialog=builder.setMessage("로그인에 성공했습니다.")
+                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //싱글톤객체
+                                    //GetInitialSingletonUser(userId,userPassword);
+                                    Intent intent=new Intent(getApplicationContext(),Main2Activity.class);
+                                    idText.setText("");
+                                    passwordText.setText("");
+                                    //로딩완료
+                                    customLoadingDialog.dismiss();
+
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .create();
+                    dialog.show();
+
+
+                }else if(msg.what==AM_LOGIN_FAIL){
                     //로딩완료
                     customLoadingDialog.dismiss();
 
-                    startActivity(intent);
-                    finish();
+                    AlertDialog dialog;
+                    AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                    dialog=builder.setMessage("서버와 연결에 실패했습니다.")
+                            .setPositiveButton("확인",null)
+                            .create();
+                    dialog.show();
                 }
             }
         };
@@ -160,6 +204,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                 if(success)
                                 {
+                                    customLoadingDialog.dismiss();
                                     String number,id,name,email,phone,level;
 
                                     number=jsonResponse.getString("idx");
@@ -178,7 +223,13 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                                 else
                                 {
-
+                                    customLoadingDialog.dismiss();
+                                    AlertDialog dialog;
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
+                                    dialog=builder.setMessage("서버와 연결에 실패했습니다.")
+                                            .setPositiveButton("확인",null)
+                                            .create();
+                                    dialog.show();
                                 }
                             }
                             catch (JSONException e) {
@@ -252,17 +303,20 @@ public class LoginActivity extends AppCompatActivity {
                         if(success)
                         {
                             customLoadingDialog.dismiss();
+                            GetInitialSingletonUser(userId,userPassword);
+                            /*
                             AlertDialog.Builder builder=new AlertDialog.Builder(LoginActivity.this);
                             dialog=builder.setMessage("로그인에 성공했습니다.")
                                     .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             //싱글톤객체
-                                            GetInitialSingletonUser(userId,userPassword);
+                                            //GetInitialSingletonUser(userId,userPassword);
                                         }
                                     })
                                     .create();
                             dialog.show();
+                            */
                         }
                         else
                         {
@@ -315,6 +369,32 @@ public class LoginActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void StartTimer(){
+
+        timerThread= new Thread() {
+            @Override
+            public void run() {
+                try {
+                    int waited = 0;
+                    // Splash screen pause time
+                    while (waited < 3000) {
+                        sleep(100);
+                        waited += 100;
+                    }
+
+                    Message msg=handlerLogin.obtainMessage();
+                    msg.what=AM_LOGIN_FAIL;
+                    handlerLogin.sendMessage(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        timerThread.start();
+
+
     }
 
 }
